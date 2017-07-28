@@ -16,7 +16,7 @@
   <url>http://ebean-orm.github.io/</url>
 
   <scm>
-    <developerConnection>scm:git:git@github.com:ebean-orm/ebean-agent.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:FOCONIS/ebean-agent.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 

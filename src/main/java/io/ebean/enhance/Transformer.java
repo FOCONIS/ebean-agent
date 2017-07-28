@@ -270,7 +270,7 @@ public class Transformer implements ClassFileTransformer {
 
     } catch (NoEnhancementRequiredException e) {
       if (ca.isLog(9)) {
-        ca.log("... skipping, no enhancement required");
+        ca.log("... skipping, no enhancement required: " + e.getMessage());
       }
     } finally {
       unresolved.addAll(cw.getUnresolved());

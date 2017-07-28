@@ -106,49 +106,53 @@ public class Transformer implements ClassFileTransformer {
       }
       TransformRequest request = new TransformRequest(classfileBuffer);
 
+      boolean enhanced = false;
+      
       boolean isEbeanModel = className.equals(EnhanceConstants.EBEAN_MODEL);
       if (isEbeanModel || enhanceContext.detectEntityTransactionalEnhancement(className)) {
-
-        DetectEnhancement detect = detect(loader, classfileBuffer);
-
-        if (detect.isEntity()) {
-          if (detect.isEnhancedEntity()) {
-            detect.log(3, "already enhanced entity");
-          } else {
-            entityEnhancement(loader, request);
-            if (request.isEnhancedEntity()) {
-              // we don't need perform subsequent transactional
-              // or query bean enhancement so return early
-              return request.getBytes();
+        try {
+          DetectEnhancement detect = detect(loader, classfileBuffer);
+  
+          if (detect.isEntity()) {
+            if (detect.isEnhancedEntity()) {
+              detect.log(3, "already enhanced entity");
+            } else {
+              entityEnhancement(loader, request);
+              enhanced = true;
+              log(8, className, "Entity Enhancement done");
             }
           }
-        }
-
-        if (detect.isTransactional()) {
-          if (detect.isEnhancedTransactional()) {
-            detect.log(3, "already enhanced transactional");
-          } else {
-            transactionalEnhancement(loader, request);
+  
+          if (detect.isTransactional()) {
+            if (detect.isEnhancedTransactional()) {
+              detect.log(3, "already enhanced transactional");
+            } else {
+              transactionalEnhancement(loader, request);
+              enhanced = true;
+              log(1, className, "Transactional Enhancement done");
+            }
           }
+        } catch (NoEnhancementRequiredException e) {
+          log(8, className, "No Entity or Transactional Enhancement required " + e.getMessage());
         }
       }
 
       if (enhanceContext.detectQueryBeanEnhancement(className)) {
-        enhanceQueryBean(loader, request);
+        try {
+          enhanceQueryBean(loader, request);
+          enhanced = true;
+          log(1, className, "Query Bean Enhancement done");
+        } catch (NoEnhancementRequiredException e) {
+          log(8, className, "No Transactional Enhancement required " + e.getMessage());
+        }            
       }
-
-      if (request.isEnhanced()) {
+     
+      if (enhanced) {
         return request.getBytes();
+      } else {
+        log(9, className, "no enhancement on class");
+        return null;
       }
-
-      log(9, className, "no enhancement on class");
-      return null;
-
-    } catch (NoEnhancementRequiredException e) {
-      // the class is an interface
-      log(8, className, "No Enhancement required " + e.getMessage());
-      return null;
-
     } catch (Exception e) {
       enhanceContext.log(e);
       return null;

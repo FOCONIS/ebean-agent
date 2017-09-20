@@ -60,4 +60,6 @@ public interface EnhanceConstants {
   String L_JETBRAINS_NOTNULL = "Lorg/jetbrains/annotations/NotNull;";
 
   String L_EBEAN_NOTNULL = "Lio/ebean/annotation/NotNull;";
+  
+  String C_CONSTRUCTOR_MARKER = "Lio/ebean/bean/ConstructorMarker;";
 }

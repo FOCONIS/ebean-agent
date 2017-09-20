@@ -5,6 +5,8 @@ import io.ebean.enhance.asm.Label;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.asm.Type;
+import io.ebean.enhance.asm.commons.GeneratorAdapter;
+import io.ebean.enhance.asm.commons.Method;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.VisitUtil;
@@ -184,6 +186,10 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     return annotations.contains("Ljavax/persistence/ManyToMany;");
   }
 
+  public boolean isOne() {
+    return annotations.contains("Ljavax/persistence/OneToOne;")
+        || annotations.contains("Ljavax/persistence/ManyToOne;");
+  }
   /**
    * Return true if this is an Embedded field.
    */
@@ -536,7 +542,8 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
 
     // ALOAD or ILOAD etc
     int iLoadOpcode = asmType.getOpcode(Opcodes.ILOAD);
-
+    int iStoreOpcode = asmType.getOpcode(Opcodes.ISTORE);
+    
     // double and long have a size of 2
     int iPosition = asmType.getSize();
 
@@ -545,12 +552,33 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
           + " opCode:" + iLoadOpcode + "," + iPosition + " preSetterArgTypes" + preSetterArgTypes);
     }
 
-    MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, setMethodName, setMethodDesc, null, null);
+    MethodVisitor originalMv = cw.visitMethod(ACC_PROTECTED, setMethodName, setMethodDesc, null, null);
+    
+    GeneratorAdapter mv = new GeneratorAdapter(originalMv, ACC_PROTECTED, setMethodName, setMethodDesc);
     mv.visitCode();
 
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(1, l0);
+    // FOCONIS Normalizer
+    String className = classMeta.getClassName();
+    if (isInterceptSet() && !isOne() && className.startsWith("de/foconis/")) {
+      
+      int sep = className.lastIndexOf('/');
+      String descName = className.substring(0, sep) + "/descriptor/D" + className.substring(sep + 1);
+      mv.visitFieldInsn(GETSTATIC, descName, "INSTANCE", "L" + descName + ";");
+      mv.visitMethodInsn(INVOKEVIRTUAL, descName, "_" + fieldName, "()Lde/foconis/core/domain/base/PropertyImpl;", false);
+      mv.visitVarInsn(ALOAD, 0);
+      
+      mv.visitVarInsn(iLoadOpcode, 1);
+      mv.box(asmType);
+      mv.visitMethodInsn(INVOKEVIRTUAL, "de/foconis/core/domain/base/PropertyImpl", "normalize",
+          "(Lde/foconis/core/domain/BaseModel;Ljava/lang/Object;)Ljava/lang/Object;", false);
+      mv.unbox(asmType);
+      mv.visitVarInsn(iStoreOpcode, 1);
+      
+    }
+    
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, fieldClass, INTERCEPT_FIELD, L_INTERCEPT);
     if (isInterceptSet()) {

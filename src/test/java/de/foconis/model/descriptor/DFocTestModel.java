@@ -32,4 +32,15 @@ public class DFocTestModel {
       
     };
   }
+  
+  public PropertyImpl<Boolean> _test() {
+    
+    return new PropertyImpl<Boolean>() {
+      
+      @Override
+      public Boolean normalize(BaseModel model, Boolean value) {
+        return value;
+      }
+    };
+  }
 }

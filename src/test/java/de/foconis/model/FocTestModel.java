@@ -13,6 +13,8 @@ public class FocTestModel {
   
   int percent;
   
+  private Boolean test = Boolean.FALSE; 
+  
   public String getName() {
     return name;
   }
@@ -35,5 +37,12 @@ public class FocTestModel {
 
   public void setPercent(int percent) {
     this.percent = percent;
+  }
+  
+  public Boolean getTest() {
+    return test;
+  }
+  public void setTest(Boolean test) {
+    this.test = test;
   }
 }

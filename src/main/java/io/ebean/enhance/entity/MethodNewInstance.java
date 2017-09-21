@@ -24,14 +24,13 @@ public class MethodNewInstance {
     mv.visitLineNumber(10, l0);
     mv.visitTypeInsn(Opcodes.NEW, classMeta.getClassName());
     mv.visitInsn(Opcodes.DUP);
-    mv.visitInsn(Opcodes.ACONST_NULL);
-    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, classMeta.getClassName(), "<init>", "(" + EnhanceConstants.C_CONSTRUCTOR_MARKER + ")V", false);
+    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, classMeta.getClassName(), "<init>", "()V", false);
     mv.visitInsn(Opcodes.ARETURN);
 
     Label l1 = new Label();
     mv.visitLabel(l1);
     mv.visitLocalVariable("this", "L" + classMeta.getClassName() + ";", null, l0, l1, 0);
-    mv.visitMaxs(3, 1);
+    mv.visitMaxs(2, 1);
     mv.visitEnd();
   }
 }

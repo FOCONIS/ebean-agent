@@ -6,7 +6,6 @@ import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.asm.commons.GeneratorAdapter;
-import io.ebean.enhance.asm.commons.Method;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.VisitUtil;
@@ -190,6 +189,9 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     return annotations.contains("Ljavax/persistence/OneToOne;")
         || annotations.contains("Ljavax/persistence/ManyToOne;");
   }
+  public boolean isDbJson() {
+    return annotations.contains("Lio/ebean/annotation/DbJson;");
+  }
   /**
    * Return true if this is an Embedded field.
    */
@@ -257,6 +259,13 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
 
       mv.visitMethodInsn(Opcodes.INVOKESTATIC, objDesc, "valueOf", "(" + primDesc + ")L" + objDesc + ";", false);
     }
+  }
+  
+  public int appendLineNumber(MethodVisitor mv, int line)  {
+    Label l0 = new Label();
+    mv.visitLabel(l0);
+    mv.visitLineNumber(line, l0);
+    return line + 1;
   }
 
   /**
@@ -560,12 +569,17 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(1, l0);
+    
     // FOCONIS Normalizer
     String className = classMeta.getClassName();
-    if (isInterceptSet() && !isOne() && className.startsWith("de/foconis/")) {
+    if (isInterceptSet() 
+        && !isOne()
+        && !isDbJson()
+        && className.startsWith("de/foconis/")) {
       
       int sep = className.lastIndexOf('/');
       String descName = className.substring(0, sep) + "/descriptor/D" + className.substring(sep + 1);
+
       mv.visitFieldInsn(GETSTATIC, descName, "INSTANCE", "L" + descName + ";");
       mv.visitMethodInsn(INVOKEVIRTUAL, descName, "_" + fieldName, "()Lde/foconis/core/domain/base/PropertyImpl;", false);
       mv.visitVarInsn(ALOAD, 0);
@@ -576,8 +590,13 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
           "(Lde/foconis/core/domain/BaseModel;Ljava/lang/Object;)Ljava/lang/Object;", false);
       mv.unbox(asmType);
       mv.visitVarInsn(iStoreOpcode, 1);
+      Label l1 = new Label();
+      mv.visitLabel(l1);
+      mv.visitLineNumber(2, l1);
       
     }
+    
+
     
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, fieldClass, INTERCEPT_FIELD, L_INTERCEPT);
@@ -602,30 +621,30 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     }
     mv.visitMethodInsn(INVOKEVIRTUAL, C_INTERCEPT, preSetterMethod, "(ZI"+ preSetterArgTypes + ")Ljava/beans/PropertyChangeEvent;", false);
     mv.visitVarInsn(ASTORE, 1 + iPosition);
-    Label l1 = new Label();
-    mv.visitLabel(l1);
-    mv.visitLineNumber(2, l1);
+    Label l2 = new Label();
+    mv.visitLabel(l2);
+    mv.visitLineNumber(3, l2);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitVarInsn(iLoadOpcode, 1);// ALOAD or ILOAD
     mv.visitFieldInsn(PUTFIELD, fieldClass, fieldName, fieldDesc);
 
-    Label l2 = new Label();
-    mv.visitLabel(l2);
-    mv.visitLineNumber(3, l2);
+    Label l3 = new Label();
+    mv.visitLabel(l3);
+    mv.visitLineNumber(4, l3);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, fieldClass, INTERCEPT_FIELD, L_INTERCEPT);
     mv.visitVarInsn(ALOAD, 1 + iPosition);
     mv.visitMethodInsn(INVOKEVIRTUAL, C_INTERCEPT, "postSetter", "(Ljava/beans/PropertyChangeEvent;)V", false);
 
-    Label l3 = new Label();
-    mv.visitLabel(l3);
-    mv.visitLineNumber(4, l3);
-    mv.visitInsn(RETURN);
     Label l4 = new Label();
     mv.visitLabel(l4);
+    mv.visitLineNumber(5, l4);
+    mv.visitInsn(RETURN);
+    Label l5 = new Label();
+    mv.visitLabel(l5);
     mv.visitLocalVariable("this", "L" + fieldClass + ";", null, l0, l4, 0);
-    mv.visitLocalVariable("newValue", fieldDesc, null, l0, l4, 1);
-    mv.visitLocalVariable("evt", "Ljava/beans/PropertyChangeEvent;", null, l1, l4, 2);
+    mv.visitLocalVariable("newValue", fieldDesc, null, l0, l5, 1);
+    mv.visitLocalVariable("evt", "Ljava/beans/PropertyChangeEvent;", null, l2, l4, 2);
     mv.visitMaxs(5, 3);
     mv.visitEnd();
   }

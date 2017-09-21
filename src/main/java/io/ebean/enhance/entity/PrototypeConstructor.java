@@ -10,7 +10,7 @@ import static io.ebean.enhance.common.EnhanceConstants.*;
 /**
  * Adds the Constructor(io/ebean/bean/ConstructorMarker) method.
  */
-public class ConstructorFast {
+public class PrototypeConstructor {
 
   /**
    * Add the _ebean_newInstance() method.

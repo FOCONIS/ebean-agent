@@ -1,6 +1,6 @@
 package de.foconis.model.descriptor;
 
-import de.foconis.core.domain.BaseModel;
+import de.foconis.core.api.domain.BaseModel;
 import de.foconis.core.domain.base.PropertyImpl;
 
 public class DFocTestModel {

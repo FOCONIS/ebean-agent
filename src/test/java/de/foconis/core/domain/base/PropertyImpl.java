@@ -1,6 +1,6 @@
 package de.foconis.core.domain.base;
 
-import de.foconis.core.domain.BaseModel;
+import de.foconis.core.api.domain.BaseModel;
 
 public abstract class PropertyImpl<T> {
 

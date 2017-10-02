@@ -587,7 +587,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
       mv.visitVarInsn(iLoadOpcode, 1);
       mv.box(asmType);
       mv.visitMethodInsn(INVOKEVIRTUAL, "de/foconis/core/domain/base/PropertyImpl", "normalize",
-          "(Lde/foconis/core/domain/BaseModel;Ljava/lang/Object;)Ljava/lang/Object;", false);
+          "(Lde/foconis/core/api/domain/BaseModel;Ljava/lang/Object;)Ljava/lang/Object;", false);
       mv.unbox(asmType);
       mv.visitVarInsn(iStoreOpcode, 1);
       Label l1 = new Label();

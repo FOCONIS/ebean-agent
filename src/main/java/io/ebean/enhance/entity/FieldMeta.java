@@ -25,7 +25,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   private final String fieldName;
   private final String fieldDesc;
 
-  private final HashSet<String> annotations = new HashSet<String>();
+  private final HashSet<String> annotations = new HashSet<>();
 
   private final Type asmType;
 
@@ -539,9 +539,8 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
    * 
    * <pre>
    * public void _ebean_set_propname(String newValue) {
-   *   PropertyChangeEvent evt = ebi.preSetter(true, propertyIndex, _ebean_get_propname(), newValue);
+   *   ebi.preSetter(true, propertyIndex, _ebean_get_propname(), newValue);
    *   this.propname = newValue;
-   *   ebi.postSetter(evt);
    * }
    * </pre>
    */
@@ -594,14 +593,11 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
           "(Lde/foconis/core/api/domain/BaseModel;Ljava/lang/Object;)Ljava/lang/Object;", false);
       mv.unbox(asmType);
       mv.visitVarInsn(iStoreOpcode, 1);
-      Label l1 = new Label();
-      mv.visitLabel(l1);
-      mv.visitLineNumber(2, l1);
-      
+      Label l05 = new Label();
+      mv.visitLabel(l05);
+      mv.visitLineNumber(2, l05);
     }
-    
 
-    
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, fieldClass, INTERCEPT_FIELD, L_INTERCEPT);
     if (isInterceptSet()) {
@@ -623,11 +619,10 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     if (isMany()) {
       preSetterMethod = "preSetterMany";
     }
-    mv.visitMethodInsn(INVOKEVIRTUAL, C_INTERCEPT, preSetterMethod, "(ZI"+ preSetterArgTypes + ")Ljava/beans/PropertyChangeEvent;", false);
-    mv.visitVarInsn(ASTORE, 1 + iPosition);
-    Label l2 = new Label();
-    mv.visitLabel(l2);
-    mv.visitLineNumber(3, l2);
+    mv.visitMethodInsn(INVOKEVIRTUAL, C_INTERCEPT, preSetterMethod, "(ZI"+ preSetterArgTypes + ")V", false);
+    Label l1 = new Label();
+    mv.visitLabel(l1);
+    mv.visitLineNumber(2, l1);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitVarInsn(iLoadOpcode, 1);// ALOAD or ILOAD
     mv.visitFieldInsn(PUTFIELD, fieldClass, fieldName, fieldDesc);
@@ -635,11 +630,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     Label l3 = new Label();
     mv.visitLabel(l3);
     mv.visitLineNumber(4, l3);
-    mv.visitVarInsn(ALOAD, 0);
-    mv.visitFieldInsn(GETFIELD, fieldClass, INTERCEPT_FIELD, L_INTERCEPT);
-    mv.visitVarInsn(ALOAD, 1 + iPosition);
-    mv.visitMethodInsn(INVOKEVIRTUAL, C_INTERCEPT, "postSetter", "(Ljava/beans/PropertyChangeEvent;)V", false);
-
+    mv.visitInsn(RETURN);
     Label l4 = new Label();
     mv.visitLabel(l4);
     mv.visitLineNumber(5, l4);
@@ -647,9 +638,8 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     Label l5 = new Label();
     mv.visitLabel(l5);
     mv.visitLocalVariable("this", "L" + fieldClass + ";", null, l0, l4, 0);
-    mv.visitLocalVariable("newValue", fieldDesc, null, l0, l5, 1);
-    mv.visitLocalVariable("evt", "Ljava/beans/PropertyChangeEvent;", null, l2, l4, 2);
-    mv.visitMaxs(5, 3);
+    mv.visitLocalVariable("newValue", fieldDesc, null, l0, l4, 1);
+    mv.visitMaxs(5, 2);
     mv.visitEnd();
   }
 

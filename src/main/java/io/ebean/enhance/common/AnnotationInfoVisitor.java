@@ -24,15 +24,16 @@ public class AnnotationInfoVisitor extends AnnotationVisitor {
 	}
 
 	public AnnotationVisitor visitAnnotation(String name, String desc) {
-		return create(name).visitAnnotation(name, desc);
+		AnnotationVisitor av = super.visitAnnotation(name, desc);
+		return create(name, av);
 	}
 
 	public AnnotationVisitor visitArray(String name) {
-		
-		return create(name).visitArray(name);
+		AnnotationVisitor av = super.visitArray(name);
+		return create(name, av);
 	}
 
-	private AnnotationInfoVisitor create(String name){
+	private AnnotationInfoVisitor create(String name, AnnotationVisitor av){
 		String newPrefix = prefix == null ? name: prefix+"."+name;
 		return new AnnotationInfoVisitor(newPrefix, info, av);
 	}

@@ -148,4 +148,14 @@ public class MyEntityBean implements EntityBean {
   public Object _ebean_getFieldIntercept(int fieldIndex) {
     return null;
   }
+
+  @Override
+  public void addPropertyChangeListener(PropertyChangeListener listener) {
+    // TODO Auto-generated method stub
+  }
+
+  @Override
+  public void removePropertyChangeListener(PropertyChangeListener listener) {
+    // TODO Auto-generated method stub
+  }
 }

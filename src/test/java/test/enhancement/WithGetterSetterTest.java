@@ -8,7 +8,7 @@ import test.model.WithGetterSetter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class WithGetterSetterTests extends BaseTest {
+public class WithGetterSetterTest extends BaseTest {
 
 
   @Test

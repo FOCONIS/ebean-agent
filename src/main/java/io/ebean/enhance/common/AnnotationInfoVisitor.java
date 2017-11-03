@@ -20,15 +20,16 @@ public class AnnotationInfoVisitor extends AnnotationVisitor {
 	
 	public void visit(String name, Object value) {
 		info.add(prefix, name, value);
+		super.visit(name, value);
 	}
 
 	public AnnotationVisitor visitAnnotation(String name, String desc) {
-		return create(name);
+		return create(name).visitAnnotation(name, desc);
 	}
 
 	public AnnotationVisitor visitArray(String name) {
 		
-		return create(name);
+		return create(name).visitArray(name);
 	}
 
 	private AnnotationInfoVisitor create(String name){

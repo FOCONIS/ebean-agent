@@ -95,17 +95,17 @@ public class ClassMetaReaderTest {
     AgentManifest manifest = AgentManifest.read(getClass().getClassLoader(), initialPackages);
     EnhanceContext enhanceContext = new EnhanceContext(reader,"debug=9;packages=line.foo", manifest);
 
-    assertTrue(enhanceContext.isIgnoreClass("jim.Me"));
-    assertFalse(enhanceContext.isIgnoreClass("jim.bob.Me"));
-    assertFalse(enhanceContext.isIgnoreClass("jim.bob.other.Me"));
+    assertFalse(enhanceContext.detectEntityTransactionalEnhancement("jim/Me"));
+    assertTrue(enhanceContext.detectEntityTransactionalEnhancement("jim/bob/Me"));
+    assertTrue(enhanceContext.detectEntityTransactionalEnhancement("jim/bob/other/Me"));
 
-    assertTrue(enhanceContext.isIgnoreClass("jack.jones.Me"));
-    assertFalse(enhanceContext.isIgnoreClass("jack.jones.fred.Me"));
-    assertFalse(enhanceContext.isIgnoreClass("jack.jones.fred.other.Me"));
+    assertFalse(enhanceContext.detectEntityTransactionalEnhancement("jack/jones/Me"));
+    assertTrue(enhanceContext.detectEntityTransactionalEnhancement("jack/jones/fred/Me"));
+    assertTrue(enhanceContext.detectEntityTransactionalEnhancement("jack/jones/fred/other/Me"));
 
-    assertTrue(enhanceContext.isIgnoreClass("line.Me"));
-    assertFalse(enhanceContext.isIgnoreClass("line.foo.Me"));
-    assertFalse(enhanceContext.isIgnoreClass("line.foo.other.Me"));
+    assertFalse(enhanceContext.detectEntityTransactionalEnhancement("line/Me"));
+    assertFalse(enhanceContext.detectEntityTransactionalEnhancement("line/foo/Me"));
+    assertFalse(enhanceContext.detectEntityTransactionalEnhancement("line/foo/other/Me"));
 
   }
 

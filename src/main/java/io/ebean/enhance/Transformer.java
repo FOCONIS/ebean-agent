@@ -19,6 +19,7 @@ import io.ebean.enhance.entity.MessageOutput;
 import io.ebean.enhance.querybean.TypeQueryClassAdapter;
 import io.ebean.enhance.transactional.ClassAdapterTransactional;
 import io.ebean.enhance.transactional.TransactionalMethodKey;
+import org.avaje.agentloader.AgentLoader;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -37,15 +38,20 @@ import java.util.List;
  */
 public class Transformer implements ClassFileTransformer {
 
+  public static void agentmain(String agentArgs, Instrumentation inst) {
+    premain(agentArgs, inst);
+  }
+
   public static void premain(String agentArgs, Instrumentation inst) {
 
-    Transformer transformer = new Transformer(null, agentArgs);
+    instrumentation = inst;
+    transformer = new Transformer(null, agentArgs);
     inst.addTransformer(transformer);
   }
 
-  public static void agentmain(String agentArgs, Instrumentation inst) throws Exception {
-    premain(agentArgs, inst);
-  }
+  private static Instrumentation instrumentation;
+
+  private static Transformer transformer;
 
   private final EnhanceContext enhanceContext;
 
@@ -63,6 +69,13 @@ public class Transformer implements ClassFileTransformer {
   }
 
   /**
+   * Create with an EnhancementContext (for IDE Plugins mainly)
+   */
+  public Transformer(EnhanceContext enhanceContext) {
+    this.enhanceContext = enhanceContext;
+  }
+
+  /**
    * Create a transformer for entity bean enhancement and transactional method enhancement.
    *
    * @param bytesReader reads resources from class path for related inheritance and interfaces
@@ -70,6 +83,33 @@ public class Transformer implements ClassFileTransformer {
    */
   public Transformer(ClassBytesReader bytesReader, String agentArgs, AgentManifest manifest) {
     this.enhanceContext = new EnhanceContext(bytesReader, agentArgs, manifest);
+  }
+
+  /**
+   * Return the Instrumentation instance.
+   */
+  public static Instrumentation instrumentation()  {
+    verifyInitialization();
+    return instrumentation;
+  }
+
+  /**
+   * Return the Transformer instance.
+   */
+  public static Transformer get()  {
+    verifyInitialization();
+    return transformer;
+  }
+
+  /**
+   * Use agent loader if necessary to initialise the transformer.
+   */
+  public static void verifyInitialization() {
+    if (instrumentation == null) {
+      if (!AgentLoader.loadAgentFromClasspath("ebean-agent", "debug=1")) {
+        throw new IllegalStateException("ebean-agent not found in classpath - not dynamically loaded");
+      }
+    }
   }
 
   /**
@@ -121,7 +161,7 @@ public class Transformer implements ClassFileTransformer {
           }
         }
 
-        if (detect.isTransactional()) {
+        if (enhanceContext.isEnableProfileLocation() || detect.isTransactional()) {
           if (detect.isEnhancedTransactional()) {
             detect.log(3, "already enhanced transactional");
           } else {
@@ -147,6 +187,9 @@ public class Transformer implements ClassFileTransformer {
       return null;
 
     } catch (Exception e) {
+      if (enhanceContext.isThrowOnError()) {
+        throw new IllegalStateException(e);
+      }
       enhanceContext.log(e);
       return null;
     } finally {
@@ -202,13 +245,13 @@ public class Transformer implements ClassFileTransformer {
       request.enhancedEntity(cw.toByteArray());
 
     } catch (AlreadyEnhancedException e) {
-      if (ca.isLog(1)) {
+      if (ca.isLog(2)) {
         ca.log("already enhanced entity");
       }
       request.enhancedEntity(null);
 
     } catch (NoEnhancementRequiredException e) {
-      if (ca.isLog(2)) {
+      if (ca.isLog(3)) {
         ca.log("skipping... no enhancement required");
       }
     } finally {
@@ -217,7 +260,7 @@ public class Transformer implements ClassFileTransformer {
   }
 
   /**
-   * Perform transactional enhancement.
+   * Perform transactional enhancement and Finder profileLocation enhancement.
    */
   private void transactionalEnhancement(ClassLoader loader, TransformRequest request) {
 
@@ -235,12 +278,12 @@ public class Transformer implements ClassFileTransformer {
       request.enhancedTransactional(cw.toByteArray());
 
     } catch (AlreadyEnhancedException e) {
-      if (ca.isLog(1)) {
+      if (ca.isLog(3)) {
         ca.log("already enhanced");
       }
 
     } catch (NoEnhancementRequiredException e) {
-      if (ca.isLog(0)) {
+      if (ca.isLog(3)) {
         ca.log("skipping... no enhancement required");
       }
     } finally {

@@ -35,14 +35,10 @@ public class AnnotationInfoVisitor extends AnnotationVisitor {
 		String newPrefix = prefix == null ? name: prefix+"."+name;
 		return new AnnotationInfoVisitor(newPrefix, info, underlying);
 	}
-	
-	public void visitEnd() {
-		super.visitEnd();
-	}
 
 	public void visitEnum(String name, String desc, String value) {
-		super.visitEnum(name, desc, value);
 		info.addEnum(prefix, name, desc, value);
+		super.visitEnum(name, desc, value);
 	}
 	
 }

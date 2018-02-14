@@ -22,13 +22,39 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
 
   @Override
   public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+    if (opcode == GETFIELD && isDescriptorBean(owner) && !isDescriptorBean(classInfo.getClassName())) {
+      enhanceContext.log(1, "desc enhancing: " + owner + " " + classInfo.getClassName() + " ", desc);
 
-    if (opcode == GETFIELD && enhanceContext.isQueryBean(owner)) {
+      classInfo.addGetFieldIntercept(owner, name);
+      mv.visitMethodInsn(INVOKEVIRTUAL, owner, "_" + name, "()" + desc, false);
+
+    } else if (opcode == GETFIELD && enhanceContext.isQueryBean(owner)) {
       classInfo.addGetFieldIntercept(owner, name);
       mv.visitMethodInsn(INVOKEVIRTUAL, owner, "_" + name, "()" + desc, false);
     } else {
       super.visitFieldInsn(opcode, owner, name, desc);
     }
+  }
+  
+  /**
+   * Return true if the owner class is a descriptor bean.
+   * <p>
+   * If true typically means the caller needs to change GETFIELD calls to instead invoke the generated
+   * 'property access' methods.
+   * </p>
+   */
+  public boolean isDescriptorBean(String owner) {
+    // quick & dirty - all classes that mathces the pattern
+    // de/foconis/.../descriptor/D... or
+    // de/foconis/.../descriptor/assoc/D... are descriptors
+    if (owner.startsWith("de/foconis/")) {
+      int subPackagePos = owner.lastIndexOf("/descriptor/");
+      if (subPackagePos > -1) {
+        String suffix = owner.substring(subPackagePos);
+        return (suffix.startsWith("/descriptor/D") || suffix.startsWith("/descriptor/assoc/D"));
+      }
+    }
+    return false;
   }
 
 }

@@ -5,6 +5,7 @@ import io.ebean.enhance.asm.Label;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.asm.Type;
+import io.ebean.enhance.asm.commons.GeneratorAdapter;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.VisitUtil;
@@ -184,6 +185,13 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     return annotations.contains("Ljavax/persistence/ManyToMany;");
   }
 
+  public boolean isOne() {
+    return annotations.contains("Ljavax/persistence/OneToOne;")
+        || annotations.contains("Ljavax/persistence/ManyToOne;");
+  }
+  public boolean isDbJson() {
+    return annotations.contains("Lio/ebean/annotation/DbJson;");
+  }
   /**
    * Return true if this is an Embedded field.
    */
@@ -259,7 +267,6 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   public void appendSwitchGet(MethodVisitor mv, ClassMeta classMeta, boolean intercept) {
 
     if (intercept) {
-      // use the special get method with interception...
       mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.getClassName(), getMethodName, getMethodDesc, false);
     } else {
       if (isLocalField(classMeta)) {
@@ -445,7 +452,11 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
       mv.visitVarInsn(ALOAD, 0);
       mv.visitTypeInsn(NEW, ebCollection);
       mv.visitInsn(DUP);
-      mv.visitMethodInsn(INVOKESPECIAL, ebCollection, "<init>", "()V", false);
+      mv.visitVarInsn(ALOAD, 0);
+      mv.visitVarInsn(ALOAD, 0);
+      VisitUtil.visitIntInsn(mv, indexPosition);
+      mv.visitMethodInsn(INVOKEINTERFACE, C_ENTITYBEAN, "_ebean_getPropertyName", "(I)Ljava/lang/String;", true);
+      mv.visitMethodInsn(INVOKESPECIAL, ebCollection, "<init>", "(Lio/ebean/bean/EntityBean;Ljava/lang/String;)V", false);
       mv.visitFieldInsn(PUTFIELD, className, fieldName, fieldDesc);
 
       mv.visitVarInsn(ALOAD, 0);
@@ -480,7 +491,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     Label l7 = new Label();
     mv.visitLabel(l7);
     mv.visitLocalVariable("this", "L" + className + ";", null, l0, l7, 0);
-    mv.visitMaxs(3, 1);
+    mv.visitMaxs(6, 1);
     mv.visitEnd();
   }
 
@@ -535,7 +546,8 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
 
     // ALOAD or ILOAD etc
     int iLoadOpcode = asmType.getOpcode(Opcodes.ILOAD);
-
+    int iStoreOpcode = asmType.getOpcode(Opcodes.ISTORE);
+    
     // double and long have a size of 2
     int iPosition = asmType.getSize();
 
@@ -544,12 +556,43 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
           + " opCode:" + iLoadOpcode + "," + iPosition + " preSetterArgTypes" + preSetterArgTypes);
     }
 
-    MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, setMethodName, setMethodDesc, null, null);
+    MethodVisitor originalMv = cw.visitMethod(ACC_PROTECTED, setMethodName, setMethodDesc, null, null);
+    
+    GeneratorAdapter mv = new GeneratorAdapter(originalMv, ACC_PROTECTED, setMethodName, setMethodDesc);
     mv.visitCode();
 
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(1, l0);
+    
+    // FOCONIS Normalizer
+    String className = classMeta.getClassName();
+    if (isInterceptSet() 
+        && !isOne()
+        && !isDbJson()
+        && className.startsWith("de/foconis/")) {
+      
+      int sep = className.lastIndexOf('/');
+      String descName = className.substring(0, sep) + "/descriptor/D" + className.substring(sep + 1);
+
+      mv.visitFieldInsn(GETSTATIC, descName, "INSTANCE", "L" + descName + ";");
+      mv.visitMethodInsn(INVOKEVIRTUAL, descName, "_" + fieldName, "()Lde/foconis/core/domain/base/PropertyImpl;", false);
+      mv.visitVarInsn(ALOAD, 0);
+      
+      mv.visitVarInsn(iLoadOpcode, 1);
+      mv.box(asmType);
+      mv.visitMethodInsn(INVOKEVIRTUAL, "de/foconis/core/domain/base/PropertyImpl", "normalize",
+          "(Lde/foconis/core/api/domain/BaseModel;Ljava/lang/Object;)Ljava/lang/Object;", false);
+      mv.unbox(asmType);
+      mv.visitVarInsn(iStoreOpcode, 1);
+      Label l1 = new Label();
+      mv.visitLabel(l1);
+      mv.visitLineNumber(2, l1);
+      
+    }
+    
+
+    
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, fieldClass, INTERCEPT_FIELD, L_INTERCEPT);
     if (isInterceptSet()) {

@@ -37,8 +37,8 @@ public class AnnotationInfoVisitor extends AnnotationVisitor {
 	}
 
 	public void visitEnum(String name, String desc, String value) {
-		info.addEnum(prefix, name, desc, value);
 		super.visitEnum(name, desc, value);
+		info.addEnum(prefix, name, desc, value);
 	}
 	
 }

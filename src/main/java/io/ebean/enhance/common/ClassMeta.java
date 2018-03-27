@@ -59,8 +59,6 @@ public class ClassMeta {
 	
 	private boolean hasStaticInit;
 
-	private HashSet<String> existingMethods = new HashSet<String>();
-
 	private LinkedHashMap<String, FieldMeta> fields = new LinkedHashMap<String, FieldMeta>();
 
 	private HashSet<String> classAnnotation = new HashSet<String>();
@@ -375,20 +373,6 @@ public class ClassMeta {
 	 */
 	public void addClassAnnotation(String desc) {
 		classAnnotation.add(desc);
-	}
-
-	/**
-	 * Add an existing method.
-	 */
-	public void addExistingMethod(String methodName, String methodDesc) {
-		existingMethods.add(methodName + methodDesc);
-	}
-
-	/**
-	 * Return true if the method already exists on the bean.
-	 */
-	public boolean isExistingMethod(String methodName, String methodDesc) {
-		return existingMethods.contains(methodName + methodDesc);
 	}
 
 	public MethodVisitor createMethodVisitor(MethodVisitor mv, int access, String name, String desc) {

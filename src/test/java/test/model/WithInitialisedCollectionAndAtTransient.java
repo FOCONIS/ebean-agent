@@ -22,6 +22,7 @@ public class WithInitialisedCollectionAndAtTransient extends BaseEntity {
   @Transient
   StringBuilder buffer = new StringBuilder();
 
+  @Override
   public String toString() {
     return "id:"+id+" name:"+name;
   }

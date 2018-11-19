@@ -71,6 +71,7 @@ public class AgentManifest {
   public AgentManifest() {
   }
 
+  @Override
   public String toString() {
     return "entityPackages:" + entityPackages + " querybeanPackages:" + querybeanPackages
       + " transactionalPackages:" + transactionalPackages + " profilingMode:" + transactionProfilingMode;

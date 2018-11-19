@@ -1,7 +1,6 @@
 package io.ebean.enhance.querybean;
 
 import io.ebean.enhance.common.EnhanceContext;
-import io.ebean.enhance.common.NoEnhancementRequiredException;
 import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.Opcodes;
 

@@ -31,6 +31,7 @@ public class WithInitialisedCollections extends BaseEntity {
   @Transient
   Set<String> strings = new HashSet<>();
 
+  @Override
   public String toString() {
     return "id:"+id+" name:"+name;
   }

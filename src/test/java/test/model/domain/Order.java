@@ -37,6 +37,7 @@ public class Order extends BaseModel {
   @OrderBy("id asc")
   List<OrderDetail> details;
 
+  @Override
   public String toString() {
     return id + " status:" + status;
   }

@@ -22,6 +22,7 @@ public class WithInitialisedCollectionsAndConstructor extends BaseEntity {
     contacts.addAll(add);
   }
 
+  @Override
   public String toString() {
     return "id:"+id+" name:"+name;
   }

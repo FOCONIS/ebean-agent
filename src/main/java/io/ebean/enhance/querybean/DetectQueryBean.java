@@ -17,6 +17,7 @@ public class DetectQueryBean {
     this.entityPackages = entityPackages;
   }
 
+  @Override
   public String toString() {
     return Arrays.toString(entityPackages);
   }

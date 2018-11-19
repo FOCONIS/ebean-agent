@@ -179,6 +179,7 @@ public class ConstructorDeferredCode implements Opcodes {
       mv.visitVarInsn(ALOAD, 0);
     }
 
+    @Override
     public String toString() {
       return "ALOAD 0";
     }
@@ -193,6 +194,7 @@ public class ConstructorDeferredCode implements Opcodes {
       mv.visitInsn(DUP);
     }
 
+    @Override
     public String toString() {
       return "DUP";
     }
@@ -214,6 +216,7 @@ public class ConstructorDeferredCode implements Opcodes {
       mv.visitTypeInsn(NEW, type);
     }
 
+    @Override
     public String toString() {
       return "NEW " + type;
     }
@@ -235,6 +238,7 @@ public class ConstructorDeferredCode implements Opcodes {
       mv.visitTypeInsn(CHECKCAST, type);
     }
 
+    @Override
     public String toString() {
       return "CHECKCAST " + type;
     }
@@ -264,6 +268,7 @@ public class ConstructorDeferredCode implements Opcodes {
       mv.visitMethodInsn(opcode, owner, name, desc, itf);
     }
 
+    @Override
     public String toString() {
       return "INVOKESPECIAL " + owner + ".<init> ()V";
     }

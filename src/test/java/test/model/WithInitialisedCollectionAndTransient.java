@@ -20,6 +20,7 @@ public class WithInitialisedCollectionAndTransient extends BaseEntity {
 
   transient StringBuilder buffer = new StringBuilder();
 
+  @Override
   public String toString() {
     return "id:"+id+" name:"+name;
   }

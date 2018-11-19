@@ -26,6 +26,7 @@ public class FieldInfo implements Opcodes, Constants, EnhanceConstants {
     this.signature = signature;
   }
 
+  @Override
   public String toString() {
     return "name:" + name + " desc:" + desc + " sig:" + signature;
   }

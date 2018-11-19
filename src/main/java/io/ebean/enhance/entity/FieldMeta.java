@@ -5,7 +5,6 @@ import io.ebean.enhance.asm.Label;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.asm.Type;
-import io.ebean.enhance.asm.commons.GeneratorAdapter;
 import io.ebean.enhance.common.AnnotationInfo;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
@@ -71,7 +70,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
 
     this.getNoInterceptMethodName = "_ebean_getni_" + name;
     this.setNoInterceptMethodName = "_ebean_setni_" + name;
-    this.normalizeAnnotationInfo = new AnnotationInfo(classMeta.getNormailzeAnnotationInfo());
+    this.normalizeAnnotationInfo = new AnnotationInfo(null);
   }
 
   public void setIndexPosition(int indexPosition) {
@@ -195,13 +194,6 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     return annotations.contains("Ljavax/persistence/ManyToMany;");
   }
 
-  public boolean isOne() {
-    return annotations.contains("Ljavax/persistence/OneToOne;")
-        || annotations.contains("Ljavax/persistence/ManyToOne;");
-  }
-  public boolean isDbJson() {
-    return annotations.contains("Lio/ebean/annotation/DbJson;");
-  }
   /**
   * Return true if this is an Embedded field.
   */
@@ -277,6 +269,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   public void appendSwitchGet(MethodVisitor mv, ClassMeta classMeta, boolean intercept) {
 
     if (intercept) {
+      // use the special get method with interception...
       mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.getClassName(), getMethodName, getMethodDesc, false);
     } else {
       if (isLocalField(classMeta)) {
@@ -566,51 +559,33 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
           + " opCode:" + iLoadOpcode + "," + iPosition + " preSetterArgTypes" + preSetterArgTypes);
     }
 
-    MethodVisitor originalMv = cw.visitMethod(ACC_PROTECTED, setMethodName, setMethodDesc, null, null);
-
-    GeneratorAdapter mv = new GeneratorAdapter(originalMv, ACC_PROTECTED, setMethodName, setMethodDesc);
+    MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, setMethodName, setMethodDesc, null, null);
     mv.visitCode();
 
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(1, l0);
+
     List<Type> normalizers = (List<Type>) normalizeAnnotationInfo.getValue("value");
-    if (normalizers != null && asmType.getDescriptor().equals(STRING_CLASS)) {
+    if (normalizers != null) {
+      // found a field normalizer. This normalizer is used regardless of the datatype.
       mv.visitVarInsn(iLoadOpcode, 1);
       for (Type normalizer : normalizers) {
         mv.visitMethodInsn(INVOKESTATIC, normalizer.getInternalName(), "normalize",
-        "(Ljava/lang/String;)Ljava/lang/String;", false);
+        "(" +  asmType.getDescriptor() +")" +  asmType.getDescriptor(), false);
       }
       mv.visitVarInsn(iStoreOpcode, 1);
+    } else {
+      normalizers = classMeta.getClassNormailzers();
+      if (normalizers != null && asmType.getDescriptor().equals(STRING_CLASS)) {
+        mv.visitVarInsn(iLoadOpcode, 1);
+        for (Type normalizer : normalizers) {
+          mv.visitMethodInsn(INVOKESTATIC, normalizer.getInternalName(), "normalize",
+          "(Ljava/lang/String;)Ljava/lang/String;", false);
+        }
+        mv.visitVarInsn(iStoreOpcode, 1);
+      }
     }
-//    x
-//    // FOCONIS Normalizer
-//    String className = classMeta.getClassName();
-//    if (isInterceptSet()
-//        && !isOne()
-//        && !isDbJson()
-//        && className.startsWith("de/foconis/")) {
-//
-//      int sep = className.lastIndexOf('/');
-//      String descName = className.substring(0, sep) + "/descriptor/D" + className.substring(sep + 1);
-//
-//      mv.visitFieldInsn(GETSTATIC, descName, "INSTANCE", "L" + descName + ";");
-//      mv.visitMethodInsn(INVOKEVIRTUAL, descName, "_" + fieldName, "()Lde/foconis/core/domain/base/PropertyImpl;", false);
-//      mv.visitVarInsn(ALOAD, 0);
-//
-//      mv.visitVarInsn(iLoadOpcode, 1);
-//      mv.box(asmType);
-//      mv.visitMethodInsn(INVOKEVIRTUAL, "de/foconis/core/domain/base/PropertyImpl", "normalize",
-//          "(Lde/foconis/core/api/domain/BaseModel;Ljava/lang/Object;)Ljava/lang/Object;", false);
-//      mv.unbox(asmType);
-//      mv.visitVarInsn(iStoreOpcode, 1);
-//      Label l1 = new Label();
-//      mv.visitLabel(l1);
-//      mv.visitLineNumber(2, l1);
-//
-//    }
-
-
 
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, fieldClass, INTERCEPT_FIELD, L_INTERCEPT);
@@ -700,6 +675,5 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     mv.visitMaxs(4, 2);
     mv.visitEnd();
   }
-
 
 }

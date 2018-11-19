@@ -50,7 +50,6 @@ public class Transformer implements ClassFileTransformer {
         in.close();
         version = prop.getProperty("version");
       }
-      System.out.println("ebean-agent version: " + version);
     } catch (IOException e) {
       System.err.println("Could not determine ebean version: " +e.getMessage());
     }

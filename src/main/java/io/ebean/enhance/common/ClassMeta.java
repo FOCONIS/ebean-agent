@@ -5,6 +5,7 @@ import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
+import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.entity.FieldMeta;
 import io.ebean.enhance.entity.LocalFieldVisitor;
 import io.ebean.enhance.entity.MessageOutput;
@@ -349,7 +350,7 @@ public class ClassMeta {
   /**
   * Return true if the class has an Entity, Embeddable, or MappedSuperclass.
   */
-  private boolean isCheckEntity() {
+  public boolean isCheckEntity() {
     return EntityCheck.hasEntityAnnotation(classAnnotation);
   }
 
@@ -512,6 +513,14 @@ public class ClassMeta {
 
   public void setGroovyInterface(boolean hasGroovyInterface) {
     this.hasGroovyInterface = hasGroovyInterface;
+  }
+
+  public List<Type> getClassNormailzers() {
+    List<Type> ann = (List<Type>) normalizeAnnotationInfo.getValue("value");
+    if (ann != null) {
+      return ann;
+    }
+    return superMeta == null ? null : superMeta.getClassNormailzers();
   }
 
 }

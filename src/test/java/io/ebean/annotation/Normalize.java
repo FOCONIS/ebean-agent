@@ -1,8 +1,3 @@
-/*
- * Licensed Materials - Property of FOCONIS AG
- * (C) Copyright FOCONIS AG.
- */
-
 package io.ebean.annotation;
 
 import static java.lang.annotation.ElementType.*;
@@ -13,9 +8,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to mark a string field or a class with a Normalization.
+ * Annotation to mark a field or a class with a Normalization.
  *
- * Multiple annotations can be specified which will all be called one after the other.
+ * If the annotation is placed at class level. Normalization is done for all string properties
+ * unless an other annotation is placed at field level.
+ *
+ * Multiple normalizers can be specified which will all be called one after the other.
  *
  * @author Alexander Wagner, FOCONIS AG
  *
@@ -26,7 +24,8 @@ import java.lang.annotation.Target;
 public @interface Normalize {
 
   /**
-  * The Normalization class.
+  * The Normalization class. Class must have a static 'T normalize(T input)' method.
+  * T is the datatype of the field.
   */
   Class<?>[] value();
 

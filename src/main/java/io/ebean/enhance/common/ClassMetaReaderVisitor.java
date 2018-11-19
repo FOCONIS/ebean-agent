@@ -61,7 +61,7 @@ public class ClassMetaReaderVisitor extends ClassVisitor implements EnhanceConst
       return new AnnotationInfoVisitor(null, classMeta.getTransactionalAnnotationInfo(), av);
     } else if (desc.equals(NORMALIZE_ANNOTATION)) {
 
-      // we have class level Transactional annotation
+      // we have class level Normalize annotation
       // which will act as default for all methods in this class
       return new AnnotationInfoVisitor(null, classMeta.getNormailzeAnnotationInfo(), av);
 

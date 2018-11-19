@@ -5,11 +5,13 @@ import io.ebean.enhance.asm.Label;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.asm.Type;
+import io.ebean.enhance.common.AnnotationInfo;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.VisitUtil;
 
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Holds meta data for a field.
@@ -40,6 +42,8 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
 
   private int indexPosition;
 
+  private AnnotationInfo normalizeAnnotationInfo;
+
   /**
   * Construct based on field name and desc from reading byte code.
   * <p>
@@ -66,6 +70,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
 
     this.getNoInterceptMethodName = "_ebean_getni_" + name;
     this.setNoInterceptMethodName = "_ebean_setni_" + name;
+    this.normalizeAnnotationInfo = new AnnotationInfo(null);
   }
 
   public void setIndexPosition(int indexPosition) {
@@ -110,6 +115,10 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   */
   public String getDesc() {
     return fieldDesc;
+  }
+
+  public AnnotationInfo getNormalizeAnnotationInfo() {
+    return normalizeAnnotationInfo;
   }
 
   private boolean isInterceptGet() {
@@ -536,6 +545,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
 
     // ALOAD or ILOAD etc
     int iLoadOpcode = asmType.getOpcode(Opcodes.ILOAD);
+    int iStoreOpcode = asmType.getOpcode(Opcodes.ISTORE);
 
     // double and long have a size of 2
     int iPosition = asmType.getSize();
@@ -551,6 +561,28 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(1, l0);
+
+    List<Type> normalizers = (List<Type>) normalizeAnnotationInfo.getValue("value");
+    if (normalizers != null) {
+      // found a field normalizer. This normalizer is used regardless of the datatype.
+      mv.visitVarInsn(iLoadOpcode, 1);
+      for (Type normalizer : normalizers) {
+        mv.visitMethodInsn(INVOKESTATIC, normalizer.getInternalName(), "normalize",
+        "(" +  asmType.getDescriptor() +")" +  asmType.getDescriptor(), false);
+      }
+      mv.visitVarInsn(iStoreOpcode, 1);
+    } else {
+      normalizers = classMeta.getClassNormailzers();
+      if (normalizers != null && asmType.getDescriptor().equals(STRING_CLASS)) {
+        mv.visitVarInsn(iLoadOpcode, 1);
+        for (Type normalizer : normalizers) {
+          mv.visitMethodInsn(INVOKESTATIC, normalizer.getInternalName(), "normalize",
+          "(Ljava/lang/String;)Ljava/lang/String;", false);
+        }
+        mv.visitVarInsn(iStoreOpcode, 1);
+      }
+    }
+
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, fieldClass, INTERCEPT_FIELD, L_INTERCEPT);
     if (isInterceptSet()) {

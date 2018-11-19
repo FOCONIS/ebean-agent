@@ -5,6 +5,7 @@ import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
+import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.entity.FieldMeta;
 import io.ebean.enhance.entity.LocalFieldVisitor;
 import io.ebean.enhance.entity.MessageOutput;
@@ -65,7 +66,9 @@ public class ClassMeta {
 
   private HashSet<String> classAnnotation = new HashSet<>();
 
-  private AnnotationInfo annotationInfo = new AnnotationInfo(null);
+  private AnnotationInfo transactionalAnnotationInfo = new AnnotationInfo(null);
+
+  private AnnotationInfo normalizeAnnotationInfo = new AnnotationInfo(null);
 
   private ArrayList<MethodMeta> methodMetaList = new ArrayList<MethodMeta>();
 
@@ -90,8 +93,16 @@ public class ClassMeta {
   * Return the AnnotationInfo collected on methods.
   * Used to determine Transactional method enhancement.
   */
-  public AnnotationInfo getAnnotationInfo() {
-    return annotationInfo;
+  public AnnotationInfo getTransactionalAnnotationInfo() {
+    return transactionalAnnotationInfo;
+  }
+
+  /**
+  * Return the AnnotationInfo collected on methods.
+  * Used to determine Normalize method enhancement.
+  */
+  public AnnotationInfo getNormailzeAnnotationInfo() {
+    return normalizeAnnotationInfo;
   }
 
   /**
@@ -339,7 +350,7 @@ public class ClassMeta {
   /**
   * Return true if the class has an Entity, Embeddable, or MappedSuperclass.
   */
-  private boolean isCheckEntity() {
+  public boolean isCheckEntity() {
     return EntityCheck.hasEntityAnnotation(classAnnotation);
   }
 
@@ -394,7 +405,7 @@ public class ClassMeta {
 
   public MethodVisitor createMethodVisitor(MethodVisitor mv, int access, String name, String desc) {
 
-    MethodMeta methodMeta = new MethodMeta(annotationInfo, access, name, desc);
+    MethodMeta methodMeta = new MethodMeta(transactionalAnnotationInfo, access, name, desc);
     methodMetaList.add(methodMeta);
 
     return new MethodReader(mv, methodMeta);
@@ -502,6 +513,14 @@ public class ClassMeta {
 
   public void setGroovyInterface(boolean hasGroovyInterface) {
     this.hasGroovyInterface = hasGroovyInterface;
+  }
+
+  public List<Type> getClassNormailzers() {
+    List<Type> ann = (List<Type>) normalizeAnnotationInfo.getValue("value");
+    if (ann != null) {
+      return ann;
+    }
+    return superMeta == null ? null : superMeta.getClassNormailzers();
   }
 
 }

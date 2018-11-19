@@ -21,6 +21,8 @@ public interface EnhanceConstants {
 
   String MAPPEDSUPERCLASS_ANNOTATION = "Ljavax/persistence/MappedSuperclass;";
 
+  String NORMALIZE_ANNOTATION = "Lio/ebean/annotation/Normalize;";
+
   String IDENTITY_FIELD = "_ebean_identity";
 
   String INTERCEPT_FIELD = "_ebean_intercept";

@@ -67,6 +67,7 @@ public class ScopeTransAdapter extends FinallyAdapter implements EnhanceConstant
     transactional = parentInfo != null;
   }
 
+  @Override
   public String toString() {
     return classAdapter.className();
   }

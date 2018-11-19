@@ -6,7 +6,6 @@ import org.testng.annotations.Test;
 
 import test.model.domain.Order;
 import test.model.domain.query.QAddress;
-import test.model.domain.query.QOrder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

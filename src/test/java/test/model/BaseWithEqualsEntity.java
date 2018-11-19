@@ -15,6 +15,7 @@ public abstract class BaseWithEqualsEntity {
 
   private transient int equalsCount;
 
+  @Override
   public String toString() {
     return ""+equalsCount;
   }
@@ -35,6 +36,7 @@ public abstract class BaseWithEqualsEntity {
     this.version = version;
   }
 
+  @Override
   public boolean equals(Object obj) {
     equalsCount++;
     return (obj != null);

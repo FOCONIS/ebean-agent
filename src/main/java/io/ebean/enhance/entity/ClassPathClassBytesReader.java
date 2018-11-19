@@ -20,6 +20,7 @@ public class ClassPathClassBytesReader implements ClassBytesReader {
     this.urls = urls == null ? new URL[0]: urls;
   }
 
+  @Override
   public byte[] getClassBytes(String className, ClassLoader classLoader) {
 
     try (URLClassLoader cl = new URLClassLoader(urls, classLoader)) {

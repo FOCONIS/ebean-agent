@@ -18,15 +18,18 @@ public class AnnotationInfoVisitor extends AnnotationVisitor {
     this.prefix = prefix;
   }
 
+  @Override
   public void visit(String name, Object value) {
     super.visit(name, value);
     info.add(prefix, name, value);
   }
 
+  @Override
   public AnnotationVisitor visitAnnotation(String name, String desc) {
     return create(name, super.visitAnnotation(name, desc));
   }
 
+  @Override
   public AnnotationVisitor visitArray(String name) {
     return create(name, super.visitArray(name));
   }
@@ -36,10 +39,12 @@ public class AnnotationInfoVisitor extends AnnotationVisitor {
     return new AnnotationInfoVisitor(newPrefix, info, underlying);
   }
 
+  @Override
   public void visitEnd() {
     super.visitEnd();
   }
 
+  @Override
   public void visitEnum(String name, String desc, String value) {
     super.visitEnum(name, desc, value);
     info.addEnum(prefix, name, desc, value);

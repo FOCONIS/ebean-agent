@@ -61,9 +61,9 @@ public class ClassMeta {
 
   private HashSet<String> existingMethods = new HashSet<String>();
 
-  private LinkedHashMap<String, FieldMeta> fields = new LinkedHashMap<String, FieldMeta>();
+  private LinkedHashMap<String, FieldMeta> fields = new LinkedHashMap<>();
 
-  private HashSet<String> classAnnotation = new HashSet<String>();
+  private HashSet<String> classAnnotation = new HashSet<>();
 
   private AnnotationInfo transactionalAnnotationInfo = new AnnotationInfo(null);
 
@@ -138,6 +138,7 @@ public class ClassMeta {
     return !superClassName.equals(OBJECT_CLASS) && isCheckEntity();
   }
 
+  @Override
   public String toString() {
     return className;
   }

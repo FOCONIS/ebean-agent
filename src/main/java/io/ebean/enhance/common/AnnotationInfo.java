@@ -8,7 +8,7 @@ import java.util.HashMap;
  */
 public class AnnotationInfo {
 
-  private final HashMap<String,Object> valueMap = new HashMap<String,Object>();
+  private final HashMap<String,Object> valueMap = new HashMap<>();
 
   private AnnotationInfo parent;
 
@@ -20,6 +20,7 @@ public class AnnotationInfo {
     this.parent = parent;
   }
 
+  @Override
   public String toString() {
     return valueMap.toString();
   }

@@ -33,6 +33,7 @@ public class Address extends BaseModel {
     return copy;
   }
 
+  @Override
   public String toString() {
     return id + " " + line1 + " " + line2 + " " + city + " " + country;
   }

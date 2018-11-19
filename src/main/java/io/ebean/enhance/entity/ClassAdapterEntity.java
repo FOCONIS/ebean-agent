@@ -5,7 +5,6 @@ import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
-import io.ebean.enhance.common.AnnotationInfo;
 import io.ebean.enhance.common.AnnotationInfoVisitor;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;

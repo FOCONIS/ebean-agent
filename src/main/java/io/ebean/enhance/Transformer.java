@@ -61,7 +61,7 @@ public class Transformer implements ClassFileTransformer {
   }
 
   public static void agentmain(String agentArgs, Instrumentation inst) {
-  premain(agentArgs, inst);
+    premain(agentArgs, inst);
   }
 
   public static void premain(String agentArgs, Instrumentation inst) {

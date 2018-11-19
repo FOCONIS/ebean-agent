@@ -17,6 +17,7 @@ public class LocalClassLoader extends URLClassLoader {
     super(urls, loader);
   }
 
+  @Override
   protected synchronized Class<?> loadClass(String name, boolean resolve)
       throws ClassNotFoundException {
 

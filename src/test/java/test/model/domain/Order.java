@@ -6,9 +6,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-
-import test.model.domain.query.QOrder;
-
 import java.sql.Date;
 import java.util.List;
 
@@ -98,11 +95,4 @@ public class Order extends BaseModel {
     this.details = details;
   }
 
-  public QOrder finder() {
-    return new QOrder().version.eq(42);
-  }
-
-  public static QOrder staticFinder() {
-    return new QOrder().version.eq(42);
-  }
 }

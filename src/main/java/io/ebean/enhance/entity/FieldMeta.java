@@ -78,6 +78,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     this.indexPosition = indexPosition;
   }
 
+  @Override
   public String toString() {
     return fieldName;
   }
@@ -575,7 +576,6 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     mv.visitLineNumber(1, l0);
     List<Type> normalizers = (List<Type>) normalizeAnnotationInfo.getValue("value");
     if (normalizers != null && asmType.getDescriptor().equals(STRING_CLASS)) {
-      System.out.println("################# " + setMethodName + " " + normalizers);
       mv.visitVarInsn(iLoadOpcode, 1);
       for (Type normalizer : normalizers) {
         mv.visitMethodInsn(INVOKESTATIC, normalizer.getInternalName(), "normalize",

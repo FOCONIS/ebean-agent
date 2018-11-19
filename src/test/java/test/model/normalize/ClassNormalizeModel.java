@@ -16,7 +16,7 @@ public class ClassNormalizeModel {
 
   String name;
 
-  @Normalize({})
+  @Normalize(value = {})
   String noNormalize;
 
   @Normalize(LeadingZeroRemover.class)

@@ -65,7 +65,7 @@ public class CustomerEntityTest extends BaseTest {
     customer.setId(23l);
 
     // this is null as the bean has not been marked as loaded yet
-    Assert.assertNull(customerIntercept.getChanged());
+    Assert.assertEquals(countDirty(customerIntercept), 0);
     boolean[] loaded = customerIntercept.getLoaded();
     assertNotNull(loaded);
     assertEquals(PROPERTY_COUNT, loaded.length);
@@ -83,7 +83,7 @@ public class CustomerEntityTest extends BaseTest {
     assertLoaded(customerIntercept, 0, 1, 3);
     assertNotLoaded(customerIntercept, 2, 4);
 
-    Assert.assertNull(customerIntercept.getChanged());
+    Assert.assertEquals(countDirty(customerIntercept), 0);
     Assert.assertTrue(customer.hashCode() > 0);
 
     Assert.assertTrue(customerIntercept.isNew());
@@ -93,16 +93,30 @@ public class CustomerEntityTest extends BaseTest {
     // Will not change (set dirty flag)
     String otherName = "h"+"ello";
     customer.setName(otherName);
-    Assert.assertNull(customerIntercept.getChanged());
+    Assert.assertEquals(countDirty(customerIntercept),0);
 
     // This will set it to be modified
     customer.setName("nameModified");
     Assert.assertTrue(customerIntercept.isDirty());
     Assert.assertTrue(customerIntercept.isNewOrDirty());
-    assertNotNull(customerIntercept.getChanged());
+    assertNotNull(countDirty(customerIntercept));
     assertChanged(customerIntercept, 3);
     assertNotChanged(customerIntercept, 0,1,2,4);
 
+  }
+
+  /**
+   * @param customerIntercept
+   * @return
+   */
+  private int countDirty(EntityBeanIntercept customerIntercept) {
+    int count = 0;
+    for (boolean dirty : customerIntercept.getDirtyProperties()) {
+      if (dirty) {
+        count++;
+      }
+    }
+    return count;
   }
 
   @Test
@@ -129,12 +143,12 @@ public class CustomerEntityTest extends BaseTest {
 
     // AFTER LOADED ... then changes are tracked
     c2Intercept.setLoaded();
-    Assert.assertNull(c2Intercept.getChanged());
+    Assert.assertEquals(countDirty(c2Intercept), 0);
 
 
     c2.setName("c2NameChanged");
-    assertNotNull(c2Intercept.getChanged());
-    assertEquals(PROPERTY_COUNT, c2Intercept.getChanged().length);
+    assertNotNull(c2Intercept.getDirtyProperties());
+    assertEquals(PROPERTY_COUNT, c2Intercept.getDirtyProperties().length);
     assertChanged(c2Intercept, 3);
     assertNotChanged(c2Intercept, 0,1,2,4);
 
@@ -170,7 +184,7 @@ public class CustomerEntityTest extends BaseTest {
   }
 
   private void assertThatChanged(EntityBeanIntercept intercept, boolean propertyLoaded, int... idx) {
-    boolean[] changedFlags = intercept.getChanged();
+    boolean[] changedFlags = intercept.getDirtyProperties();
     assertNotNull(changedFlags);
     for (int pos : idx) {
       assertEquals(propertyLoaded, changedFlags[pos]);

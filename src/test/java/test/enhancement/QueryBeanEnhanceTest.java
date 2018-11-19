@@ -3,8 +3,6 @@ package test.enhancement;
 
 import io.ebean.typequery.PLong;
 import org.testng.annotations.Test;
-
-import test.model.domain.Order;
 import test.model.domain.query.QAddress;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,11 +32,5 @@ public class QueryBeanEnhanceTest extends BaseTest {
 
     System.out.println("done");
 
-  }
-
-  @Test
-  public void testQueryBeanInEntityBean() {
-    assertNotNull(new Order().finder());
-    assertNotNull(Order.staticFinder());
   }
 }

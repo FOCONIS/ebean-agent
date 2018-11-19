@@ -36,10 +36,10 @@ public class QueryBeanEnhanceTest extends BaseTest {
     System.out.println("done");
 
   }
-  
+
   @Test
   public void testQueryBeanInEntityBean() {
-	  assertNotNull(new Order().finder());
-	  assertNotNull(Order.staticFinder());
+    assertNotNull(new Order().finder());
+    assertNotNull(Order.staticFinder());
   }
 }

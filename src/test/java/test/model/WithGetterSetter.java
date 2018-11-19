@@ -8,97 +8,97 @@ import javax.persistence.Entity;
 @Entity
 public class WithGetterSetter extends BaseEntity {
 
-	public transient List<String> log = new ArrayList<String>();
-	
-	String name;
+  public transient List<String> log = new ArrayList<String>();
 
-	Integer count;
+  String name;
 
-	boolean flag;
+  Integer count;
 
-	long number;
-	
-	double salary;
-	
-	int age;
+  boolean flag;
 
-	@Override
-	public void setId(Long id) {
-		log.add("setId");
-		super.setId(id);
-	}
-	
-	public String getName() {
-		log.add("getName");
-		return name;
-	}
+  long number;
 
-	public WithGetterSetter setName(String name) {
-		log.add("setName");
-		this.name = name;
-		return this;
-	}
+  double salary;
 
-	public Integer getCount() {
-		log.add("getCount");
-		return count;
-	}
+  int age;
 
-	public WithGetterSetter setCount(Integer count) {
-		log.add("setCount");
-		this.count = count;
-		return this;
-	}
+  @Override
+  public void setId(Long id) {
+    log.add("setId");
+    super.setId(id);
+  }
 
-	public boolean isFlag() {
-		log.add("isFlag");
-		return flag;
-	}
+  public String getName() {
+    log.add("getName");
+    return name;
+  }
 
-	public WithGetterSetter setFlag(boolean flag) {
-		log.add("setFlag");
-		this.flag = flag;
-		return this;
-	}
+  public WithGetterSetter setName(String name) {
+    log.add("setName");
+    this.name = name;
+    return this;
+  }
 
-	public long getNumber() {
-		log.add("getNumber");
-		return number;
-	}
+  public Integer getCount() {
+    log.add("getCount");
+    return count;
+  }
 
-	public long setNumber(long number) {
-		log.add("setNumber");
-		long oldValue = this.number;
-		this.number = number;
-		return oldValue;
-	}
-	
-	public double setSalary(double salary) {
-		double oldValue = this.salary;
-		this.salary = salary;
-		return oldValue;
-	}
-	
-	public int setAge(int age) {
-		int oldValue = this.age;
-		this.age = age;
-		return oldValue;
-	}
-	
+  public WithGetterSetter setCount(Integer count) {
+    log.add("setCount");
+    this.count = count;
+    return this;
+  }
 
-	// some different setters to test the setter detection in fieldMeta
-	public void setAge(double age) {
-		this.age = (int) age;
-	}
-	
-	public void setSalary(int salary) {
-		this.salary = (double) salary;
-	}
-	public WithGetterSetter setNumber() { return this; }
-	public void setNumber(int i, int j) { }
-	public void setNumber(int i, int[] j) { }
-	public void setNumber(Object o, int[] j) { }
-	public void setArray1(Object[] o) { }
-	public void setArray2(int[] i) { }
-	
+  public boolean isFlag() {
+    log.add("isFlag");
+    return flag;
+  }
+
+  public WithGetterSetter setFlag(boolean flag) {
+    log.add("setFlag");
+    this.flag = flag;
+    return this;
+  }
+
+  public long getNumber() {
+    log.add("getNumber");
+    return number;
+  }
+
+  public long setNumber(long number) {
+    log.add("setNumber");
+    long oldValue = this.number;
+    this.number = number;
+    return oldValue;
+  }
+
+  public double setSalary(double salary) {
+    double oldValue = this.salary;
+    this.salary = salary;
+    return oldValue;
+  }
+
+  public int setAge(int age) {
+    int oldValue = this.age;
+    this.age = age;
+    return oldValue;
+  }
+
+
+  // some different setters to test the setter detection in fieldMeta
+  public void setAge(double age) {
+    this.age = (int) age;
+  }
+
+  public void setSalary(int salary) {
+    this.salary = (double) salary;
+  }
+  public WithGetterSetter setNumber() { return this; }
+  public void setNumber(int i, int j) { }
+  public void setNumber(int i, int[] j) { }
+  public void setNumber(Object o, int[] j) { }
+  public void setArray1(Object[] o) { }
+  public void setArray2(int[] i) { }
+
 }

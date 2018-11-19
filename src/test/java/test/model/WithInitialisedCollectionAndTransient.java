@@ -12,9 +12,9 @@ import java.util.List;
 public class WithInitialisedCollectionAndTransient extends BaseEntity {
 
   String name;
-  
+
   Date whenStart;
-  
+
   @OneToMany(cascade = CascadeType.ALL)
   List<Contact> contacts = new ArrayList<>();
 
@@ -23,7 +23,7 @@ public class WithInitialisedCollectionAndTransient extends BaseEntity {
   public String toString() {
     return "id:"+id+" name:"+name;
   }
-  
+
   public String getName() {
     return name;
   }

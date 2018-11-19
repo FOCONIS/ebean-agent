@@ -35,14 +35,14 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
       super.visitFieldInsn(opcode, owner, name, desc);
     }
   }
-  
+
   /**
-   * Return true if the owner class is a descriptor bean.
-   * <p>
-   * If true typically means the caller needs to change GETFIELD calls to instead invoke the generated
-   * 'property access' methods.
-   * </p>
-   */
+  * Return true if the owner class is a descriptor bean.
+  * <p>
+  * If true typically means the caller needs to change GETFIELD calls to instead invoke the generated
+  * 'property access' methods.
+  * </p>
+  */
   public boolean isDescriptorBean(String owner) {
     // quick & dirty - all classes that mathces the pattern
     // de/foconis/.../descriptor/D... or

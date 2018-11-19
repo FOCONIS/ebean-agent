@@ -10,7 +10,7 @@ import javax.persistence.Version;
 public abstract class BaseWithEquals {
 
   public transient int equalsCount;
-  
+
   public String toString() {
     return ""+equalsCount;
   }

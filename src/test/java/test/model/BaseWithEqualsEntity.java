@@ -14,11 +14,11 @@ public abstract class BaseWithEqualsEntity {
   Long version;
 
   private transient int equalsCount;
-  
+
   public String toString() {
     return ""+equalsCount;
   }
-  
+
   public Long getId() {
     return id;
   }
@@ -39,6 +39,6 @@ public abstract class BaseWithEqualsEntity {
     equalsCount++;
     return (obj != null);
   }
-  
+
 
 }

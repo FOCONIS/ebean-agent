@@ -61,7 +61,7 @@ public class Transformer implements ClassFileTransformer {
   }
 
   public static void agentmain(String agentArgs, Instrumentation inst) {
-	premain(agentArgs, inst);
+  premain(agentArgs, inst);
   }
 
   public static void premain(String agentArgs, Instrumentation inst) {
@@ -91,41 +91,41 @@ public class Transformer implements ClassFileTransformer {
   }
 
   /**
-   * Create with an EnhancementContext (for IDE Plugins mainly)
-   */
+  * Create with an EnhancementContext (for IDE Plugins mainly)
+  */
   public Transformer(EnhanceContext enhanceContext) {
     this.enhanceContext = enhanceContext;
   }
 
   /**
-   * Create a transformer for entity bean enhancement and transactional method enhancement.
-   *
-   * @param bytesReader reads resources from class path for related inheritance and interfaces
-   * @param agentArgs command line arguments for debug level etc
-   */
+  * Create a transformer for entity bean enhancement and transactional method enhancement.
+  *
+  * @param bytesReader reads resources from class path for related inheritance and interfaces
+  * @param agentArgs command line arguments for debug level etc
+  */
   public Transformer(ClassBytesReader bytesReader, String agentArgs, AgentManifest manifest) {
     this.enhanceContext = new EnhanceContext(bytesReader, agentArgs, manifest);
   }
 
   /**
-   * Return the Instrumentation instance.
-   */
+  * Return the Instrumentation instance.
+  */
   public static Instrumentation instrumentation()  {
     verifyInitialization();
     return instrumentation;
   }
 
   /**
-   * Return the Transformer instance.
-   */
+  * Return the Transformer instance.
+  */
   public static Transformer get()  {
     verifyInitialization();
     return transformer;
   }
 
   /**
-   * Use agent loader if necessary to initialise the transformer.
-   */
+  * Use agent loader if necessary to initialise the transformer.
+  */
   public static void verifyInitialization() {
     if (instrumentation == null) {
       if (!AgentLoader.loadAgentFromClasspath("ebean-agent", "debug=1")) {
@@ -135,15 +135,15 @@ public class Transformer implements ClassFileTransformer {
   }
 
   /**
-   * Set this to keep and report unresolved explicitly.
-   */
+  * Set this to keep and report unresolved explicitly.
+  */
   public void setKeepUnresolved() {
     this.keepUnresolved = true;
   }
 
   /**
-   * Change the logout to something other than system out.
-   */
+  * Change the logout to something other than system out.
+  */
   public void setLogout(MessageOutput logout) {
     this.enhanceContext.setLogout(logout);
   }
@@ -203,8 +203,8 @@ public class Transformer implements ClassFileTransformer {
   }
 
   /**
-   * Perform entity and transactional enhancement.
-   */
+  * Perform entity and transactional enhancement.
+  */
   private void enhanceEntityAndTransactional(ClassLoader loader, TransformRequest request) {
     try {
       DetectEnhancement detect = detect(loader, request.getBytes());
@@ -228,17 +228,17 @@ public class Transformer implements ClassFileTransformer {
   }
 
   /**
-   * Return the transaction profiling keys.
-   *
-   * We use these to decode a the transaction profile.
-   */
+  * Return the transaction profiling keys.
+  *
+  * We use these to decode a the transaction profile.
+  */
   public List<TransactionalMethodKey> getTransactionProfilingKeys() {
     return enhanceContext.getTransactionProfilingKeys();
   }
 
   /**
-   * Log and common superclass classpath issues that defaulted to Object.
-   */
+  * Log and common superclass classpath issues that defaulted to Object.
+  */
   private void logUnresolvedCommonSuper(String className) {
     if (!keepUnresolved && !unresolved.isEmpty()) {
       for (CommonSuperUnresolved commonUnresolved : unresolved) {
@@ -249,16 +249,16 @@ public class Transformer implements ClassFileTransformer {
   }
 
   /**
-   * Return the list of unresolved common superclass issues. This should be cleared
-   * after each use and can only be used with {@link #setKeepUnresolved()}.
-   */
+  * Return the list of unresolved common superclass issues. This should be cleared
+  * after each use and can only be used with {@link #setKeepUnresolved()}.
+  */
   public List<CommonSuperUnresolved> getUnresolved() {
     return unresolved;
   }
 
   /**
-   * Perform entity bean enhancement.
-   */
+  * Perform entity bean enhancement.
+  */
   private void entityEnhancement(ClassLoader loader, TransformRequest request) {
 
     ClassReader cr = new ClassReader(request.getBytes());
@@ -290,8 +290,8 @@ public class Transformer implements ClassFileTransformer {
   }
 
   /**
-   * Perform transactional enhancement and Finder profileLocation enhancement.
-   */
+  * Perform transactional enhancement and Finder profileLocation enhancement.
+  */
   private void transactionalEnhancement(ClassLoader loader, TransformRequest request) {
 
     ClassReader cr = new ClassReader(request.getBytes());
@@ -323,8 +323,8 @@ public class Transformer implements ClassFileTransformer {
 
 
   /**
-   * Perform enhancement.
-   */
+  * Perform enhancement.
+  */
   private void enhanceQueryBean(ClassLoader loader, TransformRequest request) {
 
     ClassReader cr = new ClassReader(request.getBytes());
@@ -353,8 +353,8 @@ public class Transformer implements ClassFileTransformer {
   }
 
   /**
-   * Helper method to split semi-colon separated class paths into a URL array.
-   */
+  * Helper method to split semi-colon separated class paths into a URL array.
+  */
   public static URL[] parseClassPaths(String extraClassPath) {
 
     if (extraClassPath == null) {
@@ -365,9 +365,9 @@ public class Transformer implements ClassFileTransformer {
   }
 
   /**
-   * Read the bytes quickly trying to detect if it needs entity or transactional
-   * enhancement.
-   */
+  * Read the bytes quickly trying to detect if it needs entity or transactional
+  * enhancement.
+  */
   private DetectEnhancement detect(ClassLoader classLoader, byte[] classfileBuffer) {
 
     DetectEnhancement detect = new DetectEnhancement(classLoader, enhanceContext);

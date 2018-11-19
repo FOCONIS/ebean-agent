@@ -11,7 +11,7 @@ public abstract class BaseWithEqualsAndNoIdEntity {
   Long version;
 
   private transient int equalsCount;
-  
+
   public String toString() {
     return ""+equalsCount;
   }
@@ -28,6 +28,6 @@ public abstract class BaseWithEqualsAndNoIdEntity {
     equalsCount++;
     return (obj != null);
   }
-  
+
 
 }

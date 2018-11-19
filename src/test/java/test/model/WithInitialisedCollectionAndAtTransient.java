@@ -13,9 +13,9 @@ import java.util.List;
 public class WithInitialisedCollectionAndAtTransient extends BaseEntity {
 
   String name;
-  
+
   Date whenStart;
-  
+
   @OneToMany(cascade = CascadeType.PERSIST)
   List<Contact> contacts = new ArrayList<>();
 
@@ -25,7 +25,7 @@ public class WithInitialisedCollectionAndAtTransient extends BaseEntity {
   public String toString() {
     return "id:"+id+" name:"+name;
   }
-  
+
   public String getName() {
     return name;
   }

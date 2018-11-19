@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface Normalize {
 
-	/**
-	 * The Normalization class.
-	 */
-	Class<?>[] value();
+  /**
+  * The Normalization class.
+  */
+  Class<?>[] value();
 
 }

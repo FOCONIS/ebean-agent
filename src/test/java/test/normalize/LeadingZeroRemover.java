@@ -7,14 +7,14 @@ package test.normalize;
  *
  */
 public class LeadingZeroRemover {
-	public static String normalize(String in) {
-		if (in == null) {
-			return null;
-		}
-		int i = 0;
-		while(i < in.length() && in.charAt(i) == '0') {
-			i++;
-		}
-		return in.substring(i);
-	}
+  public static String normalize(String in) {
+    if (in == null) {
+      return null;
+    }
+    int i = 0;
+    while(i < in.length() && in.charAt(i) == '0') {
+      i++;
+    }
+    return in.substring(i);
+  }
 }

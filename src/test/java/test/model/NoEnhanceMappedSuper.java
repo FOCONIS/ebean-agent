@@ -7,7 +7,7 @@ import javax.persistence.Transient;
 public class NoEnhanceMappedSuper {
 
   static String oneStatic;
-  
+
   transient String oneInstance;
-  
+
 }

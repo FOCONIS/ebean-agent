@@ -2,9 +2,8 @@ package test.enhancement;
 
 import org.testng.annotations.Test;
 
-import de.foconis.model.FocTestModel;
-import io.ebean.Ebean;
 import io.ebean.bean.EntityBean;
+import test.model.FocTestModel;
 
 import static org.testng.Assert.*;
 

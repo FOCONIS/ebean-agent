@@ -8,7 +8,6 @@ import io.ebean.enhance.common.AlreadyEnhancedException;
 import io.ebean.enhance.common.ClassBytesReader;
 import io.ebean.enhance.common.CommonSuperUnresolved;
 import io.ebean.enhance.common.DetectEnhancement;
-import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.EnhanceContext;
 import io.ebean.enhance.common.NoEnhancementRequiredException;
 import io.ebean.enhance.common.TransformRequest;
@@ -56,11 +55,11 @@ public class Transformer implements ClassFileTransformer {
       System.err.println("Could not determine ebean version: " +e.getMessage());
     }
   }
-  
+
   public static String getVersion() {
     return version;
   }
-  
+
   public static void agentmain(String agentArgs, Instrumentation inst) {
 	premain(agentArgs, inst);
   }
@@ -161,6 +160,7 @@ public class Transformer implements ClassFileTransformer {
     return enhanceContext.getLogLevel();
   }
 
+  @Override
   public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
 
     try {

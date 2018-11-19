@@ -79,7 +79,7 @@ public class ClassMetaReaderTest {
     ClassMeta classMeta = classMetaReader.get(false, "test.model.SomeTransactionalServiceCls", classLoader);
 
     assertNotNull(classMeta);
-    AnnotationInfo annotationInfo = classMeta.getAnnotationInfo();
+    AnnotationInfo annotationInfo = classMeta.getTransactionalAnnotationInfo();
     assertEquals(annotationInfo.getValue("getGeneratedKeys"), Boolean.FALSE);
     assertEquals(annotationInfo.getValue("batchSize"), Integer.valueOf(50));
   }

@@ -6,11 +6,13 @@ import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.asm.commons.GeneratorAdapter;
+import io.ebean.enhance.common.AnnotationInfo;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.VisitUtil;
 
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Holds meta data for a field.
@@ -40,6 +42,8 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   private final String setNoInterceptMethodName;
 
   private int indexPosition;
+  
+  private AnnotationInfo normalizeAnnotationInfo;
 
   /**
    * Construct based on field name and desc from reading byte code.
@@ -67,6 +71,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
 
     this.getNoInterceptMethodName = "_ebean_getni_" + name;
     this.setNoInterceptMethodName = "_ebean_setni_" + name;
+    this.normalizeAnnotationInfo = new AnnotationInfo(classMeta.getNormailzeAnnotationInfo());
   }
 
   public void setIndexPosition(int indexPosition) {
@@ -110,6 +115,10 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
    */
   public String getDesc() {
     return fieldDesc;
+  }
+
+  public AnnotationInfo getNormalizeAnnotationInfo() {
+    return normalizeAnnotationInfo;
   }
 
   private boolean isInterceptGet() {
@@ -564,32 +573,42 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(1, l0);
-    
-    // FOCONIS Normalizer
-    String className = classMeta.getClassName();
-    if (isInterceptSet() 
-        && !isOne()
-        && !isDbJson()
-        && className.startsWith("de/foconis/")) {
-      
-      int sep = className.lastIndexOf('/');
-      String descName = className.substring(0, sep) + "/descriptor/D" + className.substring(sep + 1);
-
-      mv.visitFieldInsn(GETSTATIC, descName, "INSTANCE", "L" + descName + ";");
-      mv.visitMethodInsn(INVOKEVIRTUAL, descName, "_" + fieldName, "()Lde/foconis/core/domain/base/PropertyImpl;", false);
-      mv.visitVarInsn(ALOAD, 0);
-      
+    List<Type> normalizers = (List<Type>) normalizeAnnotationInfo.getValue("value");
+    if (normalizers != null && asmType.getDescriptor().equals(STRING_CLASS)) {
+      System.out.println("################# " + setMethodName + " " + normalizers);
       mv.visitVarInsn(iLoadOpcode, 1);
-      mv.box(asmType);
-      mv.visitMethodInsn(INVOKEVIRTUAL, "de/foconis/core/domain/base/PropertyImpl", "normalize",
-          "(Lde/foconis/core/api/domain/BaseModel;Ljava/lang/Object;)Ljava/lang/Object;", false);
-      mv.unbox(asmType);
+      for (Type normalizer : normalizers) {
+        mv.visitMethodInsn(INVOKESTATIC, normalizer.getInternalName(), "normalize",
+        "(Ljava/lang/String;)Ljava/lang/String;", false);
+      }
       mv.visitVarInsn(iStoreOpcode, 1);
-      Label l1 = new Label();
-      mv.visitLabel(l1);
-      mv.visitLineNumber(2, l1);
-      
     }
+//    x
+//    // FOCONIS Normalizer
+//    String className = classMeta.getClassName();
+//    if (isInterceptSet() 
+//        && !isOne()
+//        && !isDbJson()
+//        && className.startsWith("de/foconis/")) {
+//      
+//      int sep = className.lastIndexOf('/');
+//      String descName = className.substring(0, sep) + "/descriptor/D" + className.substring(sep + 1);
+//
+//      mv.visitFieldInsn(GETSTATIC, descName, "INSTANCE", "L" + descName + ";");
+//      mv.visitMethodInsn(INVOKEVIRTUAL, descName, "_" + fieldName, "()Lde/foconis/core/domain/base/PropertyImpl;", false);
+//      mv.visitVarInsn(ALOAD, 0);
+//      
+//      mv.visitVarInsn(iLoadOpcode, 1);
+//      mv.box(asmType);
+//      mv.visitMethodInsn(INVOKEVIRTUAL, "de/foconis/core/domain/base/PropertyImpl", "normalize",
+//          "(Lde/foconis/core/api/domain/BaseModel;Ljava/lang/Object;)Ljava/lang/Object;", false);
+//      mv.unbox(asmType);
+//      mv.visitVarInsn(iStoreOpcode, 1);
+//      Label l1 = new Label();
+//      mv.visitLabel(l1);
+//      mv.visitLineNumber(2, l1);
+//      
+//    }
     
 
     
@@ -681,5 +700,6 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     mv.visitMaxs(4, 2);
     mv.visitEnd();
   }
+
 
 }

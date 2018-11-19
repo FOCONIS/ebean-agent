@@ -5,6 +5,8 @@ import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
+import io.ebean.enhance.common.AnnotationInfo;
+import io.ebean.enhance.common.AnnotationInfoVisitor;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.EnhanceContext;
@@ -114,7 +116,17 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
 	@Override
 	public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
 		classMeta.addClassAnnotation(desc);
-		return super.visitAnnotation(desc, visible);
+		
+		AnnotationVisitor av = super.visitAnnotation(desc, visible);
+
+		if (desc.equals(EnhanceConstants.NORMALIZE_ANNOTATION)) {
+			// we have class level Normalize annotation
+			// which will act as default for all methods in this class
+			return new AnnotationInfoVisitor(null, classMeta.getNormailzeAnnotationInfo(), av);
+
+		} else {
+			return av;
+		}
 	}
 
 	/**

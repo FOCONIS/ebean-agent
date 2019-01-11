@@ -47,7 +47,7 @@ public class MethodAdapter extends MethodVisitor implements Opcodes {
     // quick & dirty - all classes that mathces the pattern
     // de/foconis/.../descriptor/D... or
     // de/foconis/.../descriptor/assoc/D... are descriptors
-    if (owner.startsWith("de/foconis/")) {
+    if (owner.startsWith("de/foconis/") || owner.startsWith("legacy/de/foconis/")) {
       int subPackagePos = owner.lastIndexOf("/descriptor/");
       if (subPackagePos > -1) {
         String suffix = owner.substring(subPackagePos);

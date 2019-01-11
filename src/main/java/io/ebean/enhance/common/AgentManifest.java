@@ -160,7 +160,7 @@ public class AgentManifest {
     while (resources.hasMoreElements()) {
       URL url = resources.nextElement();
       try {
-        addResource(url.openStream());
+        addResource(UrlHelper.openNoCache(url));
       } catch (IOException e) {
         System.err.println("Error reading manifest resources " + url);
         e.printStackTrace();

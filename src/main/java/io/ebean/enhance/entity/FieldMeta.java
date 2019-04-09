@@ -395,7 +395,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
       mv.visitLineNumber(5, labelStart);
       mv.visitVarInsn(ALOAD, 0);
       mv.visitFieldInsn(GETFIELD, className, INTERCEPT_FIELD, L_INTERCEPT);
-      mv.visitMethodInsn(INVOKEVIRTUAL, C_INTERCEPT, "preGetId", "()V", false);
+      mv.visitMethodInsn(INVOKEVIRTUAL, C_INTERCEPT, "preGetId", NOARG_VOID, false);
 
     } else if (isInterceptGet()) {
       maxVars = 2;
@@ -455,11 +455,13 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
       mv.visitVarInsn(ALOAD, 0);
       mv.visitTypeInsn(NEW, ebCollection);
       mv.visitInsn(DUP);
+      // read property name for OwnerBeanSupport
       mv.visitVarInsn(ALOAD, 0);
       mv.visitVarInsn(ALOAD, 0);
       VisitUtil.visitIntInsn(mv, indexPosition);
       mv.visitMethodInsn(INVOKEINTERFACE, C_ENTITYBEAN, "_ebean_getPropertyName", "(I)Ljava/lang/String;", true);
-      mv.visitMethodInsn(INVOKESPECIAL, ebCollection, "<init>", "(Lio/ebean/bean/EntityBean;Ljava/lang/String;)V", false);
+      mv.visitMethodInsn(INVOKESPECIAL, ebCollection, INIT, "(Lio/ebean/bean/EntityBean;Ljava/lang/String;)V", false);
+
       mv.visitFieldInsn(PUTFIELD, className, fieldName, fieldDesc);
 
       mv.visitVarInsn(ALOAD, 0);

@@ -10,6 +10,8 @@ import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
 
+import static io.ebean.enhance.common.EnhanceConstants.INIT;
+
 /**
  * Reads/visits the class and performs the appropriate enhancement if necessary.
  */
@@ -80,7 +82,7 @@ public class TypeQueryClassAdapter extends ClassVisitor implements Constants {
       if (classInfo.addMarkerAnnotation()) {
         addMarkerAnnotation();
       }
-      if (name.equals("<init>")) {
+      if (name.equals(INIT)) {
         if (!typeQueryRootBean) {
           return handleAssocBeanConstructor(access, name, desc, signature, exceptions);
         }
@@ -112,7 +114,7 @@ public class TypeQueryClassAdapter extends ClassVisitor implements Constants {
       log("... checking method " + name + " " + desc);
     }
     MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-    return new MethodAdapter(mv, enhanceContext, classInfo);
+    return new MethodAdapter(mv, enhanceContext, classInfo, name);
   }
 
   /**

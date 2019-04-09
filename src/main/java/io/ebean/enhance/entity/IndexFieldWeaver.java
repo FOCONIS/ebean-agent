@@ -11,6 +11,10 @@ import io.ebean.enhance.common.VisitUtil;
 
 import java.util.List;
 
+import static io.ebean.enhance.common.EnhanceConstants.CLINIT;
+import static io.ebean.enhance.common.EnhanceConstants.INIT;
+import static io.ebean.enhance.common.EnhanceConstants.NOARG_VOID;
+
 /**
  * Generate the methods based on the list of fields.
  * <p>
@@ -19,13 +23,15 @@ import java.util.List;
  */
 public class IndexFieldWeaver implements Opcodes {
 
+  private static final String _EBEAN_PROPS = "_ebean_props";
+
   public static void addPropertiesField(ClassVisitor cv) {
-    FieldVisitor fv = cv.visitField(ACC_PUBLIC + ACC_STATIC, "_ebean_props", "[Ljava/lang/String;", null, null);
+    FieldVisitor fv = cv.visitField(ACC_PUBLIC + ACC_STATIC, _EBEAN_PROPS, "[Ljava/lang/String;", null, null);
     fv.visitEnd();
   }
 
   public static void addPropertiesInit(ClassVisitor cv, ClassMeta classMeta) {
-    MethodVisitor mv = cv.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
+    MethodVisitor mv = cv.visitMethod(ACC_STATIC, CLINIT, NOARG_VOID, null, null);
     mv.visitCode();
     addPropertiesInit(mv, classMeta);
 
@@ -62,7 +68,7 @@ public class IndexFieldWeaver implements Opcodes {
       }
     }
 
-    mv.visitFieldInsn(PUTSTATIC, classMeta.getClassName(), "_ebean_props", "[Ljava/lang/String;");
+    mv.visitFieldInsn(PUTSTATIC, classMeta.getClassName(), _EBEAN_PROPS, "[Ljava/lang/String;");
   }
 
 
@@ -73,7 +79,7 @@ public class IndexFieldWeaver implements Opcodes {
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(13, l0);
-    mv.visitFieldInsn(GETSTATIC, classMeta.getClassName(), "_ebean_props", "[Ljava/lang/String;");
+    mv.visitFieldInsn(GETSTATIC, classMeta.getClassName(), _EBEAN_PROPS, "[Ljava/lang/String;");
     mv.visitInsn(ARETURN);
     Label l1 = new Label();
     mv.visitLabel(l1);
@@ -88,7 +94,7 @@ public class IndexFieldWeaver implements Opcodes {
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(16, l0);
-    mv.visitFieldInsn(GETSTATIC, classMeta.getClassName(), "_ebean_props", "[Ljava/lang/String;");
+    mv.visitFieldInsn(GETSTATIC, classMeta.getClassName(), _EBEAN_PROPS, "[Ljava/lang/String;");
     mv.visitVarInsn(ILOAD, 1);
     mv.visitInsn(AALOAD);
     mv.visitInsn(ARETURN);
@@ -214,11 +220,11 @@ public class IndexFieldWeaver implements Opcodes {
     mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
     mv.visitInsn(DUP);
     mv.visitLdcInsn("Invalid index ");
-    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "(Ljava/lang/String;)V", false);
+    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", INIT, "(Ljava/lang/String;)V", false);
     mv.visitVarInsn(ILOAD, 1);
     mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;", false);
     mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
-    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/RuntimeException", "<init>", "(Ljava/lang/String;)V", false);
+    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/RuntimeException", INIT, "(Ljava/lang/String;)V", false);
     mv.visitInsn(ATHROW);
 
     Label l5 = new Label();
@@ -298,11 +304,11 @@ public class IndexFieldWeaver implements Opcodes {
     mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
     mv.visitInsn(DUP);
     mv.visitLdcInsn("Invalid index ");
-    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "(Ljava/lang/String;)V", false);
+    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", INIT, "(Ljava/lang/String;)V", false);
     mv.visitVarInsn(ILOAD, 1);
     mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;", false);
     mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
-    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/RuntimeException", "<init>", "(Ljava/lang/String;)V", false);
+    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/RuntimeException", INIT, "(Ljava/lang/String;)V", false);
     mv.visitInsn(ATHROW);
     Label l9 = new Label();
     mv.visitLabel(l9);

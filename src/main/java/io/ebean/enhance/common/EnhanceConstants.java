@@ -9,6 +9,12 @@ public interface EnhanceConstants {
 
   String OBJECT_CLASS = "Ljava/lang/Object;";
 
+  String INIT = "<init>";
+
+  String CLINIT = "<clinit>";
+
+  String NOARG_VOID = "()V";
+
   String AVAJE_TRANSACTIONAL_ANNOTATION = "Lio/ebean/annotation/Transactional;";
 
   String JAVAX_PERSISTENCE = "Ljavax/persistence/";
@@ -26,6 +32,10 @@ public interface EnhanceConstants {
   String IDENTITY_FIELD = "_ebean_identity";
 
   String INTERCEPT_FIELD = "_ebean_intercept";
+
+  String C_OBJECT = "java/lang/Object";
+
+  String C_MODEL = "io/ebean/Model";
 
   String C_ENHANCEDTRANSACTIONAL = "io/ebean/bean/EnhancedTransactional";
 

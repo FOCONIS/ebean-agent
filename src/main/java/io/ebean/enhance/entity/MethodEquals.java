@@ -155,7 +155,7 @@ public class MethodEquals implements Opcodes, EnhanceConstants {
     mv.visitVarInsn(ALOAD, 0);
     mv.visitTypeInsn(NEW, "java/lang/Object");
     mv.visitInsn(DUP);
-    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", INIT, NOARG_VOID, false);
     mv.visitFieldInsn(PUTFIELD, className, IDENTITY_FIELD, OBJECT_CLASS);
     mv.visitLabel(l10);
     mv.visitLineNumber(1, l10);
@@ -269,7 +269,7 @@ public class MethodEquals implements Opcodes, EnhanceConstants {
     mv.visitVarInsn(ALOAD, 0);
     mv.visitTypeInsn(NEW, "java/lang/Object");
     mv.visitInsn(DUP);
-    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+    mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", INIT, NOARG_VOID, false);
     mv.visitFieldInsn(PUTFIELD, className, IDENTITY_FIELD, OBJECT_CLASS);
     mv.visitLabel(l11);
     mv.visitLineNumber(1, l11);

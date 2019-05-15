@@ -140,7 +140,7 @@
    -->
   <distributionManagement>
     <repository>
-      <id>foconis-snapshot</id>
+      <id>foconis-release</id>
       <name>Default Deploy Repository</name>
       <url>sftp://bamboo@repo.foconis.de/var/www/html/repo/maven-release/</url>
     </repository>

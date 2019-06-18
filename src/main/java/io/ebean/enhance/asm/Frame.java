@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package io.ebean.enhance.asm;
 
+import java.util.Objects;
+
 /**
  * The input and output stack map frames of a basic block.
  *
@@ -279,7 +281,7 @@ class Frame {
    */
   static int getAbstractTypeFromApiFormat(final SymbolTable symbolTable, final Object type) {
     if (type instanceof Integer) {
-      return CONSTANT_KIND | ((Integer) type).intValue();
+      return CONSTANT_KIND | (Integer) type;
     } else if (type instanceof String) {
       String descriptor = Type.getObjectType((String) type).getDescriptor();
       return getAbstractTypeFromDescriptor(symbolTable, descriptor, 0);
@@ -650,7 +652,11 @@ class Frame {
         if (kind == LOCAL_KIND) {
           initializedType = dim + inputLocals[value];
         } else if (kind == STACK_KIND) {
-          initializedType = dim + inputStack[inputStack.length - value];
+          if (inputStack.length - value >= 0 && value > 0) {
+            initializedType = dim + inputStack[inputStack.length - value];
+          } else {
+            throw new RuntimeException("Can't find initialized type " + abstractType + " (IndexOutOfBoundsException)");
+          }
         }
         if (abstractType == initializedType) {
           if (abstractType == UNINITIALIZED_THIS) {
@@ -730,7 +736,7 @@ class Frame {
         push(TOP);
         break;
       case Opcodes.LDC:
-        switch (argSymbol.tag) {
+        switch (Objects.requireNonNull(argSymbol).tag) {
           case Symbol.CONSTANT_INTEGER_TAG:
             push(INTEGER);
             break;

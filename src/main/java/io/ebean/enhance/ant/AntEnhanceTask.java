@@ -4,8 +4,6 @@ import io.ebean.enhance.Transformer;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
-import java.io.File;
-
 /**
  * An ANT task that can enhance entity beans etc for use by Ebean.
  * <p>

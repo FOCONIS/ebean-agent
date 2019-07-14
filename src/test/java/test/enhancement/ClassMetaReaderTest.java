@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.ebean.annotation.Transactional;
 import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.common.AgentManifest;
 import io.ebean.enhance.common.AnnotationInfo;
@@ -105,14 +104,14 @@ public class ClassMetaReaderTest {
     ClassMeta classMeta = getClassMetaForOverrideTests();
 
     // check class meta annotation
-    AnnotationInfo classAi = classMeta.getAnnotationInfo();
+    AnnotationInfo classAi = classMeta.getTransactionalAnnotationInfo();
     assertThat(classAi.getValue("batchSize")).isEqualTo(42);
     assertThat((List<Type>) (classAi.getValue("rollbackFor")))
       .containsExactly(Type.getType(IOException.class), Type.getType(IllegalStateException.class));
 
 
   }
-  
+
   @Test
   public void checkClassOverrideMethod1() throws ClassNotFoundException {
     ClassMeta classMeta = getClassMetaForOverrideTests();
@@ -145,7 +144,7 @@ public class ClassMetaReaderTest {
     assertThat((List<Type>) (methodAi.getValue("rollbackFor"))).isEmpty();
   }
 
-  
+
   @Test
   public void checkClassOverrideMethod4() throws ClassNotFoundException {
     ClassMeta classMeta = getClassMetaForOverrideTests();
@@ -157,7 +156,7 @@ public class ClassMetaReaderTest {
       .containsExactly(Type.getType(IOException.class), Type.getType(IllegalStateException.class));
   }
 
-  
+
   @Test
   public void checkClassOverrideMethod5() throws ClassNotFoundException {
     ClassMeta classMeta = getClassMetaForOverrideTests();
@@ -178,7 +177,7 @@ public class ClassMetaReaderTest {
     assertThat(methodAi.getValue("batchSize")).isEqualTo(0);
     assertThat((List<Type>) (methodAi.getValue("rollbackFor"))).isEmpty();
   }
-  
+
   @Test
   public void testEnhanceContext() {
 

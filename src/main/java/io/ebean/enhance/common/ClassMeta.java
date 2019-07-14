@@ -345,7 +345,7 @@ public class ClassMeta {
   /**
   * Return true if the class has an Entity, Embeddable, or MappedSuperclass.
   */
-  public boolean isCheckEntity() {
+  private boolean isCheckEntity() {
     return EntityCheck.hasEntityAnnotation(classAnnotation);
   }
 

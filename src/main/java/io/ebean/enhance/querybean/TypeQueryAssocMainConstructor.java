@@ -3,7 +3,6 @@ package io.ebean.enhance.querybean;
 import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.Label;
 import io.ebean.enhance.asm.Opcodes;
-import io.ebean.enhance.common.EnhanceConstants;
 
 import static io.ebean.enhance.common.EnhanceConstants.INIT;
 import static io.ebean.enhance.common.EnhanceConstants.L_OBJECT;

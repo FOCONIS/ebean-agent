@@ -7,8 +7,6 @@ import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.common.EnhanceConstants;
 
-import static io.ebean.enhance.common.EnhanceConstants.INIT;
-
 /**
  * Field information.
  */

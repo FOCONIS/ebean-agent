@@ -1,29 +1,16 @@
 package io.ebean.enhance.querybean;
 
-import io.ebean.enhance.common.EnhanceContext;
 import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.Opcodes;
+import io.ebean.enhance.common.EnhanceContext;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Holds meta information for a class.
  */
-public class ClassInfo implements Constants {
-
-  /**
-  * Detect entity beans as we will ignore them for this enhancement.
-  */
-  static Set<String> entityBeanAnnotations = new HashSet<>();
-  static {
-    entityBeanAnnotations.add(ENTITY_ANNOTATION);
-    entityBeanAnnotations.add(EMBEDDABLE_ANNOTATION);
-    entityBeanAnnotations.add(MAPPEDSUPERCLASS_ANNOTATION);
-  }
-
+class ClassInfo implements Constants {
 
   private final EnhanceContext enhanceContext;
 
@@ -49,8 +36,8 @@ public class ClassInfo implements Constants {
   }
 
   /**
-  * Return the className.
-  */
+   * Return the className.
+   */
   public String getClassName() {
     return className;
   }
@@ -58,19 +45,19 @@ public class ClassInfo implements Constants {
   /**
    * Return the short name of the class.
    */
-  public String getShortName() {
+  String getShortName() {
     int pos = className.lastIndexOf("/");
     return className.substring(pos + 1);
   }
 
   /**
-  * Return true if the bean is already enhanced.
-  */
-  public boolean isAlreadyEnhanced() {
+   * Return true if the bean is already enhanced.
+   */
+  boolean isAlreadyEnhanced() {
     return alreadyEnhanced;
   }
 
-  public boolean addMarkerAnnotation() {
+  boolean addMarkerAnnotation() {
     if (addedMarkerAnnotation) {
       return false;
     }
@@ -79,30 +66,30 @@ public class ClassInfo implements Constants {
   }
 
   /**
-  * Return true if the bean is a type query bean.
-  */
-  public boolean isTypeQueryBean() {
+   * Return true if the bean is a type query bean.
+   */
+  boolean isTypeQueryBean() {
     return typeQueryBean;
   }
 
   /**
-  * Return true if the class is explicitly annotated with TypeQueryUser annotation.
-  */
-  public boolean isTypeQueryUser() {
+   * Return true if the class is explicitly annotated with TypeQueryUser annotation.
+   */
+  boolean isTypeQueryUser() {
     return typeQueryUser;
   }
 
   /**
    * Mark this class as having enhancement for query beans.
    */
-  public void markTypeQueryEnhanced() {
+  void markTypeQueryEnhanced() {
     typeQueryUser = true;
   }
 
   /**
-  * Check for the type query bean and type query user annotations.
+   * Check for the type query bean and type query user annotations.
    */
-  public boolean checkTypeQueryAnnotation(String desc) {
+  boolean checkTypeQueryAnnotation(String desc) {
     if (isTypeQueryBeanAnnotation(desc)) {
       typeQueryBean = true;
     } else if (isAlreadyEnhancedAnnotation(desc)) {
@@ -112,9 +99,9 @@ public class ClassInfo implements Constants {
   }
 
   /**
-  * Add the type query bean field. We will create a 'property access' method for each field.
-  */
-  public void addField(int access, String name, String desc, String signature) {
+   * Add the type query bean field. We will create a 'property access' method for each field.
+   */
+  void addField(int access, String name, String desc, String signature) {
 
     if (((access & Opcodes.ACC_PUBLIC) != 0)) {
       if (fields == null) {
@@ -127,38 +114,30 @@ public class ClassInfo implements Constants {
   }
 
   /**
-  * Return true if the annotation is the TypeQueryBean annotation.
-  */
+   * Return true if the annotation is the TypeQueryBean annotation.
+   */
   private boolean isAlreadyEnhancedAnnotation(String desc) {
     return ANNOTATION_ALREADY_ENHANCED_MARKER.equals(desc);
   }
 
   /**
-  * Return true if the annotation is the TypeQueryBean annotation.
-  */
+   * Return true if the annotation is the TypeQueryBean annotation.
+   */
   private boolean isTypeQueryBeanAnnotation(String desc) {
     return ANNOTATION_TYPE_QUERY_BEAN.equals(desc);
   }
 
   /**
-  * Return true if this is one of the entity bean annotations.
-  */
-  private boolean isEntityBeanAnnotation(String desc) {
-    return entityBeanAnnotations.contains(desc);
-  }
-
-  /**
-  * Return the fields for a type query bean.
-  */
+   * Return the fields for a type query bean.
+   */
   public List<FieldInfo> getFields() {
     return fields;
   }
 
   /**
-  * Note that a GETFIELD call has been replaced to method call.
-  */
-  public void addGetFieldIntercept(String owner, String name) {
-
+   * Note that a GETFIELD call has been replaced to method call.
+   */
+  void addGetFieldIntercept(String owner, String name) {
     if (isLog(4)) {
       log("change getfield " + owner + " name:" + name);
     }
@@ -174,9 +153,9 @@ public class ClassInfo implements Constants {
   }
 
   /**
-  * There is a basic constructor on the assoc bean which is being overwritten (so don't need to add later).
-  */
-  public void setHasBasicConstructor() {
+   * There is a basic constructor on the assoc bean which is being overwritten (so don't need to add later).
+   */
+  void setHasBasicConstructor() {
     if (isLog(3)) {
       log("replace assoc bean basic constructor");
     }
@@ -184,9 +163,9 @@ public class ClassInfo implements Constants {
   }
 
   /**
-  * There is a main constructor on the assoc bean which is being overwritten (so don't need to add later).
-  */
-  public void setHasMainConstructor() {
+   * There is a main constructor on the assoc bean which is being overwritten (so don't need to add later).
+   */
+  void setHasMainConstructor() {
     if (isLog(3)) {
       log("replace assoc bean main constructor");
     }
@@ -194,9 +173,9 @@ public class ClassInfo implements Constants {
   }
 
   /**
-  * Add fields and constructors to assoc type query beans as necessary.
-  */
-  public void addAssocBeanExtras(ClassVisitor cv) {
+   * Add fields and constructors to assoc type query beans as necessary.
+   */
+  void addAssocBeanExtras(ClassVisitor cv) {
 
     if (isLog(3)) {
       String msg = "... add fields";

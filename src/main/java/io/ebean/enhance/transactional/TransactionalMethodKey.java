@@ -19,10 +19,10 @@ public class TransactionalMethodKey {
 
   @Override
   public String toString() {
-    return "profileId:"+profileId+" method:"+className+"."+methodName+methodDesc+":"+lineNumber;
+    return "profileId:" + profileId + " method:" + className + "." + methodName + methodDesc + ":" + lineNumber;
   }
 
-  public int getProfileId() {
+  int getProfileId() {
     return profileId;
   }
 
@@ -30,11 +30,11 @@ public class TransactionalMethodKey {
     this.profileId = profileId;
   }
 
-  public void setLineNumber(int lineNumber) {
+  void setLineNumber(int lineNumber) {
     this.lineNumber = lineNumber;
   }
 
-  public int getLineNumber() {
+  int getLineNumber() {
     return lineNumber;
   }
 

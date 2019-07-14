@@ -13,8 +13,8 @@ import java.util.List;
 
 import static io.ebean.enhance.common.EnhanceConstants.CLINIT;
 import static io.ebean.enhance.common.EnhanceConstants.INIT;
-import static io.ebean.enhance.common.EnhanceConstants.NOARG_VOID;
 import static io.ebean.enhance.common.EnhanceConstants.L_OBJECT;
+import static io.ebean.enhance.common.EnhanceConstants.NOARG_VOID;
 
 /**
  * Generate the methods based on the list of fields.
@@ -22,16 +22,16 @@ import static io.ebean.enhance.common.EnhanceConstants.L_OBJECT;
  * This includes the createCopy, getField and setField methods etc.
  * </p>
  */
-public class IndexFieldWeaver implements Opcodes {
+class IndexFieldWeaver implements Opcodes {
 
   private static final String _EBEAN_PROPS = "_ebean_props";
 
-  public static void addPropertiesField(ClassVisitor cv) {
+  static void addPropertiesField(ClassVisitor cv) {
     FieldVisitor fv = cv.visitField(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, _EBEAN_PROPS, "[Ljava/lang/String;", null, null);
     fv.visitEnd();
   }
 
-  public static void addPropertiesInit(ClassVisitor cv, ClassMeta classMeta) {
+  static void addPropertiesInit(ClassVisitor cv, ClassMeta classMeta) {
     MethodVisitor mv = cv.visitMethod(ACC_STATIC, CLINIT, NOARG_VOID, null, null);
     mv.visitCode();
     addPropertiesInit(mv, classMeta);
@@ -44,7 +44,7 @@ public class IndexFieldWeaver implements Opcodes {
     mv.visitEnd();
   }
 
-  public static void addPropertiesInit(MethodVisitor mv, ClassMeta classMeta) {
+  static void addPropertiesInit(MethodVisitor mv, ClassMeta classMeta) {
 
     List<FieldMeta> fields = classMeta.getAllFields();
 
@@ -60,7 +60,7 @@ public class IndexFieldWeaver implements Opcodes {
       }
 
     } else {
-      for (int i=0; i<fields.size(); i++) {
+      for (int i = 0; i < fields.size(); i++) {
         FieldMeta field = fields.get(i);
         mv.visitInsn(DUP);
         VisitUtil.visitIntInsn(mv, i);
@@ -73,7 +73,7 @@ public class IndexFieldWeaver implements Opcodes {
   }
 
 
-  public static void addGetPropertyNames(ClassVisitor cv, ClassMeta classMeta) {
+  static void addGetPropertyNames(ClassVisitor cv, ClassMeta classMeta) {
 
     MethodVisitor mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_getPropertyNames", "()[Ljava/lang/String;", null, null);
     mv.visitCode();
@@ -89,7 +89,7 @@ public class IndexFieldWeaver implements Opcodes {
     mv.visitEnd();
   }
 
-  public static void addGetPropertyName(ClassVisitor cv, ClassMeta classMeta) {
+  static void addGetPropertyName(ClassVisitor cv, ClassMeta classMeta) {
     MethodVisitor mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_getPropertyName", "(I)Ljava/lang/String;", null, null);
     mv.visitCode();
     Label l0 = new Label();
@@ -107,7 +107,7 @@ public class IndexFieldWeaver implements Opcodes {
     mv.visitEnd();
   }
 
-  public static void addMethods(ClassVisitor cv, ClassMeta classMeta) {
+  static void addMethods(ClassVisitor cv, ClassMeta classMeta) {
 
     List<FieldMeta> fields = classMeta.getAllFields();
     if (fields.isEmpty()) {
@@ -115,7 +115,7 @@ public class IndexFieldWeaver implements Opcodes {
     }
 
     if (classMeta.isLog(3)) {
-      classMeta.log("fields size:" + fields.size()+" "+fields.toString());
+      classMeta.log("fields size:" + fields.size() + " " + fields.toString());
     }
 
     generateGetField(cv, classMeta, fields, false);
@@ -170,15 +170,15 @@ public class IndexFieldWeaver implements Opcodes {
   }
 
   /**
-  * Generate the invokeGet method.
-  */
+   * Generate the invokeGet method.
+   */
   private static void generateGetField(ClassVisitor cv, ClassMeta classMeta, List<FieldMeta> fields, boolean intercept) {
 
     String className = classMeta.getClassName();
 
     MethodVisitor mv;
     if (intercept) {
-      mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_getFieldIntercept", "(I)Ljava/lang/Object;",null, null);
+      mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_getFieldIntercept", "(I)Ljava/lang/Object;", null, null);
     } else {
       mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_getField", "(I)Ljava/lang/Object;", null, null);
     }
@@ -237,14 +237,14 @@ public class IndexFieldWeaver implements Opcodes {
   }
 
   /**
-  * Generate the _ebean_setField or _ebean_setFieldBypass method.
-  * <p>
-  * Bypass will bypass the interception. The interception checks that the
-  * property has been loaded and creates oldValues if the bean is being made
-  * dirty for the first time.
-  * </p>
-  */
-  private static void generateSetField(ClassVisitor cv, ClassMeta classMeta, List<FieldMeta> fields,boolean intercept) {
+   * Generate the _ebean_setField or _ebean_setFieldBypass method.
+   * <p>
+   * Bypass will bypass the interception. The interception checks that the
+   * property has been loaded and creates oldValues if the bean is being made
+   * dirty for the first time.
+   * </p>
+   */
+  private static void generateSetField(ClassVisitor cv, ClassMeta classMeta, List<FieldMeta> fields, boolean intercept) {
 
 
     String className = classMeta.getClassName();

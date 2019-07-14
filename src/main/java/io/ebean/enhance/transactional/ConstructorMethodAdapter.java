@@ -1,7 +1,6 @@
 package io.ebean.enhance.transactional;
 
 import io.ebean.enhance.asm.MethodVisitor;
-import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.common.EnhanceConstants;
 
 /**
@@ -14,7 +13,7 @@ class ConstructorMethodAdapter extends FinallyAdapter implements EnhanceConstant
   final ClassAdapterTransactional classAdapter;
 
   ConstructorMethodAdapter(ClassAdapterTransactional classAdapter, final MethodVisitor mv, final int access, final String name, final String desc) {
-    super(Opcodes.ASM7, mv, access, name, desc);
+    super(mv, access, name, desc);
     this.classAdapter = classAdapter;
   }
 
@@ -71,10 +70,7 @@ class ConstructorMethodAdapter extends FinallyAdapter implements EnhanceConstant
     if (name.equals("query") && (desc.equals("()Lio/ebean/Query;") || desc.equals("(Ljava/lang/String;)Lio/ebean/Query;"))) {
       return true;
     }
-    if (name.equals("nativeSql") && desc.equals("(Ljava/lang/String;)Lio/ebean/Query;")) {
-      return true;
-    }
-    return false;
+    return name.equals("nativeSql") && desc.equals("(Ljava/lang/String;)Lio/ebean/Query;");
   }
 
 }

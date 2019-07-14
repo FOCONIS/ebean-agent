@@ -19,7 +19,7 @@ import io.ebean.enhance.common.EnhanceConstants;
  * _ebean_intercept = new EntityBeanIntercept(this);
  * </pre>
  */
-public class ConstructorAdapter extends MethodVisitor implements EnhanceConstants, Opcodes {
+class ConstructorAdapter extends MethodVisitor implements EnhanceConstants, Opcodes {
 
   private final ClassMeta meta;
 
@@ -30,11 +30,11 @@ public class ConstructorAdapter extends MethodVisitor implements EnhanceConstant
   private boolean constructorInitializationDone;
 
   /**
-  * Holds an init instructions to see if it is an init of a OneToMany or ManyToMany.
-  */
+   * Holds an init instructions to see if it is an init of a OneToMany or ManyToMany.
+   */
   private final ConstructorDeferredCode deferredCode;
 
-  public ConstructorAdapter(MethodVisitor mv, ClassMeta meta, String constructorDesc) {
+  ConstructorAdapter(MethodVisitor mv, ClassMeta meta, String constructorDesc) {
     super(Opcodes.ASM7, mv);
     this.meta = meta;
     this.className = meta.getClassName();
@@ -74,7 +74,7 @@ public class ConstructorAdapter extends MethodVisitor implements EnhanceConstant
   @Override
   public void visitFieldInsn(int opcode, String owner, String name, String desc) {
 
-    if (deferredCode.consumeVisitFieldInsn(opcode, owner, name, desc)) {
+    if (deferredCode.consumeVisitFieldInsn(opcode, name)) {
       // we have removed all the instructions initialising the many property
       return;
     }
@@ -116,13 +116,13 @@ public class ConstructorAdapter extends MethodVisitor implements EnhanceConstant
   }
 
   /**
-  * Add initialisation of EntityBeanIntercept to constructor.
-  *
-  * <pre>
-  * _ebean_intercept = new EntityBeanIntercept(this);
-  * </pre>
-  */
-  public void addInitialisationIfRequired(int opcode, String owner, String name, String desc) {
+   * Add initialisation of EntityBeanIntercept to constructor.
+   *
+   * <pre>
+   * _ebean_intercept = new EntityBeanIntercept(this);
+   * </pre>
+   */
+  private void addInitialisationIfRequired(int opcode, String owner, String name, String desc) {
 
     if (C_MODEL.equals(owner) && INIT.equals(name)) {
       addConstructorInit(owner);
@@ -138,11 +138,11 @@ public class ConstructorAdapter extends MethodVisitor implements EnhanceConstant
         if (meta.isLog(3)) {
           meta.log("... skipping intercept <init> ... handled by other constructor... CONSTRUCTOR: owner:" + owner + " " + constructorDesc);
         }
-      } else if (owner.equals(meta.getSuperClassName())){
+      } else if (owner.equals(meta.getSuperClassName())) {
         addConstructorInit(owner);
       } else {
         if (meta.isLog(3)) {
-          meta.log("... skipping intercept <init> ... incorrect type "+owner);
+          meta.log("... skipping intercept <init> ... incorrect type " + owner);
         }
       }
     }
@@ -157,8 +157,8 @@ public class ConstructorAdapter extends MethodVisitor implements EnhanceConstant
     if (constructorInitializationDone) {
       // hopefully this is never called but put it in here to be on the safe side.
       String msg = "Error in Enhancement. Only expecting to add <init> of intercept object"
-          + " once but it is trying to add it twice for " + meta.getClassName() + " CONSTRUCTOR:"
-          + constructorDesc+ " OWNER:" + owner;
+        + " once but it is trying to add it twice for " + meta.getClassName() + " CONSTRUCTOR:"
+        + constructorDesc + " OWNER:" + owner;
       System.err.println(msg);
 
     } else {

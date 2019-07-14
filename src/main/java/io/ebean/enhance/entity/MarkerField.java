@@ -14,17 +14,17 @@ import io.ebean.enhance.common.EnhanceConstants;
  * to make the enhancement more robust.
  * </p>
  */
-public class MarkerField implements Opcodes, EnhanceConstants {
+class MarkerField implements Opcodes, EnhanceConstants {
 
   /**
-  * The name of the static field added. Its value is the class being enhanced.
-  */
-  public static final String _EBEAN_MARKER = "_EBEAN_MARKER";
+   * The name of the static field added. Its value is the class being enhanced.
+   */
+  static final String _EBEAN_MARKER = "_EBEAN_MARKER";
 
   /**
-  * Add the _EBEAN_MARKER field.
-  */
-  public static String addField(ClassVisitor cv, String className) {
+   * Add the _EBEAN_MARKER field.
+   */
+  static String addField(ClassVisitor cv, String className) {
 
     String cn = className.replace('/', '.');
 
@@ -35,16 +35,15 @@ public class MarkerField implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * Generate the _ebean_getMarker() method.
-  *
-  * <pre>
-  * public String _ebean_getMarker() {
-  * 	return _EBEAN_MARKER;
-  * }
-  * </pre>
-  */
-  public static void addGetMarker(ClassVisitor cv, String className) {
-
+   * Generate the _ebean_getMarker() method.
+   *
+   * <pre>
+   * public String _ebean_getMarker() {
+   * 	return _EBEAN_MARKER;
+   * }
+   * </pre>
+   */
+  static void addGetMarker(ClassVisitor cv, String className) {
 
     MethodVisitor mv;
 
@@ -57,7 +56,7 @@ public class MarkerField implements Opcodes, EnhanceConstants {
     mv.visitInsn(ARETURN);
     Label l1 = new Label();
     mv.visitLabel(l1);
-    mv.visitLocalVariable("this", "L"+className+";", null, l0, l1, 0);
+    mv.visitLocalVariable("this", "L" + className + ";", null, l0, l1, 0);
     mv.visitMaxs(1, 1);
     mv.visitEnd();
   }

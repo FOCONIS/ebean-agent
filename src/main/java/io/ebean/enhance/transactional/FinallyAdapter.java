@@ -2,23 +2,19 @@ package io.ebean.enhance.transactional;
 
 import io.ebean.enhance.asm.Label;
 import io.ebean.enhance.asm.MethodVisitor;
+import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.asm.commons.AdviceAdapter;
 
 /**
  * FinallyAdapter adjusted to support both non-finally use (for ConstructorMethodAdapter)
  * and finally use (for MethodAdapter that also enhances transactional methods)
  */
-public abstract class FinallyAdapter extends AdviceAdapter {
+abstract class FinallyAdapter extends AdviceAdapter {
 
-  protected Label startFinally = new Label();
+  private final Label startFinally = new Label();
 
-  public FinallyAdapter(final int api, MethodVisitor mv, int acc, String name, String desc) {
-    super(api, mv, acc, name, desc);
-  }
-
-  @Override
-  public void visitCode() {
-    super.visitCode();
+  FinallyAdapter(MethodVisitor mv, int acc, String name, String desc) {
+    super(Opcodes.ASM7, mv, acc, name, desc);
   }
 
   @Override
@@ -26,12 +22,12 @@ public abstract class FinallyAdapter extends AdviceAdapter {
     super.visitMaxs(maxStack, maxLocals);
   }
 
-  protected void finallyVisitCode() {
+  void finallyVisitCode() {
     super.visitCode();
     mv.visitLabel(startFinally);
   }
 
-  protected void finallyVisitMaxs(int maxStack, int maxLocals) {
+  void finallyVisitMaxs(int maxStack, int maxLocals) {
 
     Label endFinally = new Label();
     mv.visitTryCatchBlock(startFinally, endFinally, endFinally, null);
@@ -48,7 +44,7 @@ public abstract class FinallyAdapter extends AdviceAdapter {
     }
   }
 
-  protected void onFinally(int opcode) {
+  void onFinally(int opcode) {
   }
 
 }

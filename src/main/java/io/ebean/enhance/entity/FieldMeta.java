@@ -45,11 +45,11 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   private AnnotationInfo normalizeAnnotationInfo;
 
   /**
-  * Construct based on field name and desc from reading byte code.
-  * <p>
-  * Used for reading local fields (not inherited) via visiting the class bytes.
-  * </p>
-  */
+   * Construct based on field name and desc from reading byte code.
+   * <p>
+   * Used for reading local fields (not inherited) via visiting the class bytes.
+   * </p>
+   */
   public FieldMeta(ClassMeta classMeta, String name, String desc, String fieldClass) {
 
     this.classMeta = classMeta;
@@ -83,38 +83,31 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * Return the field name.
-  */
+   * Return the field name.
+   */
   public String getFieldName() {
     return fieldName;
   }
 
   /**
-  * Return true if this is a primitiveType.
-  */
+   * Return true if this is a primitiveType.
+   */
   public boolean isPrimitiveType() {
     return primitiveType;
   }
 
   /**
-  * Add a field annotation.
-  */
-  protected void addAnnotationDesc(String desc) {
+   * Add a field annotation.
+   */
+  void addAnnotationDesc(String desc) {
     annotations.add(desc);
   }
 
   /**
-  * Return the field name.
-  */
+   * Return the field name.
+   */
   public String getName() {
     return fieldName;
-  }
-
-  /**
-  * Return the field bytecode type description.
-  */
-  public String getDesc() {
-    return fieldDesc;
   }
 
   public AnnotationInfo getNormalizeAnnotationInfo() {
@@ -139,11 +132,11 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * Return true if this field type is an Array of Objects.
-  * <p>
-  * We can not support Object Arrays for field types.
-  * </p>
-  */
+   * Return true if this field type is an Array of Objects.
+   * <p>
+   * We can not support Object Arrays for field types.
+   * </p>
+   */
   public boolean isObjectArray() {
     if (fieldDesc.charAt(0) == '[') {
       if (fieldDesc.length() > 2) {
@@ -157,69 +150,69 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * Return true is this is a persistent field.
-  */
+   * Return true is this is a persistent field.
+   */
   public boolean isPersistent() {
     return !isTransient();
   }
 
   /**
-  * Return true if this is a transient field.
-  */
+   * Return true if this is a transient field.
+   */
   public boolean isTransient() {
     return annotations.contains("Ljavax/persistence/Transient;")
-        || annotations.contains(L_DRAFT);
+      || annotations.contains(L_DRAFT);
   }
 
   /**
-  * Return true if this is an ID field.
-  * <p>
-  * ID fields are used in generating equals() logic based on identity.
-  * </p>
-  */
+   * Return true if this is an ID field.
+   * <p>
+   * ID fields are used in generating equals() logic based on identity.
+   * </p>
+   */
   public boolean isId() {
     return (annotations.contains("Ljavax/persistence/Id;")
-            || annotations.contains("Ljavax/persistence/EmbeddedId;"));
+      || annotations.contains("Ljavax/persistence/EmbeddedId;"));
   }
 
   /**
-  * Return true if this is a OneToMany or ManyToMany field.
-  */
+   * Return true if this is a OneToMany or ManyToMany field.
+   */
   public boolean isMany() {
     return annotations.contains("Ljavax/persistence/OneToMany;")
-        || annotations.contains("Ljavax/persistence/ManyToMany;");
+      || annotations.contains("Ljavax/persistence/ManyToMany;");
   }
 
-  public boolean isManyToMany() {
+  private boolean isManyToMany() {
     return annotations.contains("Ljavax/persistence/ManyToMany;");
   }
 
   /**
-  * Return true if this is an Embedded field.
-  */
-  public boolean isEmbedded() {
+   * Return true if this is an Embedded field.
+   */
+  boolean isEmbedded() {
     return annotations.contains("Ljavax/persistence/Embedded;");
   }
 
   /**
-  * Return true if the field is local to this class. Returns false if the field
-  * is actually on a super class.
-  */
-  public boolean isLocalField(ClassMeta classMeta) {
+   * Return true if the field is local to this class. Returns false if the field
+   * is actually on a super class.
+   */
+  boolean isLocalField(ClassMeta classMeta) {
     return fieldClass.equals(classMeta.getClassName());
   }
 
   /**
-  * Append byte code to return the Id value (for primitives).
-  */
-  public void appendGetPrimitiveIdValue(MethodVisitor mv, ClassMeta classMeta) {
+   * Append byte code to return the Id value (for primitives).
+   */
+  void appendGetPrimitiveIdValue(MethodVisitor mv, ClassMeta classMeta) {
     mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.getClassName(), getMethodName, getMethodDesc, false);
   }
 
   /**
-  * Append compare instructions if its a long, float or double.
-  */
-  public void appendCompare(MethodVisitor mv, ClassMeta classMeta) {
+   * Append compare instructions if its a long, float or double.
+   */
+  void appendCompare(MethodVisitor mv, ClassMeta classMeta) {
     if (primitiveType) {
       if (classMeta.isLog(4)) {
         classMeta.log(" ... getIdentity compare primitive field[" + fieldName + "] type[" + fieldDesc + "]");
@@ -246,12 +239,12 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * Append code to get the Object value of a primitive.
-  * <p>
-  * This becomes a Integer.valueOf(someInt); or similar.
-  * </p>
-  */
-  public void appendValueOf(MethodVisitor mv) {
+   * Append code to get the Object value of a primitive.
+   * <p>
+   * This becomes a Integer.valueOf(someInt); or similar.
+   * </p>
+   */
+  void appendValueOf(MethodVisitor mv) {
     if (primitiveType) {
       // use valueOf methods to return primitives as objects
       Type objectWrapperType = PrimitiveHelper.getObjectWrapper(asmType);
@@ -264,9 +257,9 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * As part of the switch statement to read the fields generate the get code.
-  */
-  public void appendSwitchGet(MethodVisitor mv, ClassMeta classMeta, boolean intercept) {
+   * As part of the switch statement to read the fields generate the get code.
+   */
+  void appendSwitchGet(MethodVisitor mv, ClassMeta classMeta, boolean intercept) {
 
     if (intercept) {
       // use the special get method with interception...
@@ -285,7 +278,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     }
   }
 
-  public void appendSwitchSet(MethodVisitor mv, ClassMeta classMeta, boolean intercept) {
+  void appendSwitchSet(MethodVisitor mv, ClassMeta classMeta, boolean intercept) {
 
     if (primitiveType) {
       // convert Object to primitive first...
@@ -313,13 +306,13 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
 
 
   /**
-  * Add get and set methods for field access/interception.
-  */
+   * Add get and set methods for field access/interception.
+   */
   public void addGetSetMethods(ClassVisitor cv, ClassMeta classMeta) {
 
     if (!isLocalField(classMeta)) {
       String msg = "ERROR: " + fieldClass + " != " + classMeta.getClassName() + " for field "
-          + fieldName + " " + fieldDesc;
+        + fieldName + " " + fieldDesc;
       throw new RuntimeException(msg);
     }
     // add intercepting methods that are used to replace the
@@ -347,8 +340,8 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * Return true if null check should be added to this many field.
-  */
+   * Return true if null check should be added to this many field.
+   */
   private boolean isInterceptMany() {
 
     if (isMany() && !isTransient()) {
@@ -364,8 +357,8 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * Add a get field method with interception.
-  */
+   * Add a get field method with interception.
+   */
   private void addGet(ClassVisitor cw, ClassMeta classMeta) {
 
     if (classMeta.isLog(3)) {
@@ -501,11 +494,11 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * This is a get method with no interception.
-  * <p>
-  * It exists to be able to read private fields that are on super classes.
-  * </p>
-  */
+   * This is a get method with no interception.
+   * <p>
+   * It exists to be able to read private fields that are on super classes.
+   * </p>
+   */
   private void addGetNoIntercept(ClassVisitor cw, ClassMeta classMeta) {
 
     // ARETURN or IRETURN
@@ -532,15 +525,15 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * Setter method with interception.
-  *
-  * <pre>
-  * public void _ebean_set_propname(String newValue) {
-  *   ebi.preSetter(true, propertyIndex, _ebean_get_propname(), newValue);
-  *   this.propname = newValue;
-  * }
-  * </pre>
-  */
+   * Setter method with interception.
+   *
+   * <pre>
+   * public void _ebean_set_propname(String newValue) {
+   *   ebi.preSetter(true, propertyIndex, _ebean_get_propname(), newValue);
+   *   this.propname = newValue;
+   * }
+   * </pre>
+   */
   private void addSet(ClassVisitor cw, ClassMeta classMeta) {
 
     String preSetterArgTypes = "Ljava/lang/Object;Ljava/lang/Object;";
@@ -558,7 +551,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
 
     if (classMeta.isLog(3)) {
       classMeta.log(setMethodName + " " + setMethodDesc + " intercept:" + isInterceptSet()
-          + " opCode:" + iLoadOpcode + "," + iPosition + " preSetterArgTypes" + preSetterArgTypes);
+        + " opCode:" + iLoadOpcode + "," + iPosition + " preSetterArgTypes" + preSetterArgTypes);
     }
 
     MethodVisitor mv = cw.visitMethod(ACC_PROTECTED + ACC_SYNTHETIC, setMethodName, setMethodDesc, null, null);
@@ -579,7 +572,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
       mv.visitVarInsn(iStoreOpcode, 1);
     } else {
       normalizers = classMeta.getClassNormailzers();
-      if (normalizers != null && asmType.getDescriptor().equals(STRING_CLASS)) {
+      if (normalizers != null && asmType.getDescriptor().equals(L_STRING)) {
         mv.visitVarInsn(iLoadOpcode, 1);
         for (Type normalizer : normalizers) {
           mv.visitMethodInsn(INVOKESTATIC, normalizer.getInternalName(), "normalize",
@@ -610,7 +603,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     if (isMany()) {
       preSetterMethod = "preSetterMany";
     }
-    mv.visitMethodInsn(INVOKEVIRTUAL, C_INTERCEPT, preSetterMethod, "(ZI"+ preSetterArgTypes + ")V", false);
+    mv.visitMethodInsn(INVOKEVIRTUAL, C_INTERCEPT, preSetterMethod, "(ZI" + preSetterArgTypes + ")V", false);
     Label l1 = new Label();
     mv.visitLabel(l1);
     mv.visitLineNumber(2, l1);
@@ -631,11 +624,11 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   }
 
   /**
-  * Add a non-intercepting field set method.
-  * <p>
-  * So we can set private fields on super classes.
-  * </p>
-  */
+   * Add a non-intercepting field set method.
+   * <p>
+   * So we can set private fields on super classes.
+   * </p>
+   */
   private void addSetNoIntercept(ClassVisitor cw, ClassMeta classMeta) {
 
     // ALOAD or ILOAD etc

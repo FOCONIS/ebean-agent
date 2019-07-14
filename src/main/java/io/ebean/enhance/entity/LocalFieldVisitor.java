@@ -15,19 +15,19 @@ public class LocalFieldVisitor extends FieldVisitor implements EnhanceConstants 
   private final FieldMeta fieldMeta;
 
   /**
-  * Constructor used for entity class enhancement.
-  *
-  * @param fv the fieldVisitor used to write
-  * @param fieldMeta the fieldMeta data
-  */
+   * Constructor used for entity class enhancement.
+   *
+   * @param fv        the fieldVisitor used to write
+   * @param fieldMeta the fieldMeta data
+   */
   public LocalFieldVisitor(FieldVisitor fv, FieldMeta fieldMeta) {
     super(Opcodes.ASM7, fv);
     this.fieldMeta = fieldMeta;
   }
 
   /**
-  * Return the field name.
-  */
+   * Return the field name.
+   */
   public String getName() {
     return fieldMeta.getFieldName();
   }
@@ -35,7 +35,7 @@ public class LocalFieldVisitor extends FieldVisitor implements EnhanceConstants 
   @Override
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
     fieldMeta.addAnnotationDesc(desc);
-    if (fv != null){
+    if (fv != null) {
       if (!visible && desc.equals(L_JETBRAINS_NOTNULL)) {
         fv.visitAnnotation(L_EBEAN_NOTNULL, true);
       }
@@ -51,14 +51,14 @@ public class LocalFieldVisitor extends FieldVisitor implements EnhanceConstants 
 
   @Override
   public void visitAttribute(Attribute attr) {
-    if (fv != null){
+    if (fv != null) {
       fv.visitAttribute(attr);
     }
   }
 
   @Override
   public void visitEnd() {
-    if (fv != null){
+    if (fv != null) {
       fv.visitEnd();
     }
   }

@@ -10,7 +10,7 @@ import static io.ebean.enhance.common.EnhanceConstants.NOARG_VOID;
  * Enhance an existing static initialisation block with a call to our static
  * _$initProfileLocations() method.
  */
-public class StaticInitAdapter extends AdviceAdapter {
+class StaticInitAdapter extends AdviceAdapter {
 
   private final String className;
 
@@ -20,8 +20,8 @@ public class StaticInitAdapter extends AdviceAdapter {
   }
 
   /**
-  * Adds the call to the static _$initProfileLocations() method.
-  */
+   * Adds the call to the static _$initProfileLocations() method.
+   */
   @Override
   public void visitCode() {
     super.visitCode();

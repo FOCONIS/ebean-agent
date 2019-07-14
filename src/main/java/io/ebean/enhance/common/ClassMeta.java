@@ -66,8 +66,6 @@ public class ClassMeta {
 
   private final HashSet<String> classAnnotation = new HashSet<>();
 
-  private final AnnotationInfo annotationInfo = new AnnotationInfo(null);
-
   private final AnnotationInfo transactionalAnnotationInfo = new AnnotationInfo(null);
 
   private final AnnotationInfo normalizeAnnotationInfo = new AnnotationInfo(null);
@@ -345,7 +343,7 @@ public class ClassMeta {
   /**
   * Return true if the class has an Entity, Embeddable, or MappedSuperclass.
   */
-  private boolean isCheckEntity() {
+  public boolean isCheckEntity() {
     return EntityCheck.hasEntityAnnotation(classAnnotation);
   }
 
@@ -386,7 +384,7 @@ public class ClassMeta {
 
   MethodVisitor createMethodVisitor(MethodVisitor mv, String name, String desc) {
 
-    MethodMeta methodMeta = new MethodMeta(annotationInfo, name, desc);
+    MethodMeta methodMeta = new MethodMeta(transactionalAnnotationInfo, name, desc);
     methodMetaList.add(methodMeta);
     return new MethodReader(mv, methodMeta);
   }

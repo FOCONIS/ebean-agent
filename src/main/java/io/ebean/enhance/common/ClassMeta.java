@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static io.ebean.enhance.common.EnhanceConstants.C_OBJECT;
+import static io.ebean.enhance.common.EnhanceConstants.TRANSACTIONAL_ANNOTATION;
+import static io.ebean.enhance.common.EnhanceConstants.TYPEQUERYBEAN_ANNOTATION;
 
 /**
  * Holds the meta data for an entity bean class that is being enhanced.
@@ -60,7 +62,7 @@ public class ClassMeta {
 
   private boolean hasStaticInit;
 
-  private HashSet<String> existingMethods = new HashSet<String>();
+  private HashSet<String> existingMethods = new HashSet<>();
 
   private LinkedHashMap<String, FieldMeta> fields = new LinkedHashMap<>();
 
@@ -70,7 +72,7 @@ public class ClassMeta {
 
   private AnnotationInfo normalizeAnnotationInfo = new AnnotationInfo(null);
 
-  private ArrayList<MethodMeta> methodMetaList = new ArrayList<MethodMeta>();
+  private ArrayList<MethodMeta> methodMetaList = new ArrayList<>();
 
   private final EnhanceContext enhanceContext;
 
@@ -145,7 +147,7 @@ public class ClassMeta {
   }
 
   public boolean isTransactional() {
-    return classAnnotation.contains(EnhanceConstants.AVAJE_TRANSACTIONAL_ANNOTATION);
+    return classAnnotation.contains(TRANSACTIONAL_ANNOTATION);
   }
 
   public void setClassName(String className, String superClassName) {
@@ -206,9 +208,8 @@ public class ClassMeta {
   * Return true if the field is a persistent field.
   */
   public boolean isFieldPersistent(String fieldName) {
-
     FieldMeta f = getFieldPersistent(fieldName);
-    return (f == null) ? false: f.isPersistent();
+    return (f != null) && f.isPersistent();
   }
 
   /**
@@ -234,9 +235,9 @@ public class ClassMeta {
   /**
   * Return the list of fields local to this type (not inherited).
   */
-  public List<FieldMeta> getLocalFields() {
+  private List<FieldMeta> getLocalFields() {
 
-    ArrayList<FieldMeta> list = new ArrayList<FieldMeta>();
+    List<FieldMeta> list = new ArrayList<>();
 
     for (FieldMeta fm : fields.values()) {
       if (!fm.isObjectArray()) {
@@ -251,16 +252,10 @@ public class ClassMeta {
   /**
   * Return the list of fields inherited from super types that are entities.
   */
-  private List<FieldMeta> getInheritedFields(List<FieldMeta> list) {
-
-    if (list == null){
-      list = new ArrayList<FieldMeta>();
-    }
-
+  private void addInheritedFields(List<FieldMeta> list) {
     if (superMeta != null) {
       superMeta.addFieldsForInheritance(list);
     }
-    return list;
   }
 
   /**
@@ -299,7 +294,7 @@ public class ClassMeta {
       return allFields;
     }
     List<FieldMeta> list = getLocalFields();
-    getInheritedFields(list);
+    addInheritedFields(list);
 
     this.allFields = list;
     for (int i=0; i<allFields.size(); i++) {
@@ -324,7 +319,7 @@ public class ClassMeta {
   /**
   * Return true if this is a mapped superclass.
   */
-  public boolean isMappedSuper() {
+  boolean isMappedSuper() {
     return classAnnotation.contains(EnhanceConstants.MAPPEDSUPERCLASS_ANNOTATION);
   }
 
@@ -396,18 +391,10 @@ public class ClassMeta {
     existingMethods.add(methodName + methodDesc);
   }
 
-  /**
-  * Return true if the method already exists on the bean.
-  */
-  public boolean isExistingMethod(String methodName, String methodDesc) {
-    return existingMethods.contains(methodName + methodDesc);
-  }
-
-  public MethodVisitor createMethodVisitor(MethodVisitor mv, int access, String name, String desc) {
+  MethodVisitor createMethodVisitor(MethodVisitor mv, int access, String name, String desc) {
 
     MethodMeta methodMeta = new MethodMeta(transactionalAnnotationInfo, access, name, desc);
     methodMetaList.add(methodMeta);
-
     return new MethodReader(mv, methodMeta);
   }
 
@@ -426,15 +413,22 @@ public class ClassMeta {
       if (mv != null) {
         av = mv.visitAnnotation(desc, visible);
       }
+      if (!isInterestingAnnotation(desc)) {
+        return av;
+      }
       return new AnnotationInfoVisitor(null, methodMeta.getAnnotationInfo(), av);
     }
 
+    private boolean isInterestingAnnotation(String desc) {
+      return TRANSACTIONAL_ANNOTATION.equals(desc)
+        || TYPEQUERYBEAN_ANNOTATION.equals(desc);
+    }
   }
 
   /**
   * Create and return a read only fieldVisitor for subclassing option.
   */
-  public FieldVisitor createLocalFieldVisitor(String name, String desc) {
+  FieldVisitor createLocalFieldVisitor(String name, String desc) {
     return createLocalFieldVisitor(null, name, desc);
   }
 
@@ -491,7 +485,7 @@ public class ClassMeta {
     }
   }
 
-  public boolean hasScalaInterface() {
+  private boolean hasScalaInterface() {
     return hasScalaInterface;
   }
 
@@ -507,7 +501,7 @@ public class ClassMeta {
     this.hasEntityBeanInterface = hasEntityBeanInterface;
   }
 
-  public boolean hasGroovyInterface() {
+  private boolean hasGroovyInterface() {
     return hasGroovyInterface;
   }
 

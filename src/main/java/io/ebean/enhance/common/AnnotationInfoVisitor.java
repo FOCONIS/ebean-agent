@@ -17,7 +17,7 @@ public class AnnotationInfoVisitor extends AnnotationVisitor {
     this.info = info;
     this.prefix = prefix;
     if (prefix != null) {
-      info.add(prefix, null, null);
+      info.getArrayEntry(prefix); // register as empty
     }
   }
 

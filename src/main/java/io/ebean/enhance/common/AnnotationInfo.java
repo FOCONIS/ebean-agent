@@ -36,17 +36,20 @@ public class AnnotationInfo {
   }
 
   /**
+   * Gets or creates a list for the given prefix, it will hold the array values.
+   */
+  public List<Object> getArrayEntry(String prefix) {
+    return (List<Object>) valueMap.computeIfAbsent(prefix, k -> new ArrayList<>());
+  }
+
+  /**
   * Add a annotation value.
   */
   @SuppressWarnings("unchecked")
   public void add(String prefix, String name, Object value){
     if (name == null){
       // this is an array value...
-      List<Object> list = (List<Object>) valueMap.computeIfAbsent(prefix, k -> new ArrayList<>());
-      if (value != null) {
-        // add it if it is not null (null is not allowed in annotations, but used to init empty array)
-        list.add(value);
-      }
+      getArrayEntry(prefix).add(value);
     } else {
       String key = getKey(prefix, name);
       valueMap.put(key, value);

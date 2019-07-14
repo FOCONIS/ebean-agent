@@ -6,6 +6,8 @@ import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.common.EnhanceConstants;
 
 import static io.ebean.enhance.common.EnhanceConstants.INIT;
+import static io.ebean.enhance.common.EnhanceConstants.L_OBJECT;
+import static io.ebean.enhance.common.EnhanceConstants.L_STRING;
 
 /**
  * Changes the existing constructor to remove all the field initialisation as these are going to be
@@ -53,8 +55,8 @@ public class TypeQueryAssocBasicConstructor extends BaseConstructorAdapter imple
     Label l2 = new Label();
     mv.visitLabel(l2);
     mv.visitLocalVariable("this", "L"+classInfo.getClassName()+";", "L"+classInfo.getClassName()+"<TR;>;", l0, l2, 0);
-    mv.visitLocalVariable("name", EnhanceConstants.STRING_CLASS, null, l0, l2, 1);
-    mv.visitLocalVariable("root", EnhanceConstants.OBJECT_CLASS, "TR;", l0, l2, 2);
+    mv.visitLocalVariable("name", L_STRING, null, l0, l2, 1);
+    mv.visitLocalVariable("root", L_OBJECT, "TR;", l0, l2, 2);
     mv.visitLocalVariable("depth", "I", null, l0, l2, 3);
     mv.visitMaxs(4, 4);
     mv.visitEnd();

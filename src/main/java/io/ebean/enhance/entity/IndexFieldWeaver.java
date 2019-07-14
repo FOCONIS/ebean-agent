@@ -14,6 +14,7 @@ import java.util.List;
 import static io.ebean.enhance.common.EnhanceConstants.CLINIT;
 import static io.ebean.enhance.common.EnhanceConstants.INIT;
 import static io.ebean.enhance.common.EnhanceConstants.NOARG_VOID;
+import static io.ebean.enhance.common.EnhanceConstants.L_OBJECT;
 
 /**
  * Generate the methods based on the list of fields.
@@ -26,7 +27,7 @@ public class IndexFieldWeaver implements Opcodes {
   private static final String _EBEAN_PROPS = "_ebean_props";
 
   public static void addPropertiesField(ClassVisitor cv) {
-    FieldVisitor fv = cv.visitField(ACC_PUBLIC + ACC_STATIC, _EBEAN_PROPS, "[Ljava/lang/String;", null, null);
+    FieldVisitor fv = cv.visitField(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, _EBEAN_PROPS, "[Ljava/lang/String;", null, null);
     fv.visitEnd();
   }
 
@@ -74,7 +75,7 @@ public class IndexFieldWeaver implements Opcodes {
 
   public static void addGetPropertyNames(ClassVisitor cv, ClassMeta classMeta) {
 
-    MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, "_ebean_getPropertyNames", "()[Ljava/lang/String;", null, null);
+    MethodVisitor mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_getPropertyNames", "()[Ljava/lang/String;", null, null);
     mv.visitCode();
     Label l0 = new Label();
     mv.visitLabel(l0);
@@ -89,7 +90,7 @@ public class IndexFieldWeaver implements Opcodes {
   }
 
   public static void addGetPropertyName(ClassVisitor cv, ClassMeta classMeta) {
-    MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, "_ebean_getPropertyName", "(I)Ljava/lang/String;", null, null);
+    MethodVisitor mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_getPropertyName", "(I)Ljava/lang/String;", null, null);
     mv.visitCode();
     Label l0 = new Label();
     mv.visitLabel(l0);
@@ -177,9 +178,9 @@ public class IndexFieldWeaver implements Opcodes {
 
     MethodVisitor mv;
     if (intercept) {
-      mv = cv.visitMethod(ACC_PUBLIC, "_ebean_getFieldIntercept", "(I)Ljava/lang/Object;",null, null);
+      mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_getFieldIntercept", "(I)Ljava/lang/Object;",null, null);
     } else {
-      mv = cv.visitMethod(ACC_PUBLIC, "_ebean_getField", "(I)Ljava/lang/Object;", null, null);
+      mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_getField", "(I)Ljava/lang/Object;", null, null);
     }
 
     mv.visitCode();
@@ -250,10 +251,10 @@ public class IndexFieldWeaver implements Opcodes {
 
     MethodVisitor mv;
     if (intercept) {
-      mv = cv.visitMethod(ACC_PUBLIC, "_ebean_setFieldIntercept", "(ILjava/lang/Object;)V",
+      mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_setFieldIntercept", "(ILjava/lang/Object;)V",
         null, null);
     } else {
-      mv = cv.visitMethod(ACC_PUBLIC, "_ebean_setField", "(ILjava/lang/Object;)V", null, null);
+      mv = cv.visitMethod(ACC_PUBLIC + ACC_SYNTHETIC, "_ebean_setField", "(ILjava/lang/Object;)V", null, null);
     }
 
     mv.visitCode();
@@ -314,8 +315,8 @@ public class IndexFieldWeaver implements Opcodes {
     mv.visitLabel(l9);
     mv.visitLocalVariable("this", "L" + className + ";", null, l0, l9, 0);
     mv.visitLocalVariable("index", "I", null, l0, l9, 1);
-    mv.visitLocalVariable("o", EnhanceConstants.OBJECT_CLASS, null, l0, l9, 2);
-    mv.visitLocalVariable("arg", EnhanceConstants.OBJECT_CLASS, null, l0, l9, 3);
+    mv.visitLocalVariable("o", L_OBJECT, null, l0, l9, 2);
+    mv.visitLocalVariable("arg", L_OBJECT, null, l0, l9, 3);
     mv.visitLocalVariable("p", "L" + className + ";", null, l1, l9, 4);
     mv.visitMaxs(5, 5);
     mv.visitEnd();

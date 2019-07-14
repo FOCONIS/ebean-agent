@@ -5,10 +5,6 @@ package io.ebean.enhance.common;
  */
 public interface EnhanceConstants {
 
-  String STRING_CLASS = "Ljava/lang/String;";
-
-  String OBJECT_CLASS = "Ljava/lang/Object;";
-
   String INIT = "<init>";
 
   String CLINIT = "<clinit>";
@@ -48,6 +44,10 @@ public interface EnhanceConstants {
   String C_INTERCEPT = "io/ebean/bean/EntityBeanIntercept";
 
   String C_BEANCOLLECTION = "io/ebean/bean/BeanCollection";
+
+  String L_STRING = "Ljava/lang/String;";
+
+  String L_OBJECT = "Ljava/lang/Object;";
 
   String L_INTERCEPT = "Lio/ebean/bean/EntityBeanIntercept;";
 

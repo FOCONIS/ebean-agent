@@ -34,7 +34,8 @@ import io.ebean.enhance.asm.Label;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.asm.Type;
-import io.ebean.enhance.common.EnhanceConstants;
+
+import static io.ebean.enhance.common.EnhanceConstants.L_OBJECT;
 
 /**
  * A {@link MethodVisitor} providing a more detailed API to generate and transform instructions.
@@ -44,7 +45,7 @@ import io.ebean.enhance.common.EnhanceConstants;
 public class InstructionAdapter extends MethodVisitor {
 
   /** The type of the java.lang.Object class. */
-  public static final Type OBJECT_TYPE = Type.getType(EnhanceConstants.OBJECT_CLASS);
+  public static final Type OBJECT_TYPE = Type.getType(L_OBJECT);
 
   /**
    * Constructs a new {@link InstructionAdapter}. <i>Subclasses must not use this constructor</i>.

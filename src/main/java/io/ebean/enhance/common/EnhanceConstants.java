@@ -11,6 +11,8 @@ public interface EnhanceConstants {
 
   String NOARG_VOID = "()V";
 
+  String MOCKITO_INTERCEPTOR = "mockitoInterceptor";
+
   String TRANSACTIONAL_ANNOTATION = "Lio/ebean/annotation/Transactional;";
   String TYPEQUERYBEAN_ANNOTATION = "Lio/ebean/typequery/TypeQueryBean;";
 
@@ -51,8 +53,6 @@ public interface EnhanceConstants {
   String L_OBJECT = "Ljava/lang/Object;";
 
   String L_INTERCEPT = "Lio/ebean/bean/EntityBeanIntercept;";
-
-  String L_SCOPETRANS = "Lio/ebeaninternal/api/ScopeTrans;";
 
   String L_HELPSCOPETRANS = "Lio/ebeaninternal/api/HelpScopeTrans;";
 

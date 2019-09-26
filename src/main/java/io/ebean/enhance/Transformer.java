@@ -168,7 +168,7 @@ public class Transformer implements ClassFileTransformer {
 
     try {
       // ignore JDK and JDBC classes etc
-      if (enhanceContext.isIgnoreClass(className)) {
+      if (enhanceContext.isIgnoreClass(className) || isQueryBeanCompanion(className, loader)) {
         log(9, className, "ignore class");
         return null;
       }
@@ -209,6 +209,10 @@ public class Transformer implements ClassFileTransformer {
     } finally {
       logUnresolvedCommonSuper(className);
     }
+  }
+
+  private boolean isQueryBeanCompanion(String className, ClassLoader classLoader) {
+    return className.endsWith("$Companion") && enhanceContext.isQueryBean(className, classLoader);
   }
 
   /**
@@ -292,7 +296,7 @@ public class Transformer implements ClassFileTransformer {
 
     } catch (NoEnhancementRequiredException e) {
       if (ca.isLog(3)) {
-        ca.log("skipping... no enhancement required");
+        ca.log("skipped entity enhancement");
       }
     }
   }
@@ -316,13 +320,13 @@ public class Transformer implements ClassFileTransformer {
       request.enhancedTransactional(cw.toByteArray());
 
     } catch (AlreadyEnhancedException e) {
-      if (ca.isLog(3)) {
-        ca.log("already enhanced");
+      if (ca.isLog(2)) {
+        ca.log("already transactional enhanced");
       }
 
     } catch (NoEnhancementRequiredException e) {
-      if (ca.isLog(3)) {
-        ca.log("skipping... no enhancement required");
+      if (ca.isLog(4)) {
+        ca.log("skipped transactional enhancement");
       }
     } finally {
       unresolved.addAll(cw.getUnresolved());
@@ -337,7 +341,7 @@ public class Transformer implements ClassFileTransformer {
 
     ClassReader cr = new ClassReader(request.getBytes());
     ClassWriterWithoutClassLoading cw = new ClassWriterWithoutClassLoading(ClassWriter.COMPUTE_FRAMES, loader);
-    TypeQueryClassAdapter ca = new TypeQueryClassAdapter(cw, enhanceContext);
+    TypeQueryClassAdapter ca = new TypeQueryClassAdapter(cw, enhanceContext, loader);
 
     try {
       cr.accept(ca, ClassReader.EXPAND_FRAMES);
@@ -348,12 +352,12 @@ public class Transformer implements ClassFileTransformer {
 
     } catch (AlreadyEnhancedException e) {
       if (ca.isLog(1)) {
-        ca.log("already enhanced");
+        ca.log("already query bean enhanced");
       }
 
     } catch (NoEnhancementRequiredException e) {
-      if (ca.isLog(9)) {
-        ca.log("... skipping, no enhancement required");
+      if (ca.isLog(4)) {
+        ca.log("skipped query bean enhancement");
       }
     } finally {
       unresolved.addAll(cw.getUnresolved());

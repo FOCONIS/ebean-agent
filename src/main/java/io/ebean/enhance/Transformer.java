@@ -172,6 +172,10 @@ public class Transformer implements ClassFileTransformer {
         log(9, className, "ignore class");
         return null;
       }
+      if (enhanceContext.isSkipEnhance(className, classfileBuffer)) {
+        log(9, className, "no enhancement required (cached)");
+        return null;
+      }
       TransformRequest request = new TransformRequest(className, classfileBuffer);
 
       if (enhanceContext.detectEntityTransactionalEnhancement(className)) {
@@ -187,11 +191,13 @@ public class Transformer implements ClassFileTransformer {
       }
 
       log(9, className, "no enhancement on class");
+      enhanceContext.setSkipEnhance(className, classfileBuffer);
       return null;
 
     } catch (NoEnhancementRequiredException e) {
       // the class is an interface
       log(8, className, "No Enhancement required " + e.getMessage());
+      enhanceContext.setSkipEnhance(className, classfileBuffer);
       return null;
 
     } catch (Exception e) {

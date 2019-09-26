@@ -21,6 +21,7 @@ class IgnoreClassHelper {
     ignoreOneLevel.add("jdk");
     ignoreOneLevel.add("java");
     ignoreOneLevel.add("javax");
+    ignoreOneLevel.add("javafx");
     ignoreOneLevel.add("play");
     ignoreOneLevel.add("sbt");
     ignoreOneLevel.add("scala");
@@ -58,6 +59,9 @@ class IgnoreClassHelper {
     ignoreTwoLevel.add("org/jboss");
     ignoreTwoLevel.add("org/testng");
     ignoreTwoLevel.add("org/springframework");
+    ignoreTwoLevel.add("org/hibernate");
+    ignoreTwoLevel.add("org/w3c");
+    ignoreTwoLevel.add("net/bytebuddy");
     ignoreTwoLevel.add("com/sun");
     ignoreTwoLevel.add("com/mysql");
     ignoreTwoLevel.add("com/h2database");

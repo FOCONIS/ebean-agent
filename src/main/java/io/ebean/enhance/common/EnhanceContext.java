@@ -61,6 +61,8 @@ public class EnhanceContext {
   */
   private final List<TransactionalMethodKey> profilingKeys = new ArrayList<>();
 
+  private final StateCache stateCache;
+
   public EnhanceContext(ClassBytesReader classBytesReader, String agentArgs, AgentManifest manifest) {
     this(classBytesReader, agentArgs, manifest, new ClassMetaCache());
   }
@@ -103,9 +105,15 @@ public class EnhanceContext {
 
     this.transientInternalFields = getPropertyBoolean("transientInternalFields", manifest.isTransientInternalFields());
     this.checkNullManyFields = getPropertyBoolean("checkNullManyFields", manifest.isCheckNullManyFields());
+
+    // init caching
+
+
     if (getPropertyBoolean("printversion", false)) {
       System.out.println("ebean agent version: " + Transformer.getVersion());
     }
+    // cache is enabled by default
+    stateCache = getPropertyBoolean("cache", true) ? StateCache.getInstance() : null;
   }
 
   public byte[] getClassBytes(String className, ClassLoader classLoader) {
@@ -343,5 +351,22 @@ public class EnhanceContext {
   */
   public void setThrowOnError(boolean throwOnError) {
     this.throwOnError = throwOnError;
+  }
+
+
+  /**
+   * checks the cache, if the bytecode needs enhancement.
+   */
+  public boolean isSkipEnhance(String className, byte[] bytes) {
+    return stateCache == null ? false : stateCache.isSkipEnhance(className, bytes);
+  }
+
+  /**
+   * stores in the cache, that this bytecode needs no enhancement.
+   */
+  public void setSkipEnhance(String className, byte[] bytes ) {
+    if (stateCache != null) {
+      stateCache.setSkipEnhance(className, bytes);
+    }
   }
 }

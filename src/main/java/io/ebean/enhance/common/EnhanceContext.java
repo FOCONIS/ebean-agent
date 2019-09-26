@@ -105,10 +105,6 @@ public class EnhanceContext {
 
     this.transientInternalFields = getPropertyBoolean("transientInternalFields", manifest.isTransientInternalFields());
     this.checkNullManyFields = getPropertyBoolean("checkNullManyFields", manifest.isCheckNullManyFields());
-
-    // init caching
-
-
     if (getPropertyBoolean("printversion", false)) {
       System.out.println("ebean agent version: " + Transformer.getVersion());
     }

@@ -67,6 +67,7 @@ class IgnoreClassHelper {
     ignoreTwoLevel.add("com/h2database");
     ignoreTwoLevel.add("com/fasterxml");
     ignoreTwoLevel.add("com/intellij");
+    ignoreTwoLevel.add("com/jprofiler");
     ignoreTwoLevel.add("com/google");
     ignoreTwoLevel.add("com/squareup");
     ignoreTwoLevel.add("com/microsoft");
@@ -117,10 +118,15 @@ class IgnoreClassHelper {
       return true;
     }
     int secondSlash = className.indexOf('/', firstSlash + 1);
-    if (secondSlash == -1) {
-      return false;
+    if (secondSlash != -1) {
+      String secondPackage = className.substring(0, secondSlash);
+      if (ignoreTwoLevel.contains(secondPackage)) {
+        return true;
+      }
     }
-    String secondPackage = className.substring(0, secondSlash);
-    return ignoreTwoLevel.contains(secondPackage);
+    if (className.contains("$ByteBuddy$")) {
+      return true;
+    }
+    return false;
   }
 }

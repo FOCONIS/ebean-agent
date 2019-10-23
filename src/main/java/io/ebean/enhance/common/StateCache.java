@@ -1,13 +1,18 @@
 package io.ebean.enhance.common;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Hold a StateCache, where we store already seen files.
@@ -16,67 +21,78 @@ import java.util.UUID;
  */
 class StateCache {
 
-  private static final StateCache INSTANCE = new StateCache();
-
-  private Properties enhanceCache;
-
-  public static StateCache getInstance() {
-    return INSTANCE.enhanceCache != null ? INSTANCE : null;
-  }
+  private Path dataFile;
+  private Map<UUID, byte[]> cache = new ConcurrentHashMap<>();
+  private String lastClass;
+  private static final byte[] EMPTY = new byte[] {};
 
   /**
    * Constructor.
    *
    */
-  private StateCache() {
-    Path file = Paths.get("target");
-    if (Files.exists(file)) {
-      Path propFile = file.resolve("enhance-cache.properties");
-      enhanceCache = new Properties();
-      if (Files.exists(propFile)) {
-        try (Reader rd = Files.newBufferedReader(propFile)) {
-          enhanceCache.load(rd);
-          System.out.println("Read " + enhanceCache.size() + " entries from " + propFile);
-        } catch (IOException e) {
-          e.printStackTrace();
+  public StateCache(Path basePath) {
+    this.dataFile = basePath.resolve("ebean-enhance.cache");
+    if (Files.exists(dataFile)) {
+      loadCache();
+    }
+    Runtime.getRuntime().addShutdownHook(new Thread(this::saveCache));
+  }
+
+  synchronized void loadCache() {
+    long start = System.nanoTime();
+    try (InputStream is = Files.newInputStream(dataFile);
+        ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(is))) {
+      int count = ois.readInt();
+      for (int i = 0; i < count; i++) {
+        long msb = ois.readLong();
+        long lsb = ois.readLong();
+        int len = ois.readInt();
+        UUID uuid = new UUID(msb, lsb);
+        if (len == 0) {
+          cache.put(uuid, EMPTY);
+        } else {
+          byte[] buf = new byte[len];
+          ois.readFully(buf);
+          cache.put(uuid, buf);
         }
       }
-      Runtime.getRuntime().addShutdownHook(new Thread() {
-        @Override
-        public void run() {
-          try (Writer out = Files.newBufferedWriter(propFile)) {
-            enhanceCache.store(out, "classes, which need no enhancement");
-            System.out.println("Stored " + enhanceCache.size() + " entries to " + propFile);
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        }
-      });
+      start = (System.nanoTime() - start) / 1_000_000;
+      System.out.println("Read " + cache.size() + " entries from " + dataFile + " in " + start + " ms");
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
-  /**
-   * checks the cache, if the bytecode needs enhancement.
-   */
-  boolean isSkipEnhance(String className, byte[] bytes) {
-    String uuidStr = enhanceCache.getProperty(className);
-    if (uuidStr != null) {
-      // build checksum of file
-      UUID uuid = UUID.nameUUIDFromBytes(bytes);
-      if (uuidStr.equals(uuid.toString())) {
-        return true;
-      } else {
-        enhanceCache.remove(className);
+  synchronized void saveCache() {
+    if (lastClass != null) {
+      try (OutputStream os = Files.newOutputStream(dataFile);
+          ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(os))) {
+        oos.writeInt(cache.size());
+        for (Entry<UUID, byte[]> entry : cache.entrySet()) {
+          UUID uuid = entry.getKey();
+          byte[] buf = entry.getValue();
+          oos.writeLong(uuid.getMostSignificantBits());
+          oos.writeLong(uuid.getLeastSignificantBits());
+          oos.writeInt(buf.length);
+          oos.write(buf);
+        }
+        System.out.println("Stored " + cache.size() + " entries to " + dataFile + "(last class: " + lastClass + ")");
+      } catch (IOException e) {
+        e.printStackTrace();
       }
+    } else {
+      System.out.println("Cache clean, " + cache.size() + " entries");
     }
-    return false;
   }
 
-  /**
-   * stores in the cache, that this bytecode needs no enhancement.
-   */
-  void setSkipEnhance(String className, byte[] bytes) {
+  void putCache(String className, byte[] bytes, byte[] enhancedBytes) {
+    lastClass = className;
     UUID uuid = UUID.nameUUIDFromBytes(bytes);
-    enhanceCache.setProperty(className, uuid.toString());
+    cache.put(uuid, enhancedBytes);
+  }
+
+  byte[] getCache(String className, byte[] bytes) {
+    UUID uuid = UUID.nameUUIDFromBytes(bytes);
+    return cache.get(uuid);
   }
 }

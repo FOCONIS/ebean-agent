@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,8 @@ import java.util.logging.Logger;
 public class EnhanceContext {
 
   private static final Logger logger = Logger.getLogger(EnhanceContext.class.getName());
+
+  private final AgentManifest manifest;
 
   private final IgnoreClassHelper ignoreClassHelper;
 
@@ -60,13 +63,14 @@ public class EnhanceContext {
 
   private final boolean enableQueryAutoLabel;
 
+  private StateCache stateCache;
+
   /**
-   * Mapping of profileId to transactional method descriptions (for decoding
-   * profiling).
+   * Mapping of profileId to transactional method descriptions (for decoding profiling).
    */
   private final List<TransactionalMethodKey> profilingKeys = new ArrayList<>();
 
-  private StateCache stateCache;
+  private SummaryInfo summaryInfo;
 
   public EnhanceContext(ClassBytesReader classBytesReader, String agentArgs, AgentManifest manifest) {
     this(classBytesReader, agentArgs, manifest, new ClassMetaCache());
@@ -75,9 +79,8 @@ public class EnhanceContext {
   /**
    * Construct a context for enhancement.
    */
-  public EnhanceContext(ClassBytesReader classBytesReader, String agentArgs, AgentManifest manifest,
-      ClassMetaCache metaCache) {
-
+  public EnhanceContext(ClassBytesReader classBytesReader, String agentArgs, AgentManifest manifest, ClassMetaCache metaCache) {
+    this.manifest = manifest;
     this.autoProfileId = manifest.transactionProfilingStart();
     this.enableProfileLocation = manifest.isEnableProfileLocation();
     this.enableQueryAutoLabel = manifest.isEnableQueryAutoLabel();
@@ -127,6 +130,32 @@ public class EnhanceContext {
     }
   }
 
+  public void setLogLevel(int logLevel) {
+    this.logLevel = logLevel;
+  }
+
+  /**
+   * Return the summary of the packages controlling enhancement.
+   */
+  public String getPackagesSummary() {
+    return "packages entity:" + getEntityPackages()
+      + "  transactional:" + getTransactionalPackages()
+      + "  querybean:" + getQuerybeanPackages()
+      + "  profileLocation:" + enableProfileLocation;
+  }
+
+  public Set<String> getEntityPackages() {
+    return manifest.getEntityPackages();
+  }
+
+  public Set<String> getTransactionalPackages() {
+    return manifest.getTransactionalPackages();
+  }
+
+  public Set<String> getQuerybeanPackages() {
+    return manifest.getQuerybeanPackages();
+  }
+
   public byte[] getClassBytes(String className, ClassLoader classLoader) {
     return classBytesReader.getClassBytes(className, classLoader);
   }
@@ -134,8 +163,13 @@ public class EnhanceContext {
   /**
    * Return true if the owner class is a type query bean.
    * <p>
+<<<<<<< HEAD
    * If true typically means the caller needs to change GETFIELD calls to instead
    * invoke the generated 'property access' methods.
+=======
+   * If true typically means the caller needs to change GETFIELD calls to instead invoke the generated
+   * 'property access' methods.
+>>>>>>> cace23e... #128 - Provide improved summary level logging of what classes were enhanced etc
    * </p>
    */
   public boolean isQueryBean(String owner, ClassLoader classLoader) {
@@ -195,8 +229,8 @@ public class EnhanceContext {
   }
 
   /**
-   * Return true if this class should be ignored. That is JDK classes and known
-   * libraries JDBC drivers etc can be skipped.
+   * Return true if this class should be ignored. That is JDK classes and
+   * known libraries JDBC drivers etc can be skipped.
    */
   public boolean isIgnoreClass(String className) {
     return ignoreClassHelper.isIgnoreClass(className);
@@ -286,17 +320,18 @@ public class EnhanceContext {
    * Log an error.
    */
   public void log(Throwable e) {
-    e.printStackTrace(new PrintStream(new ByteArrayOutputStream()) {
-      @Override
-      public void print(String message) {
-        logout.println(message);
-      }
+    e.printStackTrace(
+      new PrintStream(new ByteArrayOutputStream()) {
+        @Override
+        public void print(String message) {
+          logout.println(message);
+        }
 
-      @Override
-      public void println(String message) {
-        logout.println(message);
-      }
-    });
+        @Override
+        public void println(String message) {
+          logout.println(message);
+        }
+      });
   }
 
   /**
@@ -316,8 +351,8 @@ public class EnhanceContext {
   /**
    * Return true if we should add null checking on *ToMany fields.
    * <p>
-   * On getting a many that is null Ebean will create an empty List, Set or Map.
-   * If it is a ManyToMany it will turn on Modify listening.
+   * On getting a many that is null Ebean will create an empty List, Set or Map. If it is a
+   * ManyToMany it will turn on Modify listening.
    * </p>
    */
   public boolean isCheckNullManyFields() {
@@ -357,16 +392,14 @@ public class EnhanceContext {
   }
 
   /**
-   * Return true if transform should throw exception rather than log and return
-   * null.
+   * Return true if transform should throw exception rather than log and return null.
    */
   public boolean isThrowOnError() {
     return throwOnError;
   }
 
   /**
-   * Set to true if you want transform to throw exceptions rather than return
-   * null.
+   * Set to true if you want transform to throw exceptions rather than return null.
    */
   public void setThrowOnError(boolean throwOnError) {
     this.throwOnError = throwOnError;
@@ -387,4 +420,58 @@ public class EnhanceContext {
     }
     return null;
   }
+
+  /**
+   * Turn on the summary collection of the enhancement.
+   */
+  public void collectSummary() {
+    this.summaryInfo = new SummaryInfo();
+  }
+
+  /**
+   * Add the transactional enhanced class to summary information.
+   */
+  public void summaryTransactional(String className) {
+    if (summaryInfo != null) {
+      summaryInfo.addTransactional(className);
+    }
+  }
+
+  /**
+   * Add the entity enhanced class to summary information.
+   */
+  public void summaryEntity(String className) {
+    if (summaryInfo != null) {
+      summaryInfo.addEntity(className);
+    }
+  }
+
+  /**
+   * Add the query bean enhanced class to summary information.
+   */
+  public void summaryQueryBean(String className) {
+    if (summaryInfo != null) {
+      summaryInfo.addQueryBean(className);
+    }
+  }
+
+  /**
+   * Add the query bean caller enhanced class to summary information.
+   */
+  public void summaryQueryBeanCaller(String className) {
+    if (summaryInfo != null) {
+      summaryInfo.addQueryBeanCaller(className);
+    }
+  }
+
+  /**
+   * Return the summary of the enhancement.
+   *
+   * Note that <code>collectSummary()</code> must be called in order for summary
+   * information to be collected and returned here.
+   */
+  public SummaryInfo getSummaryInfo() {
+    return summaryInfo.prepare();
+  }
+
 }

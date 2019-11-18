@@ -165,6 +165,10 @@ public class Transformer implements ClassFileTransformer {
     return enhanceContext.getLogLevel();
   }
 
+  public EnhanceContext getEnhanceContext() {
+    return enhanceContext;
+  }
+
   @Override
   public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
 
@@ -321,7 +325,6 @@ public class Transformer implements ClassFileTransformer {
 
     try {
       cr.accept(ca, ClassReader.EXPAND_FRAMES);
-
       if (ca.isLog(1)) {
         ca.log("enhanced transactional");
       }
@@ -332,7 +335,6 @@ public class Transformer implements ClassFileTransformer {
       if (ca.isLog(2)) {
         ca.log("already transactional enhanced");
       }
-
     } catch (NoEnhancementRequiredException e) {
       if (ca.isLog(4)) {
         ca.log("skipped transactional enhancement");

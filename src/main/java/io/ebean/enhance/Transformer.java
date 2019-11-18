@@ -302,13 +302,13 @@ public class Transformer implements ClassFileTransformer {
       request.enhancedEntity(cw.toByteArray());
 
     } catch (AlreadyEnhancedException e) {
-      if (ca.isLog(2)) {
+      if (ca.isLog(3)) {
         ca.log("already enhanced entity");
       }
       request.enhancedEntity(null);
 
     } catch (NoEnhancementRequiredException e) {
-      if (ca.isLog(3)) {
+      if (ca.isLog(4)) {
         ca.log("skipped entity enhancement");
       }
     }
@@ -332,7 +332,7 @@ public class Transformer implements ClassFileTransformer {
       request.enhancedTransactional(cw.toByteArray());
 
     } catch (AlreadyEnhancedException e) {
-      if (ca.isLog(2)) {
+      if (ca.isLog(3)) {
         ca.log("already transactional enhanced");
       }
     } catch (NoEnhancementRequiredException e) {

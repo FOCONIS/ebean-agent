@@ -95,17 +95,6 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
       if (superMeta != null && superMeta.isCheckEntity()) {
         // the superClass is an entity/embedded/mappedSuperclass...
         classMeta.setSuperMeta(superMeta);
-        if (classMeta.isLog(3)) {
-          classMeta.log("entity extends " + superMeta.getDescription());
-        }
-      } else {
-        if (classMeta.isLog(7)) {
-          if (superMeta == null) {
-            classMeta.log("unable to read superMeta for " + superName);
-          } else {
-            classMeta.log("superMeta " + superName + " is not an entity/embedded/mappedsuperclass (with equals or persistent fields)");
-          }
-        }
       }
     }
 
@@ -176,9 +165,6 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
     }
 
     if ((access & Opcodes.ACC_TRANSIENT) != 0) {
-      if (isLog(3)) {
-        log("Skip intercepting transient field " + name);
-      }
       // no interception of transient fields
       return super.visitField(access, name, desc, signature, value);
     }

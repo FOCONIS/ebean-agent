@@ -21,16 +21,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 class StateCache {
 
+  private static final Map<Path, StateCache> CACHES = new ConcurrentHashMap<>();
+
   private Path dataFile;
   private Map<UUID, byte[]> cache = new ConcurrentHashMap<>();
   private String lastClass;
   private static final byte[] EMPTY = new byte[] {};
-
+  public static StateCache get(Path basePath) {
+    return CACHES.computeIfAbsent(basePath, StateCache::new);
+  }
   /**
    * Constructor.
    *
    */
-  public StateCache(Path basePath) {
+  private StateCache(Path basePath) {
     this.dataFile = basePath.resolve("ebean-enhance.cache");
     if (Files.exists(dataFile)) {
       loadCache();

@@ -120,7 +120,7 @@ public class EnhanceContext {
       Path path = Paths.get(cacheDir);
       try {
         Files.createDirectories(path);
-        stateCache = new StateCache(path);
+        stateCache = StateCache.get(path);
       } catch (IOException e) {
         e.printStackTrace();
       }

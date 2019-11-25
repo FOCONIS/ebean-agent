@@ -163,13 +163,8 @@ public class EnhanceContext {
   /**
    * Return true if the owner class is a type query bean.
    * <p>
-<<<<<<< HEAD
-   * If true typically means the caller needs to change GETFIELD calls to instead
-   * invoke the generated 'property access' methods.
-=======
    * If true typically means the caller needs to change GETFIELD calls to instead invoke the generated
    * 'property access' methods.
->>>>>>> cace23e... #128 - Provide improved summary level logging of what classes were enhanced etc
    * </p>
    */
   public boolean isQueryBean(String owner, ClassLoader classLoader) {
@@ -333,6 +328,7 @@ public class EnhanceContext {
         }
       });
   }
+
 
   /**
    * Return the log level.

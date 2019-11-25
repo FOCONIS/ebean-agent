@@ -21,7 +21,7 @@ import org.apache.tools.ant.Task;
  * <li> <b>transformArgs</b> Arguments passed to the transformer. Typically a
  * debug level in the form of debug=1 etc. </li>
  * </ul>
- * </p>
+ *
  *
  * <pre class="code">
  *

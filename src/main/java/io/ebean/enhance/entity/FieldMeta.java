@@ -449,13 +449,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
       mv.visitVarInsn(ALOAD, 0);
       mv.visitTypeInsn(NEW, ebCollection);
       mv.visitInsn(DUP);
-      // read property name for OwnerBeanSupport
-      mv.visitVarInsn(ALOAD, 0);
-      mv.visitVarInsn(ALOAD, 0);
-      VisitUtil.visitIntInsn(mv, indexPosition);
-      mv.visitMethodInsn(INVOKEINTERFACE, C_ENTITYBEAN, "_ebean_getPropertyName", "(I)Ljava/lang/String;", true);
-      mv.visitMethodInsn(INVOKESPECIAL, ebCollection, INIT, "(Lio/ebean/bean/EntityBean;Ljava/lang/String;)V", false);
-
+      mv.visitMethodInsn(INVOKESPECIAL, ebCollection, INIT, NOARG_VOID, false);
       mv.visitFieldInsn(PUTFIELD, className, fieldName, fieldDesc);
 
       mv.visitVarInsn(ALOAD, 0);
@@ -490,7 +484,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     Label l7 = new Label();
     mv.visitLabel(l7);
     mv.visitLocalVariable("this", "L" + className + ";", null, l0, l7, 0);
-    mv.visitMaxs(6, 1);
+    mv.visitMaxs(3, 1);
     mv.visitEnd();
   }
 

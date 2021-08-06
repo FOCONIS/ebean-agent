@@ -194,11 +194,6 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     return annotations.contains("Ljavax/persistence/ManyToMany;");
   }
 
-  private boolean isDbJson() {
-    return annotations.contains("Lio/ebean/annotation/DbJson;")
-        || annotations.contains("Lio/ebean/annotation/DbJsonB;");
-  }
-
   /**
    * Return true if this is an Embedded field.
    */
@@ -423,14 +418,8 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     mv.visitLabel(labelEnd);
     mv.visitLineNumber(7, labelEnd);
 
-    if (isDbJson() && classMeta.getEnhanceContext().getPostJsonGetter() != null) {
+    if (addPostJsonGetter(className, mv)) {
       maxVars = 3;
-      mv.visitVarInsn(ALOAD, 0);
-      mv.visitVarInsn(ALOAD, 0);
-      mv.visitFieldInsn(GETFIELD, className, fieldName, fieldDesc);
-      mv.visitLdcInsn(fieldName);
-      mv.visitMethodInsn(INVOKESTATIC, postJsonGetter, "postJsonGet",
-          "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;)V", false);
     }
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, className, fieldName, fieldDesc);
@@ -442,6 +431,25 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     mv.visitEnd();
   }
 
+  private boolean addPostJsonGetter(String className, MethodVisitor mv) {
+    if (postJsonGetter != null
+        && !primitiveType
+        && (!fieldDesc.startsWith("Ljava/")
+            || fieldDesc.equals("Ljava/util/Collection;")
+            || fieldDesc.equals("Ljava/util/List;")
+            || fieldDesc.equals("Ljava/util/Set;")
+            || fieldDesc.equals("Ljava/util/Map;"))) {
+      mv.visitVarInsn(ALOAD, 0);
+      mv.visitVarInsn(ALOAD, 0);
+      mv.visitFieldInsn(GETFIELD, className, fieldName, fieldDesc);
+      mv.visitLdcInsn(fieldName);
+      mv.visitMethodInsn(INVOKESTATIC, postJsonGetter, "postJsonGet",
+          "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;)V", false);
+      return true;
+    } else {
+      return false;
+    }
+  }
   private void addGetForMany(MethodVisitor mv) {
 
     String className = classMeta.getClassName();
@@ -504,6 +512,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     mv.visitLabel(l4);
     mv.visitLineNumber(5, l4);
     mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+    addPostJsonGetter(className, mv);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, className, fieldName, fieldDesc);
     mv.visitInsn(ARETURN);

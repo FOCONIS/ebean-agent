@@ -2,3 +2,5 @@ entity-packages: test.model.domain
 transactional-packages: test
 querybean-packages: test.model, foo
 query-labels: true
+post-json-getter: test.normalize.PostJsonGetter
+

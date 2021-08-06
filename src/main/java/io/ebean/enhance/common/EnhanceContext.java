@@ -56,6 +56,8 @@ public class EnhanceContext {
 
   private final boolean enableQueryAutoLabel;
 
+  private final String postJsonGetter;
+
   /**
    * Mapping of profileId to transactional method descriptions (for decoding
    * profiling).
@@ -74,7 +76,7 @@ public class EnhanceContext {
     this.autoProfileId = manifest.transactionProfilingStart();
     this.enableProfileLocation = manifest.isEnableProfileLocation();
     this.enableQueryAutoLabel = manifest.isEnableQueryAutoLabel();
-
+    this.postJsonGetter = manifest.getPostJsonGetter();
     this.agentArgsMap = ArgParser.parse(agentArgs);
     this.filterEntityTransactional = new FilterEntityTransactional(manifest);
     this.filterQueryBean = new FilterQueryBean(manifest);
@@ -305,6 +307,13 @@ public class EnhanceContext {
    */
   public boolean isCheckNullManyFields() {
     return checkNullManyFields;
+  }
+
+  /**
+   * Returns, which postJsonGetter class should be used.
+   */
+  public String getPostJsonGetter() {
+    return postJsonGetter;
   }
 
   /**

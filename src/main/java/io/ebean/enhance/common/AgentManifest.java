@@ -44,6 +44,8 @@ public class AgentManifest {
 
   private boolean enableQueryAutoLabel;
 
+  private String postJsonGetter;
+
   public static AgentManifest read(ClassLoader classLoader, Set<String> initialPackages) {
 
     try {
@@ -171,6 +173,13 @@ public class AgentManifest {
   }
 
   /**
+   * Returns the class that contains the post-json-getter
+   */
+  public String getPostJsonGetter() {
+    return postJsonGetter;
+  }
+
+  /**
   * Read all the specific manifest files and return the set of packages containing type query beans.
   */
   AgentManifest readManifests(ClassLoader classLoader, String path) throws IOException {
@@ -266,6 +275,7 @@ public class AgentManifest {
       add(transactionalPackages, topPackages);
       add(querybeanPackages, topPackages);
     }
+    postJsonGetter = attributes.getValue("post-json-getter");
   }
 
   private void readOptions(Attributes attributes) {

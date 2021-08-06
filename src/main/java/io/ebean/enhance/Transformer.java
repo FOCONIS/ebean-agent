@@ -42,8 +42,6 @@ public class Transformer implements ClassFileTransformer {
 
   private static String version;
 
-  private static final byte[] EMPTY = new byte[] {};
-
   /**
    * Return the version of the ebean-agent or "unknown" if the version can not be determined.
    */
@@ -174,16 +172,6 @@ public class Transformer implements ClassFileTransformer {
         log(9, className, "ignore class");
         return null;
       }
-      byte[] cacheResult = enhanceContext.getCache(className, classfileBuffer);
-      if (cacheResult != null) {
-        if (cacheResult.length  < 2) {
-          log(9, className, "no enhancement required (cache hit)");
-          return null;
-        } else {
-          log(9, className, "enhancement required (cached hit)");
-          return cacheResult;
-        }
-      }
       TransformRequest request = new TransformRequest(className, classfileBuffer);
 
       if (enhanceContext.detectEntityTransactionalEnhancement(className)) {
@@ -195,18 +183,15 @@ public class Transformer implements ClassFileTransformer {
       }
 
       if (request.isEnhanced()) {
-        enhanceContext.putCache(className, classfileBuffer, request.getBytes());
         return request.getBytes();
       }
 
       log(9, className, "no enhancement on class");
-      enhanceContext.putCache(className, classfileBuffer, EMPTY);
       return null;
 
     } catch (NoEnhancementRequiredException e) {
       // the class is an interface
       log(8, className, "No Enhancement required " + e.getMessage());
-      enhanceContext.putCache(className, classfileBuffer, EMPTY);
       return null;
 
     } catch (Exception e) {

@@ -7,11 +7,7 @@ import io.ebean.enhance.querybean.Distill;
 import io.ebean.enhance.transactional.TransactionalMethodKey;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,17 +62,14 @@ public class EnhanceContext {
    */
   private final List<TransactionalMethodKey> profilingKeys = new ArrayList<>();
 
-  private StateCache stateCache;
-
   public EnhanceContext(ClassBytesReader classBytesReader, String agentArgs, AgentManifest manifest) {
     this(classBytesReader, agentArgs, manifest, new ClassMetaCache());
   }
 
   /**
-   * Construct a context for enhancement.
-   */
-  public EnhanceContext(ClassBytesReader classBytesReader, String agentArgs, AgentManifest manifest,
-      ClassMetaCache metaCache) {
+  * Construct a context for enhancement.
+  */
+  public EnhanceContext(ClassBytesReader classBytesReader, String agentArgs, AgentManifest manifest, ClassMetaCache metaCache) {
 
     this.autoProfileId = manifest.transactionProfilingStart();
     this.enableProfileLocation = manifest.isEnableProfileLocation();
@@ -113,17 +106,6 @@ public class EnhanceContext {
     this.checkNullManyFields = getPropertyBoolean("checkNullManyFields", manifest.isCheckNullManyFields());
     if (getPropertyBoolean("printversion", false)) {
       System.out.println("ebean agent version: " + Transformer.getVersion());
-    }
-    // cache is enabled by default
-    String cacheDir = getProperty("cacheDir");
-    if (cacheDir != null) {
-      Path path = Paths.get(cacheDir);
-      try {
-        Files.createDirectories(path);
-        stateCache = new StateCache(path);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
     }
   }
 
@@ -283,16 +265,17 @@ public class EnhanceContext {
   }
 
   /**
-   * Log an error.
-   */
+  * Log an error.
+  */
   public void log(Throwable e) {
-    e.printStackTrace(new PrintStream(new ByteArrayOutputStream()) {
-      @Override
-      public void print(String message) {
-        logout.println(message);
-      }
+    e.printStackTrace(
+        new PrintStream(new ByteArrayOutputStream()) {
+          @Override
+          public void print(String message) {
+            logout.println(message);
+          }
 
-      @Override
+          @Override
       public void println(String message) {
         logout.println(message);
       }
@@ -370,21 +353,5 @@ public class EnhanceContext {
    */
   public void setThrowOnError(boolean throwOnError) {
     this.throwOnError = throwOnError;
-  }
-
-  /**
-   * stores in the cache, that this bytecode needs no enhancement.
-   */
-  public void putCache(String className, byte[] bytes, byte[] enhancedBytes) {
-    if (stateCache != null) {
-        stateCache.putCache(className, bytes, enhancedBytes);
-    }
-  }
-
-  public byte[] getCache(String className, byte[] bytes) {
-    if (stateCache != null) {
-        return stateCache.getCache(className, bytes);
-    }
-    return null;
   }
 }

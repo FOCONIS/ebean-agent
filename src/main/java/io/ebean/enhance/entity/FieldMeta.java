@@ -37,6 +37,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
   private final String setMethodDesc;
   private final String getNoInterceptMethodName;
   private final String setNoInterceptMethodName;
+  private final String postJsonGetter;
 
   private int indexPosition;
 
@@ -62,6 +63,11 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     this.setMethodName = "_ebean_set_" + name;
     this.getNoInterceptMethodName = "_ebean_getni_" + name;
     this.setNoInterceptMethodName = "_ebean_setni_" + name;
+    if (classMeta.getEnhanceContext().getPostJsonGetter() != null) {
+      this.postJsonGetter = classMeta.getEnhanceContext().getPostJsonGetter().replace('.', '/');
+    } else {
+      this.postJsonGetter = null;
+    }
   }
 
   public void setIndexPosition(int indexPosition) {
@@ -367,6 +373,10 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     }
     mv.visitLabel(labelEnd);
     mv.visitLineNumber(7, labelEnd);
+
+    if (addPostJsonGetter(className, mv)) {
+      maxVars = 3;
+    }
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, className, fieldName, fieldDesc);
     mv.visitInsn(iReturnOpcode);// ARETURN or IRETURN
@@ -375,6 +385,26 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     mv.visitLocalVariable("this", "L" + className + ";", null, labelStart, labelEnd1, 0);
     mv.visitMaxs(maxVars, 1);
     mv.visitEnd();
+  }
+
+  private boolean addPostJsonGetter(String className, MethodVisitor mv) {
+    if (postJsonGetter != null
+      && !primitiveType
+      && (!fieldDesc.startsWith("Ljava/")
+      || fieldDesc.equals("Ljava/util/Collection;")
+      || fieldDesc.equals("Ljava/util/List;")
+      || fieldDesc.equals("Ljava/util/Set;")
+      || fieldDesc.equals("Ljava/util/Map;"))) {
+      mv.visitVarInsn(ALOAD, 0);
+      mv.visitVarInsn(ALOAD, 0);
+      mv.visitFieldInsn(GETFIELD, className, fieldName, fieldDesc);
+      mv.visitLdcInsn(fieldName);
+      mv.visitMethodInsn(INVOKESTATIC, postJsonGetter, "postJsonGet",
+        "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;)V", false);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private void addGetForMany(MethodVisitor mv) {
@@ -433,6 +463,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants {
     mv.visitLabel(l4);
     mv.visitLineNumber(5, l4);
     mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+    addPostJsonGetter(className, mv);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, className, fieldName, fieldDesc);
     mv.visitInsn(ARETURN);

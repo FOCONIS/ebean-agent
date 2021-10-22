@@ -100,7 +100,17 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
   @Override
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
     classMeta.addClassAnnotation(desc);
-    return super.visitAnnotation(desc, visible);
+
+    AnnotationVisitor av = super.visitAnnotation(desc, visible);
+
+    if (desc.equals(EnhanceConstants.NORMALIZE_ANNOTATION)) {
+      // we have class level Normalize annotation
+      // which will act as default for all methods in this class
+      return new AnnotationInfoVisitor(null, classMeta.getNormalizeAnnotationInfo(), av);
+
+    } else {
+      return av;
+    }
   }
 
   private boolean isPropertyChangeListenerField(String desc) {

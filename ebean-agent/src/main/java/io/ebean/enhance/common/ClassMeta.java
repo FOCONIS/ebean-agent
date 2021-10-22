@@ -4,6 +4,7 @@ import io.ebean.enhance.asm.AnnotationVisitor;
 import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
+import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.entity.*;
 
 import java.util.*;
@@ -55,6 +56,8 @@ public class ClassMeta {
   private final LinkedHashMap<String, FieldMeta> fields = new LinkedHashMap<>();
   private final HashSet<String> classAnnotation = new HashSet<>();
   private final AnnotationInfo annotationInfo = new AnnotationInfo(null);
+
+  private final AnnotationInfo normalizeAnnotationInfo = new AnnotationInfo(null);
   private final ArrayList<MethodMeta> methodMetaList = new ArrayList<>();
   private final EnhanceContext enhanceContext;
   private List<FieldMeta> allFields;
@@ -79,6 +82,10 @@ public class ClassMeta {
    */
   public AnnotationInfo annotationInfo() {
     return annotationInfo;
+  }
+
+  public AnnotationInfo getNormalizeAnnotationInfo() {
+    return normalizeAnnotationInfo;
   }
 
   public boolean isAllowNullableDbArray() {
@@ -331,7 +338,7 @@ public class ClassMeta {
   /**
    * Return true if the class has an Entity, Embeddable, or MappedSuperclass.
    */
-  private boolean isCheckEntity() {
+  public boolean isCheckEntity() {
     return EntityCheck.hasEntityAnnotation(classAnnotation);
   }
 
@@ -577,4 +584,11 @@ public class ClassMeta {
     this.hasGroovyInterface = hasGroovyInterface;
   }
 
+  public List<Type> getClassNormalizers() {
+    List<Type> ann = (List<Type>) normalizeAnnotationInfo.getValue("value");
+    if (ann != null) {
+      return ann;
+    }
+    return superMeta == null ? null : superMeta.getClassNormalizers();
+  }
 }

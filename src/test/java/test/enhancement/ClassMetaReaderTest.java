@@ -2,11 +2,8 @@ package test.enhancement;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import io.ebean.annotation.Transactional;
 import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.common.AgentManifest;
 import io.ebean.enhance.common.AnnotationInfo;
@@ -84,7 +81,7 @@ public class ClassMetaReaderTest {
     ClassMeta classMeta = classMetaReader.get(false, "test.model.SomeTransactionalServiceCls", classLoader);
 
     assertNotNull(classMeta);
-    AnnotationInfo annotationInfo = classMeta.getAnnotationInfo();
+    AnnotationInfo annotationInfo = classMeta.getTransactionalAnnotationInfo();
     assertEquals(annotationInfo.getValue("getGeneratedKeys"), Boolean.FALSE);
     assertEquals(annotationInfo.getValue("batchSize"), Integer.valueOf(50));
   }
@@ -105,7 +102,7 @@ public class ClassMetaReaderTest {
     ClassMeta classMeta = getClassMetaForOverrideTests();
 
     // check class meta annotation
-    AnnotationInfo classAi = classMeta.getAnnotationInfo();
+    AnnotationInfo classAi = classMeta.getTransactionalAnnotationInfo();
     assertThat(classAi.getValue("batchSize")).isEqualTo(42);
     assertThat((List<Type>) (classAi.getValue("rollbackFor")))
       .containsExactly(Type.getType(IOException.class), Type.getType(IllegalStateException.class));

@@ -23,6 +23,9 @@ public final class AgentManifest {
   private final Set<String> transactionalPackages = new HashSet<>();
   private final Set<String> querybeanPackages = new HashSet<>();
   private final DetectQueryBean detectQueryBean;
+
+  private String postJsonGetter;
+
   private int debugLevel = -1;
   private boolean allowNullableDbArray;
   private boolean transientInternalFields;
@@ -204,6 +207,13 @@ public final class AgentManifest {
     return querybeanPackages;
   }
 
+  /**
+   * Returns the class that contains the post-json-getter
+   */
+  public String getPostJsonGetter() {
+    return postJsonGetter;
+  }
+
   protected void readEbeanVersion(ClassLoader classLoader, String path) throws IOException {
     Enumeration<URL> resources = classLoader.getResources(path);
     while (resources.hasMoreElements()) {
@@ -307,6 +317,7 @@ public final class AgentManifest {
       add(transactionalPackages, topPackages);
       add(querybeanPackages, topPackages);
     }
+    postJsonGetter = attributes.getValue("post-json-getter");
   }
 
   private void readOptions(Attributes attributes) {

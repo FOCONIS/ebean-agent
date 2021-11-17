@@ -109,6 +109,11 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <extensions>false</extensions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.2.0</version>
@@ -149,12 +154,12 @@
 
   <distributionManagement>
     <repository>
-      <id>ossrh</id>
+      <id>foconis-release</id>
       <name>FOCONIS Release Repository</name>
       <url>https://mvnrepo.foconis.de/repository/release/</url>
     </repository>
     <snapshotRepository>
-      <id>ossrh</id>
+      <id>foconis-snapshot</id>
       <name>FOCONIS Snapshot Repository</name>
       <url>https://mvnrepo.foconis.de/repository/snapshot/</url>
     </snapshotRepository>

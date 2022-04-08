@@ -16,7 +16,7 @@
   <url>https://ebean-orm.github.io/</url>
 
   <scm>
-    <developerConnection>scm:git:git@github.com:ebean-orm/ebean-agent.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:FOCONIS/ebean-agent.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
@@ -106,9 +106,48 @@
     </dependency>
 
   </dependencies>
+  <repositories>
+    <repository>
+      <id>foconis-release</id>
+      <url>https://mvnrepo.foconis.de/repository/release/</url>
+    </repository>
+    <repository>
+      <id>foconis-snapshot</id>
+      <url>https://mvnrepo.foconis.de/repository/snapshot/</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>foconis-release</id>
+      <url>https://mvnrepo.foconis.de/repository/release/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>foconis-snapshot</id>
+      <url>https://mvnrepo.foconis.de/repository/snapshot/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <distributionManagement>
+    <repository>
+      <id>foconis-release</id>
+      <name>FOCONIS Release Repository</name>
+      <url>https://mvnrepo.foconis.de/repository/release/</url>
+    </repository>
+    <snapshotRepository>
+      <id>foconis-snapshot</id>
+      <name>FOCONIS Snapshot Repository</name>
+      <url>https://mvnrepo.foconis.de/repository/snapshot/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <extensions>false</extensions>
+      </plugin>    
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>

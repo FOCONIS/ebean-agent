@@ -13,7 +13,6 @@ import io.ebean.enhance.asm.ClassReader;
 public class ClassMetaReader {
 
   private final ClassMetaCache metaCache;
-
   private final EnhanceContext enhanceContext;
 
   public ClassMetaReader(EnhanceContext enhanceContext, ClassMetaCache metaCache) {
@@ -26,7 +25,6 @@ public class ClassMetaReader {
   }
 
   private ClassMeta getWithCache(boolean readMethodAnnotations, String name, ClassLoader classLoader) throws ClassNotFoundException {
-
     synchronized (metaCache) {
       ClassMeta meta = metaCache.get(name);
       if (meta == null) {
@@ -45,9 +43,7 @@ public class ClassMetaReader {
     }
   }
 
-  private ClassMeta readFromResource(boolean readMethodAnnotations, String className, ClassLoader classLoader)
-      throws ClassNotFoundException {
-
+  private ClassMeta readFromResource(boolean readMethodAnnotations, String className, ClassLoader classLoader) throws ClassNotFoundException {
     byte[] classBytes = enhanceContext.getClassBytes(className, classLoader);
     if (classBytes == null){
       if (enhanceContext.isLog(3)) {

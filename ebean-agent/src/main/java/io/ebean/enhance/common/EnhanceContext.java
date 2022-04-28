@@ -7,6 +7,7 @@ import io.ebean.enhance.entity.MessageOutput;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,27 +25,16 @@ public class EnhanceContext {
   private static final Logger logger = Logger.getLogger(EnhanceContext.class.getName());
 
   private final AgentManifest manifest;
-
   private final IgnoreClassHelper ignoreClassHelper;
-
-  private final HashMap<String, String> agentArgsMap;
-
+  private final Map<String, String> agentArgsMap;
   private final ClassMetaReader reader;
-
   private final ClassBytesReader classBytesReader;
-
   private MessageOutput logout;
-
   private int logLevel;
-
   private final HashMap<String, ClassMeta> map = new HashMap<>();
-
   private final FilterEntityTransactional filterEntityTransactional;
-
   private final FilterQueryBean filterQueryBean;
-
   private boolean throwOnError;
-
   private final boolean enableProfileLocation;
   private final int accPublic;
   private final int accProtected;
@@ -72,7 +62,6 @@ public class EnhanceContext {
     this.agentArgsMap = ArgParser.parse(agentArgs);
     this.filterEntityTransactional = new FilterEntityTransactional(manifest);
     this.filterQueryBean = new FilterQueryBean(manifest);
-
     this.ignoreClassHelper = new IgnoreClassHelper();
     this.logout = new SysoutMessageOutput(System.out);
     this.classBytesReader = classBytesReader;
@@ -81,7 +70,6 @@ public class EnhanceContext {
     if (manifest.getDebugLevel() > -1) {
       logLevel = manifest.getDebugLevel();
     }
-
     String debugValue = agentArgsMap.get("debug");
     if (debugValue != null) {
       try {
@@ -90,7 +78,6 @@ public class EnhanceContext {
         logger.log(Level.WARNING, "Agent debug argument [" + debugValue + "] is not an int?");
       }
     }
-
     if (getPropertyBoolean("printversion", false)) {
       System.out.println("ebean agent version: " + Transformer.getVersion());
     }
@@ -225,13 +212,11 @@ public class EnhanceContext {
    * </p>
    */
   public ClassMeta getSuperMeta(String superClassName, ClassLoader classLoader) {
-
     try {
       if (isIgnoreClass(superClassName)) {
         return null;
       }
       return reader.get(false, superClassName, classLoader);
-
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
@@ -244,13 +229,11 @@ public class EnhanceContext {
    * </p>
    */
   public ClassMeta getInterfaceMeta(String interfaceClassName, ClassLoader classLoader) {
-
     try {
       if (isIgnoreClass(interfaceClassName)) {
         return null;
       }
       return reader.get(true, interfaceClassName, classLoader);
-
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
     }

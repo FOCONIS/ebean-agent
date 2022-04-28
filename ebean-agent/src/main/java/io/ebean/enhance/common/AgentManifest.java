@@ -22,21 +22,15 @@ import static io.ebean.enhance.asm.Opcodes.*;
 public class AgentManifest {
 
   private final Set<Integer> classLoaderIdentities = new HashSet<>();
-
   private final List<String> loadedResources = new ArrayList<>();
-
   private final Set<String> entityPackages = new HashSet<>();
-
   private final Set<String> transactionalPackages = new HashSet<>();
-
   private final Set<String> querybeanPackages = new HashSet<>();
-
   private final DetectQueryBean detectQueryBean;
 
   private String postJsonGetter;
 
   private int debugLevel = -1;
-
   private boolean transientInternalFields;
   private boolean checkNullManyFields = true;
   private boolean enableProfileLocation = true;

@@ -248,6 +248,7 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
     MethodIsEmbeddedNewOrDirty.addMethod(cv, classMeta);
     MethodNewInstance.addMethod(cv, classMeta);
     MethodNewInstanceReadOnly.interceptAddReadOnly(cv, classMeta);
+    MethodNewInstanceIntercept.interceptAddIntercept(cv, classMeta);
     MethodToString.addMethod(cv, classMeta);
 
     // register with the agentContext

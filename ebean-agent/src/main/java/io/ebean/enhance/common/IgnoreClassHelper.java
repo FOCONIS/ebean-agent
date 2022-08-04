@@ -22,7 +22,6 @@ class IgnoreClassHelper {
     ignoreOneLevel.add("java");
     ignoreOneLevel.add("javax");
     ignoreOneLevel.add("jakarta");
-    ignoreOneLevel.add("play");
     ignoreOneLevel.add("sbt");
     ignoreOneLevel.add("scala");
     ignoreOneLevel.add("sun");
@@ -72,6 +71,7 @@ class IgnoreClassHelper {
     ignoreTwoLevel.add("io/ebean");
     ignoreTwoLevel.add("io/ebeaninternal");
     ignoreTwoLevel.add("io/ebeanservice");
+    ignoreTwoLevel.add("io/opentelemetry");
 
     ignoreThreeLevel.add("io/avaje/config");
     ignoreThreeLevel.add("io/avaje/classpath");

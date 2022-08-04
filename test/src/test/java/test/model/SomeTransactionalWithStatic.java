@@ -1,6 +1,6 @@
 package test.model;
 
-import io.ebean.Ebean;
+import io.ebean.DB;
 import io.ebean.Transaction;
 import io.ebean.annotation.Transactional;
 import io.ebean.annotation.TxType;
@@ -14,7 +14,7 @@ public class SomeTransactionalWithStatic {
   static {
     Boolean anything = true;
 
-    Transaction tdTransaction = Ebean.currentTransaction();
+    Transaction tdTransaction = DB.currentTransaction();
     System.out.println("--- in <clinit> " + tdTransaction);
     assertNull(tdTransaction);
   }
@@ -22,7 +22,7 @@ public class SomeTransactionalWithStatic {
   @Transactional(label = "something")
   public void someMethod(String param) {
 
-    Transaction tdTransaction = Ebean.currentTransaction();
+    Transaction tdTransaction = DB.currentTransaction();
     System.out.println("--- in someMethod " + tdTransaction);
     assertNotNull(tdTransaction);
   }

@@ -185,15 +185,15 @@ class ClassMetaReaderTest {
     try (URLClassLoader emptyClassloader = new URLClassLoader(new URL[0])) {
 
       AgentManifest manifest = new AgentManifest(emptyClassloader);
-      assertThat(manifest.getEnhancementVersion()).isEqualTo(133);
+      assertThat(manifest.getEnhancementVersion()).isEqualTo(141);
 
       EnhanceContext enhanceContext0 = new EnhanceContext(reader,"debug=1", manifest);
       assertThat(enhanceContext0.isEnhancedToString()).isTrue();
-      assertThat(enhanceContext0.interceptNew()).isEqualTo("io/ebean/bean/EntityBeanIntercept");
+      assertThat(enhanceContext0.interceptNew()).isEqualTo("io/ebean/bean/InterceptReadWrite");
 
-      EnhanceContext enhanceContext141 = new EnhanceContext(reader,"version=141;debug=1", manifest);
-      assertThat(enhanceContext141.isEnhancedToString()).isTrue();
-      assertThat(enhanceContext141.interceptNew()).isEqualTo("io/ebean/bean/InterceptReadWrite");
+      EnhanceContext enhanceContext133 = new EnhanceContext(reader,"version=133;debug=1", manifest);
+      assertThat(enhanceContext133.isEnhancedToString()).isTrue();
+      assertThat(enhanceContext133.interceptNew()).isEqualTo("io/ebean/bean/EntityBeanIntercept");
     }
   }
 

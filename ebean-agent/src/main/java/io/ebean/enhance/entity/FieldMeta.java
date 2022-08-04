@@ -64,8 +64,8 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
     this.setMethodName = "_ebean_set_" + name;
     this.getNoInterceptMethodName = "_ebean_getni_" + name;
     this.setNoInterceptMethodName = "_ebean_setni_" + name;
-    if (classMeta.getEnhanceContext().getPostJsonGetter() != null) {
-      this.postJsonGetter = classMeta.getEnhanceContext().getPostJsonGetter().replace('.', '/');
+    if (classMeta.context().postJsonGetter() != null) {
+      this.postJsonGetter = classMeta.context().postJsonGetter().replace('.', '/');
     } else {
       this.postJsonGetter = null;
     }
@@ -122,7 +122,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
     return primitiveType;
   }
 
-  public AnnotationInfo getNormalizeAnnotationInfo() {
+  public AnnotationInfo normalizeAnnotationInfo() {
     return this.normalizeAnnotationInfo;
   }
 
@@ -603,7 +603,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
       }
       mv.visitVarInsn(iStoreOpcode, 1);
     } else {
-      normalizers = classMeta.getClassNormalizers();
+      normalizers = classMeta.classNormalizers();
       if (normalizers != null && asmType.getDescriptor().equals(L_STRING)) {
         mv.visitVarInsn(iLoadOpcode, 1);
         for (Type normalizer : normalizers) {

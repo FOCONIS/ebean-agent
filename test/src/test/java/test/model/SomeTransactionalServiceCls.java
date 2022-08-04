@@ -1,6 +1,6 @@
 package test.model;
 
-import io.ebean.Ebean;
+import io.ebean.DB;
 import io.ebean.annotation.Transactional;
 import io.ebeaninternal.api.SpiTransaction;
 
@@ -13,7 +13,7 @@ public class SomeTransactionalServiceCls {
 
     System.out.println("--- in someMethod");
 
-    SpiTransaction tdTransaction = (SpiTransaction)Ebean.currentTransaction();
+    SpiTransaction tdTransaction = (SpiTransaction)DB.currentTransaction();
     getGeneratedKeys = tdTransaction.getBatchGetGeneratedKeys();
   }
 

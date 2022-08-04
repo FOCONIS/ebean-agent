@@ -13,7 +13,7 @@
   <description>Runs agent tests using</description>
 
   <properties>
-    <ebean.version>13.4.0</ebean.version>
+    <ebean.version>13.7.1-FOC7</ebean.version>
   </properties>
 
   <dependencies>
@@ -127,7 +127,7 @@
             <id>test</id>
             <phase>process-test-classes</phase>
             <configuration>
-              <transformArgs>debug=1;packages=test,org.foo</transformArgs>
+              <transformArgs>debug=0,version=999999999</transformArgs>
             </configuration>
             <goals>
               <goal>testEnhance</goal>

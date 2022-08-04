@@ -84,7 +84,7 @@ public class ClassMeta {
     return annotationInfo;
   }
 
-  public AnnotationInfo getNormalizeAnnotationInfo() {
+  public AnnotationInfo normalizeAnnotationInfo() {
     return normalizeAnnotationInfo;
   }
 
@@ -338,7 +338,7 @@ public class ClassMeta {
   /**
    * Return true if the class has an Entity, Embeddable, or MappedSuperclass.
    */
-  public boolean isCheckEntity() {
+  private boolean isCheckEntity() {
     return EntityCheck.hasEntityAnnotation(classAnnotation);
   }
 
@@ -584,11 +584,11 @@ public class ClassMeta {
     this.hasGroovyInterface = hasGroovyInterface;
   }
 
-  public List<Type> getClassNormalizers() {
+  public List<Type> classNormalizers() {
     List<Type> ann = (List<Type>) normalizeAnnotationInfo.getValue("value");
     if (ann != null) {
       return ann;
     }
-    return superMeta == null ? null : superMeta.getClassNormalizers();
+    return superMeta == null ? null : superMeta.classNormalizers();
   }
 }

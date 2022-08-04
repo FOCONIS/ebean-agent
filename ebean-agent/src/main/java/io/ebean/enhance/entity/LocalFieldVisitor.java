@@ -47,7 +47,7 @@ public final class LocalFieldVisitor extends FieldVisitor implements EnhanceCons
       }
       AnnotationVisitor av = fv.visitAnnotation(desc, visible);
       if (desc.equals(NORMALIZE_ANNOTATION)) {
-        av = new AnnotationInfoVisitor(null, fieldMeta.getNormalizeAnnotationInfo(), av);
+        av = new AnnotationInfoVisitor(null, fieldMeta.normalizeAnnotationInfo(), av);
       }
       return av;
     } else {

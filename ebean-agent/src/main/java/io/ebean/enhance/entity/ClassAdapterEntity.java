@@ -106,7 +106,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
     if (desc.equals(EnhanceConstants.NORMALIZE_ANNOTATION)) {
       // we have class level Normalize annotation
       // which will act as default for all methods in this class
-      return new AnnotationInfoVisitor(null, classMeta.getNormalizeAnnotationInfo(), av);
+      return new AnnotationInfoVisitor(null, classMeta.normalizeAnnotationInfo(), av);
 
     } else {
       return av;

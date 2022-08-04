@@ -73,6 +73,7 @@ public final class EnhanceContext {
   public EnhanceContext(ClassBytesReader classBytesReader, String agentArgs, AgentManifest manifest, ClassMetaCache metaCache) {
     this.manifest = manifest;
     this.enableProfileLocation = manifest.isEnableProfileLocation();
+    this.postJsonGetter = manifest.postJsonGetter();
     this.enableEntityFieldAccess = manifest.isEnableEntityFieldAccess();
     this.profileLineNumberMode = manifest.profileLineMode();
     this.postJsonGetter = manifest.getPostJsonGetter();
@@ -372,7 +373,7 @@ public final class EnhanceContext {
   /**
    * Returns, which postJsonGetter class should be used.
    */
-  public String getPostJsonGetter() {
+  public String postJsonGetter() {
     return postJsonGetter;
   }
 

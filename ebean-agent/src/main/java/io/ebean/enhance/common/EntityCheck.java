@@ -14,6 +14,7 @@ class EntityCheck {
       EnhanceConstants.ENTITY_ANNOTATION,
       EnhanceConstants.EMBEDDABLE_ANNOTATION,
       EnhanceConstants.MAPPEDSUPERCLASS_ANNOTATION,
+      EnhanceConstants.ENTITY_EXTENSION_ANNOTATION,
       EnhanceConstants.DOCSTORE_ANNOTATION
   };
 
@@ -22,7 +23,8 @@ class EntityCheck {
   */
   static boolean isEntityAnnotation(String desc) {
     if (!desc.startsWith(EnhanceConstants.JAVAX_PERSISTENCE)) {
-      return desc.equals(EnhanceConstants.DOCSTORE_ANNOTATION);
+      return desc.equals(EnhanceConstants.DOCSTORE_ANNOTATION)
+        || desc.equals(EnhanceConstants.ENTITY_EXTENSION_ANNOTATION);
     }
     return desc.equals(EnhanceConstants.ENTITY_ANNOTATION)
       || desc.equals(EnhanceConstants.EMBEDDABLE_ANNOTATION)

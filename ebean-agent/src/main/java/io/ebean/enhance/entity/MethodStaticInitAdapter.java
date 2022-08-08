@@ -18,5 +18,8 @@ class MethodStaticInitAdapter extends MethodVisitor {
   public void visitCode() {
     super.visitCode();
     IndexFieldWeaver.addPropertiesInit(mv, classMeta);
+    if (classMeta.entityExtension()) {
+      EntityExtensionField.addStorageInit(mv, classMeta);
+    }
   }
 }

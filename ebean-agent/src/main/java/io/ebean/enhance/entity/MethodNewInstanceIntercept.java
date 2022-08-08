@@ -28,7 +28,7 @@ import static io.ebean.enhance.common.EnhanceConstants.INTERCEPT_FIELD;
 class MethodNewInstanceIntercept {
 
   static void interceptAddIntercept(ClassVisitor cv, ClassMeta meta) {
-    if (!meta.interceptAddReadOnly()) {
+    if (!meta.entityExtension()) {
       return;
     }
     if (meta.isSuperClassEntity()) {

@@ -45,7 +45,7 @@ public class ClassMeta {
   /**
    * Set to true if the class already implements the EntityBean interface.
    */
-  private boolean hasEntityBeanInterface;
+  private boolean hasExtendableBeanInterface;
   private boolean alreadyEnhanced;
   private boolean hasEqualsOrHashcode;
   private boolean hasToString;
@@ -300,6 +300,10 @@ public class ClassMeta {
     return classAnnotation.contains(EnhanceConstants.MAPPEDSUPERCLASS_ANNOTATION);
   }
 
+  boolean isEntityExtension() {
+    return classAnnotation.contains(EnhanceConstants.ENTITY_EXTENSION_ANNOTATION);
+  }
+
   /**
    * Return true if this is a query bean.
    */
@@ -410,6 +414,10 @@ public class ClassMeta {
     return enhanceContext.interceptAddReadOnly();
   }
 
+  public boolean entityExtension() {
+    return enhanceContext.entityExtension();
+  }
+
   private static final class MethodReader extends MethodVisitor {
 
     final MethodMeta methodMeta;
@@ -504,12 +512,12 @@ public class ClassMeta {
     this.hasScalaInterface = hasScalaInterface;
   }
 
-  public boolean hasEntityBeanInterface() {
-    return hasEntityBeanInterface;
+  public boolean implementsExtendableBeanInterface() {
+    return hasExtendableBeanInterface || (superMeta != null && superMeta.implementsExtendableBeanInterface());
   }
 
-  public void setEntityBeanInterface(boolean hasEntityBeanInterface) {
-    this.hasEntityBeanInterface = hasEntityBeanInterface;
+  public void setExtendableBeanInterface(boolean hasExtendableBeanInterface) {
+    this.hasExtendableBeanInterface = hasExtendableBeanInterface;
   }
 
   private boolean hasGroovyInterface() {

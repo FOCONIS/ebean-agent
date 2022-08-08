@@ -71,6 +71,9 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
       if (c[i].equals(C_GROOVYOBJECT)) {
         classMeta.setGroovyInterface(true);
       }
+      if (c[i].equals(C_EXTENDABLE_BEAN_I)) {
+        classMeta.setExtendableBeanInterface(true);
+      }
     }
     // add the EntityBean interface
     c[c.length - 1] = C_ENTITYBEAN;
@@ -158,13 +161,12 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
       if (classMeta.isAlreadyEnhanced()) {
         throw new NoEnhancementRequiredException();
       }
-      if (classMeta.hasEntityBeanInterface()) {
-        log("Enhancing when EntityBean interface already exists!");
-      }
       IndexFieldWeaver.addPropertiesField(cv, classMeta);
       if (isLog(4)) {
         log("... add _ebean_props field");
       }
+      EntityExtensionField.addExtensionInfoField(cv, classMeta);
+
       if (!classMeta.isSuperClassEntity()) {
         // only add the intercept and identity fields if
         // the superClass is not also enhanced
@@ -173,6 +175,7 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
         }
         InterceptField.addField(cv, classMeta, enhanceContext.isTransientInternalFields());
         MethodEquals.addIdentityField(cv, classMeta);
+        EntityExtensionField.addStorageField(cv, classMeta, enhanceContext.isTransientInternalFields());
 
       }
       firstMethod = false;
@@ -229,7 +232,7 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
     }
     IndexFieldWeaver.addGetPropertyNames(cv, classMeta);
     IndexFieldWeaver.addGetPropertyName(cv, classMeta);
-
+    EntityExtensionField.addGetExtensionInfo(cv, classMeta);
     if (!classMeta.isSuperClassEntity()) {
       if (isLog(8)) {
         log("... add _ebean_getIntercept() and _ebean_setIntercept()");

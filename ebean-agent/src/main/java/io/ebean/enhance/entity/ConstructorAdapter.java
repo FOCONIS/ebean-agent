@@ -172,6 +172,8 @@ class ConstructorAdapter extends MethodVisitor implements EnhanceConstants, Opco
       System.err.println(msg);
 
     } else {
+      EntityExtensionWeaver.addStorageInit(mv, meta);
+
       // add the initialisation of the intercept object
       super.visitVarInsn(ALOAD, 0);
       super.visitTypeInsn(NEW, meta.interceptNew());
@@ -180,6 +182,7 @@ class ConstructorAdapter extends MethodVisitor implements EnhanceConstants, Opco
 
       super.visitMethodInsn(INVOKESPECIAL, meta.interceptNew(), INIT, "(Ljava/lang/Object;)V", false);
       super.visitFieldInsn(PUTFIELD, className, INTERCEPT_FIELD, EnhanceConstants.L_INTERCEPT);
+
 
       if (meta.isLog(8)) {
         meta.log("... constructorInitializationDone " + owner);

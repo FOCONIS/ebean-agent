@@ -165,7 +165,7 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
       if (isLog(4)) {
         log("... add _ebean_props field");
       }
-      EntityExtensionField.addExtensionInfoField(cv, classMeta);
+      EntityExtensionWeaver.addExtensionInfoField(cv, classMeta);
 
       if (!classMeta.isSuperClassEntity()) {
         // only add the intercept and identity fields if
@@ -175,7 +175,7 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
         }
         InterceptField.addField(cv, classMeta, enhanceContext.isTransientInternalFields());
         MethodEquals.addIdentityField(cv, classMeta);
-        EntityExtensionField.addStorageField(cv, classMeta, enhanceContext.isTransientInternalFields());
+        EntityExtensionWeaver.addStorageField(cv, classMeta, enhanceContext.isTransientInternalFields());
 
       }
       firstMethod = false;
@@ -232,7 +232,7 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
     }
     IndexFieldWeaver.addGetPropertyNames(cv, classMeta);
     IndexFieldWeaver.addGetPropertyName(cv, classMeta);
-    EntityExtensionField.addGetExtensionInfo(cv, classMeta);
+    EntityExtensionWeaver.addGetExtensionInfo(cv, classMeta);
     if (!classMeta.isSuperClassEntity()) {
       if (isLog(8)) {
         log("... add _ebean_getIntercept() and _ebean_setIntercept()");

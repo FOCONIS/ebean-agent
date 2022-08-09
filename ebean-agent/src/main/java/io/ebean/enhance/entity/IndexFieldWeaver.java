@@ -34,7 +34,7 @@ class IndexFieldWeaver implements Opcodes {
     MethodVisitor mv = cv.visitMethod(ACC_STATIC, CLINIT, NOARG_VOID, null, null);
     mv.visitCode();
     addPropertiesInit(mv, classMeta);
-    EntityExtensionField.addStorageInit(mv, classMeta);
+    EntityExtensionWeaver.addExtensionInfoInit(mv, classMeta);
 
     Label l1 = new Label();
     mv.visitLabel(l1);

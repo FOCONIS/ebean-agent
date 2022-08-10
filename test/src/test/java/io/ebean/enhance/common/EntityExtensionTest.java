@@ -1,6 +1,7 @@
 package io.ebean.enhance.common;
 
 import io.ebean.DB;
+import io.ebean.bean.EntityBean;
 import io.ebean.bean.extend.ExtensionInfo;
 import org.junit.jupiter.api.Test;
 import test.model.extend.BEntityBase;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class EntityExtensionTest {
 
 
-  //@Test
+  @Test
   void test() throws Exception {
     DB.getDefault();
 
@@ -33,8 +34,9 @@ public class EntityExtensionTest {
 
     BEntityBase base = new BEntityBase();
     ExtensionInfo info = base._ebean_getExtensionInfo();
-    assertThat(info.getPropertyLength()).isEqualTo(3);
+    //assertThat(info.getPropertyLength()).isEqualTo(3);
 
-    DB.getDefault();
+    EntityBean ret = base._ebean_getExtension(0, null);
+    System.out.println(ret);
   }
 }

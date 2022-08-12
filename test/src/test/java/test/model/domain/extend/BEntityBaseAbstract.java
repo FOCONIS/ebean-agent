@@ -1,4 +1,4 @@
-package test.model.extend;
+package test.model.domain.extend;
 
 import io.ebean.bean.EntityBean;
 import io.ebean.bean.EntityBeanIntercept;

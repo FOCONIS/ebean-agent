@@ -1,11 +1,10 @@
 package io.ebean.enhance.common;
 
 import io.ebean.DB;
-import io.ebean.bean.EntityBean;
 import io.ebean.bean.extend.ExtensionInfo;
 import org.junit.jupiter.api.Test;
-import test.model.extend.BEntityBase;
-import test.model.extend.BEntityBaseAbstract;
+import test.model.domain.extend.BEntityBase;
+import test.model.domain.extend.BEntityBaseAbstract;
 
 import java.lang.reflect.Field;
 
@@ -23,7 +22,8 @@ public class EntityExtensionTest {
     DB.getDefault();
 
     Field field = BEntityBaseAbstract.class.getDeclaredField("_ebean_extensions");
-    field.get(null);
+    Object ret = field.get(null);
+    System.out.println(ret);
     BEntityBaseAbstract.class.getDeclaredField("_ebean_extension_storage");
 
     BEntityBase.class.getDeclaredField("_ebean_extensions");
@@ -36,7 +36,7 @@ public class EntityExtensionTest {
     ExtensionInfo info = base._ebean_getExtensionInfo();
     //assertThat(info.getPropertyLength()).isEqualTo(3);
 
-    EntityBean ret = base._ebean_getExtension(0, null);
+     ret = base._ebean_getExtension(0, null);
     System.out.println(ret);
   }
 }

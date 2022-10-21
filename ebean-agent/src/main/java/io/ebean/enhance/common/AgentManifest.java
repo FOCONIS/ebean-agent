@@ -206,7 +206,7 @@ public final class AgentManifest {
   /**
    * Returns the class that contains the post-json-getter
    */
-  public String getPostJsonGetter() {
+  public String postJsonGetter() {
     return postJsonGetter;
   }
 

@@ -186,7 +186,7 @@ class ClassMetaReaderTest {
 
       AgentManifest manifest = new AgentManifest(emptyClassloader);
 
-      assertThat(manifest.enhancementVersion()).isEqualTo(133);
+      assertThat(manifest.enhancementVersion()).isEqualTo(141);
 
       EnhanceContext enhanceContext0 = new EnhanceContext(reader,"debug=1", manifest);
       assertThat(enhanceContext0.isEnhancedToString()).isTrue();

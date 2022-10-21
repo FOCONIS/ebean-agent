@@ -16,8 +16,8 @@
   <description>Runs agent tests using</description>
 
   <properties>
-    <ebean.agent.version>13.7.0-FOC1-SNAPSHOT</ebean.agent.version>
-    <ebean.version>13.6.5</ebean.version>
+    <ebean.agent.version>13.10.1-FOC1-SNAPSHOT</ebean.agent.version>
+    <ebean.version>13.4.0</ebean.version>
 <!--    <ebean.version>13.0.1-SNAPSHOT</ebean.version>-->
   </properties>
 
@@ -32,6 +32,13 @@
       <groupId>org.avaje</groupId>
       <artifactId>avaje-agentloader</artifactId>
       <version>4.3</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.ebean</groupId>
+      <artifactId>ebean-annotation</artifactId>
+      <version>8.3</version>
       <scope>provided</scope>
     </dependency>
 

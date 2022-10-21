@@ -30,6 +30,7 @@ public interface EnhanceConstants {
   String C_ENTITYBEAN = "io/ebean/bean/EntityBean";
   String C_SCALAOBJECT = "scala/ScalaObject";
   String C_GROOVYOBJECT = "groovy/lang/GroovyObject";
+  String C_RECORDTYPE = "java/lang/Record";
   String C_INTERCEPT_I = "io/ebean/bean/EntityBeanIntercept";
   String C_INTERCEPT_RW = "io/ebean/bean/InterceptReadWrite";
   String C_INTERCEPT_RO = "io/ebean/bean/InterceptReadOnly";
@@ -54,4 +55,6 @@ public interface EnhanceConstants {
   String LINKEDHASHMAP = "java/util/LinkedHashMap";
   String L_JETBRAINS_NOTNULL = "Lorg/jetbrains/annotations/NotNull;";
   String L_EBEAN_NOTNULL = "Lio/ebean/annotation/NotNull;";
+  String L_COLUMN_ANNOTATION = "Ljavax/persistence/Column;";
+  String L_DBARRAY = "Lio/ebean/annotation/DbArray;";
 }

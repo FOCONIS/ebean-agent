@@ -11,7 +11,7 @@ import static io.ebean.enhance.Transformer.EBEAN_ASM_VERSION;
 /**
  * Used to collect information about a field (specifically from field annotations).
  */
-public class LocalFieldVisitor extends FieldVisitor implements EnhanceConstants {
+public final class LocalFieldVisitor extends FieldVisitor implements EnhanceConstants {
 
   private final FieldMeta fieldMeta;
 
@@ -29,8 +29,8 @@ public class LocalFieldVisitor extends FieldVisitor implements EnhanceConstants 
   /**
    * Return the field name.
    */
-  public String getName() {
-    return fieldMeta.getFieldName();
+  public String name() {
+    return fieldMeta.name();
   }
 
   @Override
@@ -39,6 +39,11 @@ public class LocalFieldVisitor extends FieldVisitor implements EnhanceConstants 
     if (fv != null) {
       if (!visible && desc.equals(L_JETBRAINS_NOTNULL)) {
         fv.visitAnnotation(L_EBEAN_NOTNULL, true);
+        fieldMeta.setNotNull();
+      }
+      if (fieldMeta.isNullable() && annotationWithNullable(desc)) {
+        // looking for nullable=false attribute on Column or DbArray
+        return new FieldAnnotationVisitor(fieldMeta, fv.visitAnnotation(desc, visible));
       }
       AnnotationVisitor av = fv.visitAnnotation(desc, visible);
       if (desc.equals(NORMALIZE_ANNOTATION)) {
@@ -48,6 +53,10 @@ public class LocalFieldVisitor extends FieldVisitor implements EnhanceConstants 
     } else {
       return null;
     }
+  }
+
+  private boolean annotationWithNullable(String desc) {
+    return L_COLUMN_ANNOTATION.equals(desc) || L_DBARRAY.equals(desc);
   }
 
   @Override

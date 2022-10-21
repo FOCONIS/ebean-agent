@@ -19,7 +19,7 @@ import static io.ebean.enhance.asm.Opcodes.*;
  * Reads all the META-INF/ebean.mf and META-INF/ebean-generated-info.mf resources with the locations
  * of all the entity beans (and hence locations of query beans).
  */
-public class AgentManifest {
+public final class AgentManifest {
 
   private final Set<Integer> classLoaderIdentities = new HashSet<>();
   private final List<String> loadedResources = new ArrayList<>();
@@ -31,9 +31,13 @@ public class AgentManifest {
   private String postJsonGetter;
 
   private int debugLevel = -1;
+  private boolean allowNullableDbArray;
   private boolean transientInternalFields;
+  private boolean transientInit;
+  private boolean transientInitThrowError;
   private boolean checkNullManyFields = true;
   private boolean enableProfileLocation = true;
+  private boolean enableEntityFieldAccess;
   private boolean synthetic = true;
   private int enhancementVersion;
 
@@ -81,11 +85,15 @@ public class AgentManifest {
       + " transactionalPackages:" + transactionalPackages;
   }
 
+  public boolean isDetectEntityBean(String owner) {
+    return detectQueryBean.isEntityBean(owner);
+  }
+
   public boolean isDetectQueryBean(String owner) {
     return detectQueryBean.isQueryBean(owner);
   }
 
-  public int getEnhancementVersion() {
+  public int enhancementVersion() {
     return enhancementVersion;
   }
 
@@ -96,25 +104,28 @@ public class AgentManifest {
     return enableProfileLocation;
   }
 
+  public boolean isEnableEntityFieldAccess() {
+    return enableEntityFieldAccess;
+  }
 
   /**
    * Return the debug level read from ebean.mf
    */
-  public int getDebugLevel() {
+  public int debugLevel() {
     return debugLevel;
   }
 
   /**
    * Return the paths that manifests were loaded from.
    */
-  public List<String> getLoadedResources() {
+  public List<String> loadedResources() {
     return loadedResources;
   }
 
   /**
    * Return the parsed set of packages that type query beans are in.
    */
-  public Set<String> getEntityPackages() {
+  public Set<String> entityPackages() {
     return entityPackages;
   }
 
@@ -123,6 +134,20 @@ public class AgentManifest {
    */
   public boolean isTransactionalNone() {
     return transactionalPackages.contains("none") && transactionalPackages.size() == 1;
+  }
+
+  /**
+   * Return true if enhancement should add initialisation of transient fields when adding a default constructor.
+   */
+  public boolean isTransientInit() {
+    return transientInit;
+  }
+
+  /**
+   * Return true if an error should be thrown when adding a default constructor and transient fields can't be initialised.
+   */
+  public boolean isTransientInitThrowError() {
+    return transientInitThrowError;
   }
 
   /**
@@ -137,6 +162,10 @@ public class AgentManifest {
    */
   public boolean isCheckNullManyFields() {
     return checkNullManyFields;
+  }
+
+  public boolean isAllowNullableDbArray() {
+    return allowNullableDbArray;
   }
 
   public int accPublic() {
@@ -162,7 +191,7 @@ public class AgentManifest {
    * Return the packages that should be enhanced for transactional.
    * An empty set means all packages are scanned for transaction classes and methods.
    */
-  public Set<String> getTransactionalPackages() {
+  public Set<String> transactionalPackages() {
     return transactionalPackages;
   }
 
@@ -170,7 +199,7 @@ public class AgentManifest {
    * Return the packages that should be enhanced for query bean use.
    * An empty set means all packages are scanned for transaction classes and methods.
    */
-  public Set<String> getQuerybeanPackages() {
+  public Set<String> querybeanPackages() {
     return querybeanPackages;
   }
 
@@ -245,6 +274,10 @@ public class AgentManifest {
     if (locationMode != null) {
       enableProfileLocation = Boolean.parseBoolean(locationMode);
     }
+    String fieldAccessMode = attributes.getValue("entity-field-access");
+    if (fieldAccessMode != null) {
+      enableEntityFieldAccess = Boolean.parseBoolean(fieldAccessMode);
+    }
     String syntheticOption = attributes.getValue("synthetic");
     if (syntheticOption != null) {
       synthetic = Boolean.parseBoolean(syntheticOption);
@@ -270,8 +303,11 @@ public class AgentManifest {
   }
 
   private void readOptions(Attributes attributes) {
+    transientInit = bool("transient-init", transientInit, attributes);
+    transientInitThrowError = bool("transient-init-error", transientInit, attributes);
     transientInternalFields = bool("transient-internal-fields", transientInternalFields, attributes);
     checkNullManyFields = bool("check-null-many-fields", checkNullManyFields, attributes);
+    allowNullableDbArray = bool("allow-nullable-dbarray", allowNullableDbArray, attributes);
   }
 
   private boolean bool(String key, boolean defaultValue, Attributes attributes) {

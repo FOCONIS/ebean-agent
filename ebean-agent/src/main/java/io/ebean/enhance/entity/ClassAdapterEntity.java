@@ -22,7 +22,7 @@ import static io.ebean.enhance.Transformer.EBEAN_ASM_VERSION;
  * This is NOT used for subclass generation.
  * </p>
  */
-public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants {
+public final class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants {
 
   private final EnhanceContext enhanceContext;
   private final ClassLoader classLoader;
@@ -82,8 +82,8 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
       if (classMeta.isLog(7)) {
         classMeta.log("read information about superClasses " + superName + " to see if it is entity/embedded/mappedSuperclass");
       }
-      ClassMeta superMeta = enhanceContext.getSuperMeta(superName, classLoader);
-      if (superMeta != null && superMeta.isCheckEntity()) {
+      ClassMeta superMeta = enhanceContext.superMeta(superName, classLoader);
+      if (superMeta != null && superMeta.isEntity()) {
         // the superClass is an entity/embedded/mappedSuperclass...
         classMeta.setSuperMeta(superMeta);
       }
@@ -252,7 +252,7 @@ public class ClassAdapterEntity extends ClassVisitor implements EnhanceConstants
 
     // register with the agentContext
     enhanceContext.addClassMeta(classMeta);
-    enhanceContext.summaryEntity(classMeta.getClassName());
+    enhanceContext.summaryEntity(classMeta.className());
     super.visitEnd();
   }
 

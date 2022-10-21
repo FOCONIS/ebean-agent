@@ -94,7 +94,7 @@ public class ClassAdapterTransactional extends ClassVisitor {
     AnnotationInfo interfaceAnnotationInfo = null;
     for (int i = 0; i < transactionalInterfaces.size(); i++) {
       ClassMeta interfaceMeta = transactionalInterfaces.get(i);
-      AnnotationInfo ai = interfaceMeta.getInterfaceTransactionalInfo(methodName, methodDesc);
+      AnnotationInfo ai = interfaceMeta.interfaceTransactionalInfo(methodName, methodDesc);
       if (ai != null) {
         if (interfaceAnnotationInfo != null) {
           String msg = "Error in [" + className + "] searching the transactional interfaces ["
@@ -133,14 +133,14 @@ public class ClassAdapterTransactional extends ClassVisitor {
       if (newInterfaces[i].equals(EnhanceConstants.C_ENHANCEDTRANSACTIONAL)) {
         throw new AlreadyEnhancedException(name);
       }
-      ClassMeta interfaceMeta = enhanceContext.getInterfaceMeta(newInterfaces[i], classLoader);
+      ClassMeta interfaceMeta = enhanceContext.interfaceMeta(newInterfaces[i], classLoader);
       if (interfaceMeta != null && interfaceMeta.isTransactional()) {
         // the interface was transactional. We gather its information
         // because our methods inherit that transactional configuration
         transactionalInterfaces.add(interfaceMeta);
 
         if (isLog(6)) {
-          log(" implements transactional interface " + interfaceMeta.getDescription());
+          log(" implements transactional interface " + interfaceMeta.description());
         }
       }
     }

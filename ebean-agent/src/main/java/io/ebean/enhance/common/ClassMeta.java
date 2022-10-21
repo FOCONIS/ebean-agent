@@ -99,7 +99,7 @@ public class ClassMeta {
   }
 
 
-  public AnnotationInfo getNormalizeAnnotationInfo() {
+  public AnnotationInfo normalizeAnnotationInfo() {
     return normalizeAnnotationInfo;
   }
 

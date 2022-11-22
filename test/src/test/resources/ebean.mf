@@ -5,3 +5,7 @@ post-json-getter: test.normalize.PostJsonGetter
 query-labels: true
 debug: 3
 synthetic: false
+transient-init: true
+transient-init-error: false
+allow-nullable-dbarray: true
+

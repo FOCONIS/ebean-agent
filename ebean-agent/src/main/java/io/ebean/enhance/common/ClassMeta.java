@@ -5,22 +5,14 @@ import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Type;
-import io.ebean.enhance.entity.FieldMeta;
-import io.ebean.enhance.entity.LocalFieldVisitor;
-import io.ebean.enhance.entity.MessageOutput;
-import io.ebean.enhance.entity.MethodMeta;
+import io.ebean.enhance.entity.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static io.ebean.enhance.Transformer.EBEAN_ASM_VERSION;
-import static io.ebean.enhance.common.EnhanceConstants.C_OBJECT;
-import static io.ebean.enhance.common.EnhanceConstants.TRANSACTIONAL_ANNOTATION;
-import static io.ebean.enhance.common.EnhanceConstants.TYPEQUERYBEAN_ANNOTATION;
+import static io.ebean.enhance.common.EnhanceConstants.*;
 
 /**
  * Holds the meta data for an entity bean class that is being enhanced.
@@ -52,6 +44,15 @@ public class ClassMeta {
   private boolean hasDefaultConstructor;
   private boolean hasStaticInit;
 
+  /**
+   * If enhancement is adding a default constructor - only single type is supported initialising transient fields.
+   */
+  private final Set<String> unsupportedTransientMultipleTypes = new LinkedHashSet<>();
+  /**
+   * If enhancement is adding a default constructor - only default constructors are supported initialising transient fields.
+   */
+  private final Set<String> unsupportedTransientInitialisation = new LinkedHashSet<>();
+  private final Map<String, CapturedInitCode> transientInitCode = new LinkedHashMap<>();
   private final LinkedHashMap<String, FieldMeta> fields = new LinkedHashMap<>();
   private final HashSet<String> classAnnotation = new HashSet<>();
   private final AnnotationInfo annotationInfo = new AnnotationInfo(null);
@@ -60,6 +61,7 @@ public class ClassMeta {
   private final ArrayList<MethodMeta> methodMetaList = new ArrayList<>();
   private final EnhanceContext enhanceContext;
   private List<FieldMeta> allFields;
+  private boolean recordType;
 
   public ClassMeta(EnhanceContext enhanceContext, int logLevel, MessageOutput logout) {
     this.enhanceContext = enhanceContext;
@@ -70,7 +72,7 @@ public class ClassMeta {
   /**
    * Return the enhance context which has options for enhancement.
    */
-  public EnhanceContext getEnhanceContext() {
+  public EnhanceContext context() {
     return enhanceContext;
   }
 
@@ -78,18 +80,23 @@ public class ClassMeta {
    * Return the AnnotationInfo collected on methods.
    * Used to determine Transactional method enhancement.
    */
-  public AnnotationInfo getAnnotationInfo() {
+  public AnnotationInfo annotationInfo() {
     return annotationInfo;
   }
+
 
   public AnnotationInfo getNormalizeAnnotationInfo() {
     return normalizeAnnotationInfo;
   }
 
+  public boolean isAllowNullableDbArray() {
+    return enhanceContext.isAllowNullableDbArray();
+  }
+
   /**
    * Return the transactional annotation information for a matching interface method.
    */
-  public AnnotationInfo getInterfaceTransactionalInfo(String methodName, String methodDesc) {
+  public AnnotationInfo interfaceTransactionalInfo(String methodName, String methodDesc) {
     AnnotationInfo annotationInfo = null;
     for (int i = 0; i < methodMetaList.size(); i++) {
       MethodMeta meta = methodMetaList.get(i);
@@ -128,9 +135,12 @@ public class ClassMeta {
   public void setClassName(String className, String superClassName) {
     this.className = className;
     this.superClassName = superClassName;
+    if (superClassName.equals(C_RECORDTYPE)) {
+      recordType = true;
+    }
   }
 
-  public String getSuperClassName() {
+  public String superClassName() {
     return superClassName;
   }
 
@@ -194,33 +204,45 @@ public class ClassMeta {
    * Return true if the field is a persistent field.
    */
   public boolean isFieldPersistent(String fieldName) {
-    FieldMeta f = getFieldPersistent(fieldName);
+    FieldMeta f = field(fieldName);
     return (f != null) && f.isPersistent();
+  }
+
+  public boolean isTransient(String fieldName) {
+    FieldMeta f = field(fieldName);
+    return (f != null && f.isTransient());
+  }
+
+  public boolean isInitTransient(String fieldName) {
+    if (!enhanceContext.isTransientInit()) {
+      return false;
+    }
+    return isTransient(fieldName);
   }
 
   /**
    * Return true if the field is a persistent many field that we want to consume the init on.
    */
   public boolean isConsumeInitMany(String fieldName) {
-    FieldMeta f = getFieldPersistent(fieldName);
+    FieldMeta f = field(fieldName);
     return (f != null && f.isPersistent() && f.isInitMany());
   }
 
   /**
    * Return the field - null when not found.
    */
-  public FieldMeta getFieldPersistent(String fieldName) {
+  public FieldMeta field(String fieldName) {
     FieldMeta f = fields.get(fieldName);
     if (f != null) {
       return f;
     }
-    return (superMeta == null) ? null : superMeta.getFieldPersistent(fieldName);
+    return (superMeta == null) ? null : superMeta.field(fieldName);
   }
 
   /**
    * Return the list of fields local to this type (not inherited).
    */
-  private List<FieldMeta> getLocalFields() {
+  private List<FieldMeta> localFields() {
     List<FieldMeta> list = new ArrayList<>();
     for (FieldMeta fm : fields.values()) {
       if (!fm.isObjectArray()) {
@@ -268,11 +290,11 @@ public class ClassMeta {
    * Return the list of all fields including ones inherited from entity super
    * types and mappedSuperclasses.
    */
-  public List<FieldMeta> getAllFields() {
+  public List<FieldMeta> allFields() {
     if (allFields != null) {
       return allFields;
     }
-    List<FieldMeta> list = getLocalFields();
+    List<FieldMeta> list = localFields();
     addInheritedFields(list);
 
     this.allFields = list;
@@ -308,7 +330,7 @@ public class ClassMeta {
    * Return true if this is a query bean.
    */
   public boolean isQueryBean() {
-    return classAnnotation.contains(EnhanceConstants.TYPEQUERYBEAN_ANNOTATION);
+    return classAnnotation.contains(TYPEQUERYBEAN_ANNOTATION);
   }
 
   /**
@@ -342,7 +364,7 @@ public class ClassMeta {
   /**
    * Return the className of this entity class.
    */
-  public String getClassName() {
+  public String className() {
     return className;
   }
 
@@ -381,6 +403,13 @@ public class ClassMeta {
   }
 
   /**
+   * If field access use public rather than protected plus usually with synthetic.
+   */
+  public int accAccessor() {
+    return enhanceContext.isEnableEntityFieldAccess() ? accPublic() : accProtected();
+  }
+
+  /**
    * ACC_PRIVATE with maybe ACC_SYNTHETIC.
    */
   public int accPrivate() {
@@ -416,6 +445,42 @@ public class ClassMeta {
 
   public boolean entityExtension() {
     return enhanceContext.entityExtension();
+  }
+
+  public boolean isRecordType() {
+    return recordType;
+  }
+
+  public void addTransientInit(CapturedInitCode deferredInitCode) {
+    CapturedInitCode old = transientInitCode.put(deferredInitCode.name(), deferredInitCode);
+    if (old != null && !old.type().equals(deferredInitCode.type())) {
+      transientInitCode.put(deferredInitCode.name(), old);
+      unsupportedTransientMultipleTypes.add("field: " + old.name() + " types: " + old.type() + " " + deferredInitCode.type());
+    }
+  }
+
+  public Collection<CapturedInitCode> transientInit() {
+    return transientInitCode.values();
+  }
+
+  public void addUnsupportedTransientInit(String name) {
+    unsupportedTransientInitialisation.add(name);
+  }
+
+  public boolean hasTransientFieldErrors() {
+    return !unsupportedTransientMultipleTypes.isEmpty() || !unsupportedTransientInitialisation.isEmpty();
+  }
+
+  public String transientFieldErrorMessage() {
+    String msg = "ERROR: Entity class without default constructor has unsupported initialisation of transient fields. Entity class: " + className;
+    if (!unsupportedTransientMultipleTypes.isEmpty()) {
+      msg += " - fields initialised in constructor with 2 different types - " + unsupportedTransientMultipleTypes;
+    }
+    if (!unsupportedTransientInitialisation.isEmpty()) {
+      msg += " - Unsupported initialisation of transient fields - " + unsupportedTransientInitialisation;
+    }
+    msg += " Refer: https://ebean.io/docs/trouble-shooting#transient-initialisation";
+    return msg;
   }
 
   private static final class MethodReader extends MethodVisitor {
@@ -465,7 +530,7 @@ public class ClassMeta {
         log("... ignore field " + name);
       }
     } else {
-      fields.put(localField.getName(), fieldMeta);
+      fields.put(localField.name(), fieldMeta);
     }
     return localField;
   }
@@ -490,7 +555,7 @@ public class ClassMeta {
     return hasStaticInit;
   }
 
-  public String getDescription() {
+  public String description() {
     StringBuilder sb = new StringBuilder();
     appendDescription(sb);
     return sb.toString();

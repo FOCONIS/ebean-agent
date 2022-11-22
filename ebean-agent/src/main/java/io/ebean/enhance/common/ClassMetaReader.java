@@ -31,7 +31,7 @@ public class ClassMetaReader {
         meta = readFromResource(readMethodAnnotations, name, classLoader);
         if (meta != null) {
           if (meta.isCheckSuperClassForEntity()) {
-            ClassMeta superMeta = getWithCache(readMethodAnnotations, meta.getSuperClassName(), classLoader);
+            ClassMeta superMeta = getWithCache(readMethodAnnotations, meta.superClassName(), classLoader);
             if (superMeta != null && superMeta.isEntity()) {
               meta.setSuperMeta(superMeta);
             }
@@ -44,7 +44,7 @@ public class ClassMetaReader {
   }
 
   private ClassMeta readFromResource(boolean readMethodAnnotations, String className, ClassLoader classLoader) throws ClassNotFoundException {
-    byte[] classBytes = enhanceContext.getClassBytes(className, classLoader);
+    byte[] classBytes = enhanceContext.classBytes(className, classLoader);
     if (classBytes == null){
       if (enhanceContext.isLog(3)) {
         enhanceContext.log(null, "Could not read meta data for class ["+className+"].");

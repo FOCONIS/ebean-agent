@@ -16,7 +16,7 @@ import static io.ebean.enhance.Transformer.EBEAN_ASM_VERSION;
  * Transient annotation then it is not transformed in this way.
  * </p>
  */
-class MethodFieldAdapter extends MethodVisitor implements Opcodes {
+final class MethodFieldAdapter extends MethodVisitor implements Opcodes {
 
   private final ClassMeta meta;
   private final String className;
@@ -26,7 +26,7 @@ class MethodFieldAdapter extends MethodVisitor implements Opcodes {
   MethodFieldAdapter(MethodVisitor mv, ClassMeta meta, String methodDescription) {
     super(EBEAN_ASM_VERSION, mv);
     this.meta = meta;
-    this.className = meta.getClassName();
+    this.className = meta.className();
     this.methodDescription = methodDescription;
   }
 

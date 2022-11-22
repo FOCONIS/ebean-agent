@@ -17,7 +17,7 @@ import java.util.List;
  * This can then generate the appropriate byte code for this field.
  * </p>
  */
-public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMeta> {
+public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMeta> {
 
   private final ClassMeta classMeta;
   private final String fieldClass;
@@ -40,13 +40,15 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
 
   private int indexPosition;
   private int sortOrder;
+
   private AnnotationInfo normalizeAnnotationInfo;
+
+  private boolean notNull;
 
   /**
    * Construct based on field name and desc from reading byte code.
    * <p>
    * Used for reading local fields (not inherited) via visiting the class bytes.
-   * </p>
    */
   public FieldMeta(ClassMeta classMeta, String name, String desc, String fieldClass) {
     this.classMeta = classMeta;
@@ -111,10 +113,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
     return fieldName;
   }
 
-  /**
-   * Return the field name.
-   */
-  public String getFieldName() {
+  public String name() {
     return fieldName;
   }
 
@@ -128,19 +127,22 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
   public AnnotationInfo getNormalizeAnnotationInfo() {
     return this.normalizeAnnotationInfo;
   }
+  public void setNotNull() {
+    this.notNull = true;
+  }
+
+  public boolean isNullable() {
+    return !notNull;
+  }
 
   /**
    * Add a field annotation.
    */
   void addAnnotationDesc(String desc) {
     annotations.add(desc);
-  }
-
-  /**
-   * Return the field name.
-   */
-  public String getName() {
-    return fieldName;
+    if (!notNull && desc.equals(L_EBEAN_NOTNULL)) {
+      notNull = true;
+    }
   }
 
   private boolean isInterceptGet() {
@@ -222,7 +224,11 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
    * This means these properties are lazy initialised on demand.
    */
   public boolean isInitMany() {
-    return isToMany() || isDbArray();
+    return isToMany() || isInitDbArray();
+  }
+
+  private boolean isInitDbArray() {
+    return isDbArray() && (notNull || !classMeta.isAllowNullableDbArray());
   }
 
   private boolean isDbArray() {
@@ -259,14 +265,14 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
    * is actually on a super class.
    */
   boolean isLocalField(ClassMeta classMeta) {
-    return fieldClass.equals(classMeta.getClassName());
+    return fieldClass.equals(classMeta.className());
   }
 
   /**
    * Append byte code to return the Id value (for primitives).
    */
   void appendGetPrimitiveIdValue(MethodVisitor mv, ClassMeta classMeta) {
-    mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.getClassName(), getMethodName, getMethodDesc, false);
+    mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.className(), getMethodName, getMethodDesc, false);
   }
 
   /**
@@ -319,13 +325,13 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
   void appendSwitchGet(MethodVisitor mv, ClassMeta classMeta, boolean intercept) {
     if (intercept) {
       // use the special get method with interception...
-      mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.getClassName(), getMethodName, getMethodDesc, false);
+      mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.className(), getMethodName, getMethodDesc, false);
     } else {
       if (isLocalField(classMeta)) {
-        mv.visitFieldInsn(GETFIELD, classMeta.getClassName(), fieldName, fieldDesc);
+        mv.visitFieldInsn(GETFIELD, classMeta.className(), fieldName, fieldDesc);
       } else {
         // field is on a superclass... so use virtual getNoInterceptMethodName
-        mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.getClassName(), getNoInterceptMethodName, getMethodDesc, false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.className(), getNoInterceptMethodName, getMethodDesc, false);
       }
     }
     if (primitiveType) {
@@ -349,9 +355,9 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
 
     if (intercept) {
       // go through the set method to check for interception...
-      mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.getClassName(), setMethodName, setMethodDesc, false);
+      mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.className(), setMethodName, setMethodDesc, false);
     } else {
-      mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.getClassName(), setNoInterceptMethodName, setMethodDesc, false);
+      mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.className(), setNoInterceptMethodName, setMethodDesc, false);
     }
   }
 
@@ -360,7 +366,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
    */
   public void addGetSetMethods(ClassVisitor cv, ClassMeta classMeta) {
     if (!isLocalField(classMeta)) {
-      String msg = "ERROR: " + fieldClass + " != " + classMeta.getClassName() + " for field "
+      String msg = "ERROR: " + fieldClass + " != " + classMeta.className() + " for field "
         + fieldName + " " + fieldDesc;
       throw new RuntimeException(msg);
     }
@@ -375,7 +381,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
     addSetNoIntercept(cv, classMeta);
   }
 
-  private String getInitCollectionClass() {
+  private String initCollectionClass() {
     final boolean dbArray = isDbArray();
     if (fieldDesc.equals("Ljava/util/List;")) {
       return dbArray ? ARRAYLIST : BEANLIST;
@@ -393,7 +399,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
    * Add a get field method with interception.
    */
   private void addGet(ClassVisitor cw, ClassMeta classMeta) {
-    MethodVisitor mv = cw.visitMethod(classMeta.accProtected(), getMethodName, getMethodDesc, null, null);
+    MethodVisitor mv = cw.visitMethod(classMeta.accAccessor(), getMethodName, getMethodDesc, null, null);
     mv.visitCode();
 
     if (isInitMany()) {
@@ -404,7 +410,7 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
     // ARETURN or IRETURN
     int iReturnOpcode = asmType.getOpcode(Opcodes.IRETURN);
 
-    String className = classMeta.getClassName();
+    String className = classMeta.className();
 
     Label labelEnd = new Label();
     Label labelStart = null;
@@ -468,8 +474,8 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
   }
 
   private void addGetForMany(MethodVisitor mv) {
-    String className = classMeta.getClassName();
-    String ebCollection = getInitCollectionClass();
+    String className = classMeta.className();
+    String ebCollection = initCollectionClass();
 
     Label l0 = new Label();
     mv.visitLabel(l0);
@@ -480,10 +486,10 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
     classMeta.visitMethodInsnIntercept(mv, "preGetter", "(I)V");
 
     Label l4 = new Label();
-    if (classMeta.getEnhanceContext().isCheckNullManyFields()) {
+    if (classMeta.context().isCheckNullManyFields()) {
       if (ebCollection == null) {
         String msg = "Unexpected collection type [" + Type.getType(fieldDesc).getClassName() + "] for ["
-        + classMeta.getClassName() + "." + fieldName + "] expected either java.util.List, java.util.Set or java.util.Map ";
+        + classMeta.className() + "." + fieldName + "] expected either java.util.List, java.util.Set or java.util.Map ";
         throw new RuntimeException(msg);
       }
       Label l3 = new Label();
@@ -578,11 +584,15 @@ public class FieldMeta implements Opcodes, EnhanceConstants, Comparable<FieldMet
 
     // ALOAD or ILOAD etc
     int iLoadOpcode = asmType.getOpcode(Opcodes.ILOAD);
+
     int iStoreOpcode = asmType.getOpcode(Opcodes.ISTORE);
 
     MethodVisitor originalMv = cw.visitMethod(ACC_PROTECTED, setMethodName, setMethodDesc, null, null);
 
     GeneratorAdapter mv = new GeneratorAdapter(originalMv, ACC_PROTECTED, setMethodName, setMethodDesc);
+
+    MethodVisitor mv = cw.visitMethod(classMeta.accAccessor(), setMethodName, setMethodDesc, null, null);
+
     mv.visitCode();
 
     Label l0 = new Label();

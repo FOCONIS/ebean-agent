@@ -86,7 +86,7 @@ class ClassMetaReaderTest {
     ClassMeta classMeta = classMetaReader.get(false, "test.model.SomeTransactionalServiceCls", classLoader);
 
     assertNotNull(classMeta);
-    AnnotationInfo annotationInfo = classMeta.getAnnotationInfo();
+    AnnotationInfo annotationInfo = classMeta.annotationInfo();
     assertEquals(annotationInfo.getValue("getGeneratedKeys"), Boolean.FALSE);
     assertEquals(annotationInfo.getValue("batchSize"), Integer.valueOf(50));
   }
@@ -107,7 +107,7 @@ class ClassMetaReaderTest {
     ClassMeta classMeta = getClassMetaForOverrideTests();
 
     // check class meta annotation
-    AnnotationInfo classAi = classMeta.getAnnotationInfo();
+    AnnotationInfo classAi = classMeta.annotationInfo();
     assertThat(classAi.getValue("batchSize")).isEqualTo(42);
     assertThat((List<Type>) (classAi.getValue("rollbackFor")))
       .containsExactly(Type.getType(IOException.class), Type.getType(IllegalStateException.class));
@@ -120,7 +120,7 @@ class ClassMetaReaderTest {
     ClassMeta classMeta = getClassMetaForOverrideTests();
 
     // Method1 has no annotation, so it must take the annotation from class level
-    AnnotationInfo methodAi = classMeta.getInterfaceTransactionalInfo("someMethod1", "()V");
+    AnnotationInfo methodAi = classMeta.interfaceTransactionalInfo("someMethod1", "()V");
     assertThat(methodAi.getValue("batchSize")).isEqualTo(42);
     assertThat((List<Type>) (methodAi.getValue("rollbackFor")))
       .containsExactly(Type.getType(IOException.class), Type.getType(IllegalStateException.class));
@@ -131,7 +131,7 @@ class ClassMetaReaderTest {
     ClassMeta classMeta = getClassMetaForOverrideTests();
 
     // Method2 has @Transactional(rollbackFor = ArrayIndexOutOfBoundsException.class)
-    AnnotationInfo methodAi = classMeta.getInterfaceTransactionalInfo("someMethod2", "()V");
+    AnnotationInfo methodAi = classMeta.interfaceTransactionalInfo("someMethod2", "()V");
     assertThat(methodAi.getValue("batchSize")).isEqualTo(42);
     assertThat((List<Type>) (methodAi.getValue("rollbackFor")))
       .containsExactly(Type.getType(ArrayIndexOutOfBoundsException.class));
@@ -142,7 +142,7 @@ class ClassMetaReaderTest {
     ClassMeta classMeta = getClassMetaForOverrideTests();
 
     // Method3 has @Transactional(rollbackFor = {})
-    AnnotationInfo methodAi = classMeta.getInterfaceTransactionalInfo("someMethod3", "()V");
+    AnnotationInfo methodAi = classMeta.interfaceTransactionalInfo("someMethod3", "()V");
     assertThat(methodAi.getValue("batchSize")).isEqualTo(42);
     assertThat((List<Type>) (methodAi.getValue("rollbackFor"))).isEmpty();
   }
@@ -152,7 +152,7 @@ class ClassMetaReaderTest {
     ClassMeta classMeta = getClassMetaForOverrideTests();
 
     // Method4 has @Transactional(batchSize = 23)
-    AnnotationInfo methodAi = classMeta.getInterfaceTransactionalInfo("someMethod4", "()V");
+    AnnotationInfo methodAi = classMeta.interfaceTransactionalInfo("someMethod4", "()V");
     assertThat(methodAi.getValue("batchSize")).isEqualTo(23);
     assertThat((List<Type>) (methodAi.getValue("rollbackFor")))
       .containsExactly(Type.getType(IOException.class), Type.getType(IllegalStateException.class));
@@ -163,7 +163,7 @@ class ClassMetaReaderTest {
     ClassMeta classMeta = getClassMetaForOverrideTests();
 
     // Method5 has @Transactional
-    AnnotationInfo methodAi = classMeta.getInterfaceTransactionalInfo("someMethod5", "()V");
+    AnnotationInfo methodAi = classMeta.interfaceTransactionalInfo("someMethod5", "()V");
     assertThat(methodAi.getValue("batchSize")).isEqualTo(42);
     assertThat((List<Type>) (methodAi.getValue("rollbackFor")))
       .containsExactly(Type.getType(IOException.class), Type.getType(IllegalStateException.class));
@@ -174,7 +174,7 @@ class ClassMetaReaderTest {
     ClassMeta classMeta = getClassMetaForOverrideTests();
 
     // Method5 has @Transactional
-    AnnotationInfo methodAi = classMeta.getInterfaceTransactionalInfo("someMethod6", "()V");
+    AnnotationInfo methodAi = classMeta.interfaceTransactionalInfo("someMethod6", "()V");
     assertThat(methodAi.getValue("batchSize")).isEqualTo(0);
     assertThat((List<Type>) (methodAi.getValue("rollbackFor"))).isEmpty();
   }
@@ -185,7 +185,8 @@ class ClassMetaReaderTest {
     try (URLClassLoader emptyClassloader = new URLClassLoader(new URL[0])) {
 
       AgentManifest manifest = new AgentManifest(emptyClassloader);
-      assertThat(manifest.getEnhancementVersion()).isEqualTo(141);
+
+      assertThat(manifest.enhancementVersion()).isEqualTo(141);
 
       EnhanceContext enhanceContext0 = new EnhanceContext(reader,"debug=1", manifest);
       assertThat(enhanceContext0.isEnhancedToString()).isTrue();

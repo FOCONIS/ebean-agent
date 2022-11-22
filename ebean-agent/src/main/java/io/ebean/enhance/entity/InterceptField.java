@@ -11,7 +11,7 @@ import io.ebean.enhance.common.EnhanceConstants;
 /**
  * Generate the _ebean_getIntercept() method and field.
  */
-class InterceptField implements Opcodes, EnhanceConstants {
+final class InterceptField implements Opcodes, EnhanceConstants {
 
   /**
    * Add the _ebean_intercept field.
@@ -32,7 +32,7 @@ class InterceptField implements Opcodes, EnhanceConstants {
    * </pre>
    */
   static void addGetterSetter(ClassVisitor cv, ClassMeta meta) {
-    String className = meta.getClassName();
+    String className = meta.className();
     String lClassName = "L" + className + ";";
 
     MethodVisitor mv;
@@ -74,7 +74,7 @@ class InterceptField implements Opcodes, EnhanceConstants {
    * </pre>
    */
   private static void addInitInterceptMethod(ClassVisitor cv, ClassMeta meta) {
-    String className = meta.getClassName();
+    String className = meta.className();
     MethodVisitor mv = cv.visitMethod(meta.accPublic(), "_ebean_intercept", "()" + L_INTERCEPT, null, null);
     mv.visitCode();
     Label l0 = new Label();

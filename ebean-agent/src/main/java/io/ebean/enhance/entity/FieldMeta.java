@@ -66,8 +66,8 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
     this.setMethodName = "_ebean_set_" + name;
     this.getNoInterceptMethodName = "_ebean_getni_" + name;
     this.setNoInterceptMethodName = "_ebean_setni_" + name;
-    if (classMeta.getEnhanceContext().getPostJsonGetter() != null) {
-      this.postJsonGetter = classMeta.getEnhanceContext().getPostJsonGetter().replace('.', '/');
+    if (classMeta.context().getPostJsonGetter() != null) {
+      this.postJsonGetter = classMeta.context().getPostJsonGetter().replace('.', '/');
     } else {
       this.postJsonGetter = null;
     }
@@ -590,8 +590,6 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
     MethodVisitor originalMv = cw.visitMethod(ACC_PROTECTED, setMethodName, setMethodDesc, null, null);
 
     GeneratorAdapter mv = new GeneratorAdapter(originalMv, ACC_PROTECTED, setMethodName, setMethodDesc);
-
-    MethodVisitor mv = cw.visitMethod(classMeta.accAccessor(), setMethodName, setMethodDesc, null, null);
 
     mv.visitCode();
 

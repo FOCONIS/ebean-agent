@@ -1,7 +1,9 @@
 package io.ebean.enhance.common;
 
 import io.ebean.DB;
+import io.ebean.annotation.DocStore;
 import io.ebean.bean.extend.ExtensionInfo;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import test.model.domain.extend.BEntityBase;
 import test.model.domain.extend.BEntityBaseAbstract;
@@ -14,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * @author Roland Praml, FOCONIS AG
  */
+@Disabled
 public class EntityExtensionTest {
 
 

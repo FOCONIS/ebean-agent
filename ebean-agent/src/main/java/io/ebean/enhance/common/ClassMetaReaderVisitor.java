@@ -65,7 +65,7 @@ class ClassMetaReaderVisitor extends ClassVisitor implements EnhanceConstants {
 
       // we have class level Normalize annotation
       // which will act as default for all methods in this class
-      return new AnnotationInfoVisitor(null, classMeta.getNormalizeAnnotationInfo(), av);
+      return new AnnotationInfoVisitor(null, classMeta.normalizeAnnotationInfo(), av);
 
     } else {
       return av;

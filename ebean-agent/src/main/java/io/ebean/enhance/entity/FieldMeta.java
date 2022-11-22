@@ -3,7 +3,6 @@ package io.ebean.enhance.entity;
 import io.ebean.enhance.asm.*;
 import io.ebean.enhance.asm.commons.GeneratorAdapter;
 import io.ebean.enhance.common.AnnotationInfo;
-
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.VisitUtil;
@@ -66,8 +65,8 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
     this.setMethodName = "_ebean_set_" + name;
     this.getNoInterceptMethodName = "_ebean_getni_" + name;
     this.setNoInterceptMethodName = "_ebean_setni_" + name;
-    if (classMeta.context().getPostJsonGetter() != null) {
-      this.postJsonGetter = classMeta.context().getPostJsonGetter().replace('.', '/');
+    if (classMeta.context().postJsonGetter() != null) {
+      this.postJsonGetter = classMeta.context().postJsonGetter().replace('.', '/');
     } else {
       this.postJsonGetter = null;
     }
@@ -124,7 +123,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
     return primitiveType;
   }
 
-  public AnnotationInfo getNormalizeAnnotationInfo() {
+  public AnnotationInfo normalizeAnnotationInfo() {
     return this.normalizeAnnotationInfo;
   }
   public void setNotNull() {
@@ -489,7 +488,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
     if (classMeta.context().isCheckNullManyFields()) {
       if (ebCollection == null) {
         String msg = "Unexpected collection type [" + Type.getType(fieldDesc).getClassName() + "] for ["
-        + classMeta.className() + "." + fieldName + "] expected either java.util.List, java.util.Set or java.util.Map ";
+          + classMeta.className() + "." + fieldName + "] expected either java.util.List, java.util.Set or java.util.Map ";
         throw new RuntimeException(msg);
       }
       Label l3 = new Label();
@@ -587,7 +586,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
 
     int iStoreOpcode = asmType.getOpcode(Opcodes.ISTORE);
 
-    MethodVisitor originalMv = cw.visitMethod(ACC_PROTECTED, setMethodName, setMethodDesc, null, null);
+    MethodVisitor originalMv = cw.visitMethod(classMeta.accAccessor(), setMethodName, setMethodDesc, null, null);
 
     GeneratorAdapter mv = new GeneratorAdapter(originalMv, ACC_PROTECTED, setMethodName, setMethodDesc);
 
@@ -603,11 +602,11 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
       mv.visitVarInsn(iLoadOpcode, 1);
       for (Type normalizer : normalizers) {
         mv.visitMethodInsn(INVOKESTATIC, normalizer.getInternalName(), "normalize",
-          "(" +  asmType.getDescriptor() +")" +  asmType.getDescriptor(), false);
+          "(" + asmType.getDescriptor() + ")" + asmType.getDescriptor(), false);
       }
       mv.visitVarInsn(iStoreOpcode, 1);
     } else {
-      normalizers = classMeta.getClassNormalizers();
+      normalizers = classMeta.classNormalizers();
       if (normalizers != null && asmType.getDescriptor().equals(L_STRING)) {
         mv.visitVarInsn(iLoadOpcode, 1);
         for (Type normalizer : normalizers) {

@@ -85,7 +85,6 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       if (classMeta.isLog(7)) {
         classMeta.log("read information about superClasses " + superName + " to see if it is entity/embedded/mappedSuperclass");
       }
-
       ClassMeta superMeta = enhanceContext.superMeta(superName, classLoader);
       if (superMeta != null && superMeta.isEntity()) {
         // the superClass is an entity/embedded/mappedSuperclass...
@@ -113,7 +112,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
     if (desc.equals(EnhanceConstants.NORMALIZE_ANNOTATION)) {
       // we have class level Normalize annotation
       // which will act as default for all methods in this class
-      return new AnnotationInfoVisitor(null, classMeta.getNormalizeAnnotationInfo(), av);
+      return new AnnotationInfoVisitor(null, classMeta.normalizeAnnotationInfo(), av);
 
     } else {
       return av;

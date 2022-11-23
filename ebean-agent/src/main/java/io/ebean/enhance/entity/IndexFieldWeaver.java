@@ -76,7 +76,7 @@ final class IndexFieldWeaver implements Opcodes {
     mv.visitCode();
     Label l0 = new Label();
     mv.visitLabel(l0);
-    mv.visitLineNumber(13, l0);
+    mv.visitLineNumber(1, l0);
     mv.visitFieldInsn(GETSTATIC, classMeta.className(), _EBEAN_PROPS, "[Ljava/lang/String;");
     mv.visitInsn(ARETURN);
     Label l1 = new Label();

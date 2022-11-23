@@ -82,7 +82,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
       mv.visitCode();
       Label l0 = new Label();
       mv.visitLabel(l0);
-      mv.visitLineNumber(13, l0);
+      mv.visitLineNumber(1, l0);
       mv.visitFieldInsn(GETSTATIC, classMeta.className(), EXTENSION_INFO_FIELD, "L" + C_EXTENSIONINFO + ";");
       mv.visitInsn(ARETURN);
       Label l1 = new Label();
@@ -132,7 +132,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     Label l1 = new Label();
 
     mv.visitLabel(l0);
-    mv.visitLineNumber(13, l0);
+    mv.visitLineNumber(1, l0);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, classMeta.className(), EXTENSION_STORAGE_FIELD, "[Lio/ebean/bean/EntityBean;");
 
@@ -173,21 +173,23 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
   }
 
   public static MethodVisitor replaceGetterBody(MethodVisitor mv, String className, Type extension) {
-    mv.visitCode();
+   // mv.visitCode();
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(13, l0);
-    mv.visitFieldInsn(GETSTATIC, className, getFieldName(extension), "L" + C_EXTENSIONINFO + ";");
+    mv.visitFieldInsn(GETSTATIC, className, getFieldName(extension), "L" + C_EXTENSIONACCESSOR + ";");
     mv.visitVarInsn(ALOAD, 0);
     mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "getExtension", "(Lio/ebean/bean/extend/ExtendableBean;)Ljava/lang/Object;", true);
     mv.visitTypeInsn(Opcodes.CHECKCAST, className);
     mv.visitInsn(ARETURN);
+
     Label l1 = new Label();
     mv.visitLabel(l1);
     mv.visitLocalVariable("obj", "L" + extension.getInternalName() + ";", null, l0, l1, 0);
     mv.visitMaxs(2, 1);
     mv.visitEnd();
-    return mv;
+
+    return null;
   }
 
   private static String getFieldName(Type extension) {

@@ -3,7 +3,6 @@ package io.ebean.enhance.common;
 import io.ebean.DB;
 import io.ebean.annotation.DocStore;
 import io.ebean.bean.EntityBean;
-import io.ebean.bean.extend.EnhancedEntityExtension;
 import io.ebean.bean.extend.ExtensionInfo;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -24,10 +23,14 @@ public class EntityExtensionTest {
 
   @Test
   void test() throws Exception {
+
+
     DB.getDefault();
 
     BExtension1 ext = new BExtension1();
     assertThat(ext).isInstanceOf(EntityBean.class);
+
+    BExtension1.get(new BEntityBase());
 
     Field field = BEntityBaseAbstract.class.getDeclaredField("_ebean_extensions");
     Object ret = field.get(null);

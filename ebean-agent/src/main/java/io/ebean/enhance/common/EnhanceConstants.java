@@ -48,7 +48,6 @@ public interface EnhanceConstants {
   String C_EXTENSIONINFO = "io/ebean/bean/extend/ExtensionInfo";
 
   String C_EXTENSIONACCESSOR = "io/ebean/bean/extend/ExtensionAccessor";
-  String C_EXTENSIONMANAGER = "io/ebean/bean/extend/ExtensionManager";
   String L_STRING = "Ljava/lang/String;";
   String L_OBJECT = "Ljava/lang/Object;";
   String L_INTERCEPT = "Lio/ebean/bean/EntityBeanIntercept;";

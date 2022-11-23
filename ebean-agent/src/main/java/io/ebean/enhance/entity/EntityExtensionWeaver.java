@@ -46,13 +46,14 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
 
       mv.visitTypeInsn(NEW, C_EXTENSIONINFO);
       mv.visitInsn(DUP);
-      mv.visitLdcInsn(Type.getType("L" + classMeta.className() + ";"));
+      //mv.visitLdcInsn(Type.getType("L" + classMeta.className() + ";"));
+      mv.visitFieldInsn(GETSTATIC, classMeta.className(), "_ebean_props", "[Ljava/lang/String;");
       if (classMeta.isSuperClassEntity()) {
         mv.visitFieldInsn(GETSTATIC, classMeta.superClassName(), EXTENSION_INFO_FIELD, "L" + C_EXTENSIONINFO + ";");
       } else {
         mv.visitInsn(ACONST_NULL);
       }
-      mv.visitMethodInsn(INVOKESPECIAL, C_EXTENSIONINFO, INIT, "(Ljava/lang/Class;Lio/ebean/bean/extend/ExtensionInfo;)V", false);
+      mv.visitMethodInsn(INVOKESPECIAL, C_EXTENSIONINFO, INIT, "([Ljava/lang/String;Lio/ebean/bean/extend/ExtensionInfo;)V", false);
       mv.visitFieldInsn(PUTSTATIC, classMeta.className(), EXTENSION_INFO_FIELD, "L" + C_EXTENSIONINFO + ";");
     }
 
@@ -62,12 +63,12 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
         Label l0 = new Label();
         mv.visitLabel(l0);
         mv.visitLineNumber(1, l0);
-
-        //extension.getClassName()
-
-        mv.visitLdcInsn(extension);
-        mv.visitLdcInsn(Type.getType("L" + classMeta.className() + ";"));
-        mv.visitMethodInsn(INVOKESTATIC, C_EXTENSIONMANAGER, "extend", "(Ljava/lang/Class;Ljava/lang/Class;)Lio/ebean/bean/extend/ExtensionAccessor;", false);
+        mv.visitFieldInsn(GETSTATIC, extension.getInternalName(), EXTENSION_INFO_FIELD, "L" + C_EXTENSIONINFO + ";");
+        //mv.visitLdcInsn(Type.getType("L" + classMeta.className() + ";")); // sourceClass
+        mv.visitTypeInsn(NEW, classMeta.className());
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKESPECIAL, classMeta.className(), "<init>", "()V", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONINFO, "add", "(L" + C_ENTITYBEAN + ";)L" + C_EXTENSIONACCESSOR + ";", false);
         mv.visitFieldInsn(PUTSTATIC, classMeta.className(), getFieldName(extension), "L" + C_EXTENSIONACCESSOR + ";");
       }
     }
@@ -113,7 +114,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
       mv.visitVarInsn(ALOAD, 0);
       mv.visitMethodInsn(INVOKEVIRTUAL, meta.className(), "_ebean_getExtensionInfo", "()Lio/ebean/bean/extend/ExtensionInfo;", false);
       mv.visitMethodInsn(INVOKEVIRTUAL, "io/ebean/bean/extend/ExtensionInfo", "size", "()I", false);
-      mv.visitTypeInsn(ANEWARRAY, "io/ebean/bean/EntityBean");
+      mv.visitTypeInsn(ANEWARRAY, C_ENTITYBEAN);
       mv.visitFieldInsn(PUTFIELD, meta.className(), EXTENSION_STORAGE_FIELD, "[Lio/ebean/bean/EntityBean;");
       return true;
     } else {
@@ -128,11 +129,13 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
 
     MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getExtension", "(ILio/ebean/bean/EntityBeanIntercept;)Lio/ebean/bean/EntityBean;", null, null);
     mv.visitCode();
+
     Label l0 = new Label();
     Label l1 = new Label();
 
     mv.visitLabel(l0);
     mv.visitLineNumber(1, l0);
+
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, classMeta.className(), EXTENSION_STORAGE_FIELD, "[Lio/ebean/bean/EntityBean;");
 
@@ -146,13 +149,16 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.className(), "_ebean_getExtensionInfo", "()L" + C_EXTENSIONINFO + ";", false);
     mv.visitInsn(DUP);
     mv.visitVarInsn(ILOAD, 1); // index
-    mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONINFO, "get", "(I)Lio/ebean/bean/extend/ExtensionInfo$Entry;", false);
+    mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONINFO, "get", "(I)L" + C_EXTENSIONACCESSOR + ";", false);
+
     mv.visitInsn(SWAP);
     mv.visitVarInsn(ILOAD, 1); // index
     mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONINFO, "getOffset", "(I)I", false);
+
     mv.visitVarInsn(ALOAD, 2); // ebi
-    mv.visitMethodInsn(INVOKEVIRTUAL, "io/ebean/bean/extend/ExtensionInfo$Entry", "createInstance", "(ILio/ebean/bean/EntityBeanIntercept;)Lio/ebean/bean/EntityBean;", false);
+    mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "createInstance", "(ILio/ebean/bean/EntityBeanIntercept;)Lio/ebean/bean/EntityBean;", true);
     mv.visitInsn(DUP);
+
     mv.visitVarInsn(ASTORE, 3);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, classMeta.className(), EXTENSION_STORAGE_FIELD, "[Lio/ebean/bean/EntityBean;");
@@ -173,7 +179,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
   }
 
   public static MethodVisitor replaceGetterBody(MethodVisitor mv, String className, Type extension) {
-   // mv.visitCode();
+    // mv.visitCode();
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(13, l0);

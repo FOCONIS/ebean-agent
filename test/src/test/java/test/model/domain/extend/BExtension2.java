@@ -7,7 +7,7 @@ import io.ebean.bean.extend.ExtensionManager;
 /**
  * @author Roland Praml, FOCONIS AG
  */
-@EntityExtension()
+@EntityExtension(BEntityBaseAbstract.class)
 public class BExtension2 {
 
   public static final ExtensionAccessor _extension_id = ExtensionManager.extend(BEntityBaseAbstract.class, BExtension2.class);

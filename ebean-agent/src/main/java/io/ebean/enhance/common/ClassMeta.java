@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import static io.ebean.enhance.Transformer.EBEAN_ASM_VERSION;
 import static io.ebean.enhance.common.EnhanceConstants.C_OBJECT;
 import static io.ebean.enhance.common.EnhanceConstants.C_RECORDTYPE;
+import static io.ebean.enhance.common.EnhanceConstants.ENTITY_EXTENSION_ANNOTATION;
 import static io.ebean.enhance.common.EnhanceConstants.TRANSACTIONAL_ANNOTATION;
 import static io.ebean.enhance.common.EnhanceConstants.TYPEQUERYBEAN_ANNOTATION;
 
@@ -69,7 +70,9 @@ public class ClassMeta {
   private final Map<String, CapturedInitCode> transientInitCode = new LinkedHashMap<>();
   private final LinkedHashMap<String, FieldMeta> fields = new LinkedHashMap<>();
   private final HashSet<String> classAnnotation = new HashSet<>();
-  private final AnnotationInfo annotationInfo = new AnnotationInfo(null);
+  private final AnnotationInfo transactionalAnnotationInfo = new AnnotationInfo(null);
+
+  private final AnnotationInfo extensionAnnotationInfo = new AnnotationInfo(null);
 
   private final AnnotationInfo normalizeAnnotationInfo = new AnnotationInfo(null);
   private final ArrayList<MethodMeta> methodMetaList = new ArrayList<>();
@@ -94,10 +97,13 @@ public class ClassMeta {
    * Return the AnnotationInfo collected on methods.
    * Used to determine Transactional method enhancement.
    */
-  public AnnotationInfo annotationInfo() {
-    return annotationInfo;
+  public AnnotationInfo transactionalAnnotationInfo() {
+    return transactionalAnnotationInfo;
   }
 
+  public AnnotationInfo extensionAnnotationInfo() {
+    return extensionAnnotationInfo;
+  }
 
   public AnnotationInfo normalizeAnnotationInfo() {
     return normalizeAnnotationInfo;
@@ -144,6 +150,10 @@ public class ClassMeta {
 
   public boolean isTransactional() {
     return classAnnotation.contains(TRANSACTIONAL_ANNOTATION);
+  }
+
+  public boolean isEntityExtension() {
+    return classAnnotation.contains(ENTITY_EXTENSION_ANNOTATION);
   }
 
   public void setClassName(String className, String superClassName) {
@@ -336,10 +346,6 @@ public class ClassMeta {
     return classAnnotation.contains(EnhanceConstants.MAPPEDSUPERCLASS_ANNOTATION);
   }
 
-  boolean isEntityExtension() {
-    return classAnnotation.contains(EnhanceConstants.ENTITY_EXTENSION_ANNOTATION);
-  }
-
   /**
    * Return true if this is a query bean.
    */
@@ -397,7 +403,7 @@ public class ClassMeta {
   }
 
   MethodVisitor createMethodVisitor(MethodVisitor mv, String name, String desc) {
-    MethodMeta methodMeta = new MethodMeta(annotationInfo, name, desc);
+    MethodMeta methodMeta = new MethodMeta(transactionalAnnotationInfo, name, desc);
     methodMetaList.add(methodMeta);
     return new MethodReader(mv, methodMeta);
   }
@@ -613,5 +619,13 @@ public class ClassMeta {
       return ann;
     }
     return superMeta == null ? null : superMeta.classNormalizers();
+  }
+
+  public List<Type> entityExtensions() {
+    List<Type> ann = (List<Type>) extensionAnnotationInfo.getValue("value");
+    if (ann != null) {
+      return ann;
+    }
+    return superMeta == null ? null : superMeta.entityExtensions();
   }
 }

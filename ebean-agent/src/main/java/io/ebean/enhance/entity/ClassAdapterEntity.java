@@ -5,11 +5,14 @@ import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
+import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.common.AnnotationInfoVisitor;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.EnhanceContext;
 import io.ebean.enhance.common.NoEnhancementRequiredException;
+
+import java.util.List;
 
 import static io.ebean.enhance.Transformer.EBEAN_ASM_VERSION;
 
@@ -113,7 +116,10 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       // we have class level Normalize annotation
       // which will act as default for all methods in this class
       return new AnnotationInfoVisitor(null, classMeta.normalizeAnnotationInfo(), av);
-
+    } else if (desc.equals(EnhanceConstants.ENTITY_EXTENSION_ANNOTATION)) {
+      // we have class level Normalize annotation
+      // which will act as default for all methods in this class
+      return new AnnotationInfoVisitor(null, classMeta.extensionAnnotationInfo(), av);
     } else {
       return av;
     }
@@ -185,6 +191,25 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       log("--- #### method name[" + name + "] desc[" + desc + "] sig[" + signature + "]");
     }
 
+    // search for get method that returns this cclassMeta
+    // public static THIS_CLASS get(EXTENSION_TYPE param)
+    if (classMeta.isEntityExtension() && (access & Opcodes.ACC_STATIC) != 0
+      && name.equals("get") && desc.endsWith(")L" + classMeta.className() + ";")) {
+
+      Type extension = findExtensionEntry(desc);
+      if (extension != null) {
+
+        MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+
+        return EntityExtensionWeaver.replaceGetterBody(mv, classMeta.className(), extension);
+      }
+
+
+/*      MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+      return new MethodVisitor(api, null) {
+// return dummy method visitor. All code in this method will be ignored
+      };*/
+    }
     if (isConstructor(name, desc)) {
       if (desc.equals(NOARG_VOID)) {
         // ensure public access on the default constructor
@@ -210,6 +235,19 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
     }
     // just leave as is, no interception etc
     return mv;
+  }
+
+  private Type findExtensionEntry(String desc) {
+    List<Type> extensions = classMeta.entityExtensions();
+    if (extensions != null) {
+      for (Type extension : extensions) {
+        // search extension getter, where parameter match.
+        if (desc.startsWith("(L" + extension.getInternalName() + ";)")) {
+          return extension;
+        }
+      }
+    }
+    return null;
   }
 
   /**

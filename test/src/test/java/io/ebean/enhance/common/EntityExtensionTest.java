@@ -46,7 +46,7 @@ public class EntityExtensionTest {
     ExtensionAccessors info = ((EntityBean) base)._ebean_getExtensionAccessors();
     //assertThat(info.getPropertyLength()).isEqualTo(3);
 
-    ret = ((EntityBean) base)._ebean_getExtension(0, null);
+    ret = ((EntityBean) base)._ebean_getExtension(info.iterator().next(), null);
     System.out.println(ret);
   }
 }

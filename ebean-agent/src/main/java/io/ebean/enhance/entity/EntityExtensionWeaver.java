@@ -1,11 +1,6 @@
 package io.ebean.enhance.entity;
 
-import io.ebean.enhance.asm.ClassVisitor;
-import io.ebean.enhance.asm.FieldVisitor;
-import io.ebean.enhance.asm.Label;
-import io.ebean.enhance.asm.MethodVisitor;
-import io.ebean.enhance.asm.Opcodes;
-import io.ebean.enhance.asm.Type;
+import io.ebean.enhance.asm.*;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 
@@ -53,7 +48,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
       } else {
         mv.visitInsn(ACONST_NULL);
       }
-      mv.visitMethodInsn(INVOKESPECIAL, C_EXTENSIONACCESSORS, INIT, "([Ljava/lang/String;L"+C_EXTENSIONACCESSORS+";)V", false);
+      mv.visitMethodInsn(INVOKESPECIAL, C_EXTENSIONACCESSORS, INIT, "([Ljava/lang/String;L" + C_EXTENSIONACCESSORS + ";)V", false);
       mv.visitFieldInsn(PUTSTATIC, classMeta.className(), EXTENSION_ACCESSORS_FIELD, "L" + C_EXTENSIONACCESSORS + ";");
     }
 
@@ -111,9 +106,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     if (meta.entityExtension() && meta.implementsExtendableBeanInterface()) {
       // initialize the EXTENSION_STORAGE field
       mv.visitVarInsn(ALOAD, 0);
-      mv.visitVarInsn(ALOAD, 0);
-      mv.visitFieldInsn(GETSTATIC, meta.className(), EXTENSION_ACCESSORS_FIELD,"L"+C_EXTENSIONACCESSORS+";");
-      //mv.visitMethodInsn(INVOKEVIRTUAL, meta.className(), "_ebean_getExtensionAccessors", "()L"+C_EXTENSIONACCESSORS+";", false);
+      mv.visitFieldInsn(GETSTATIC, meta.className(), EXTENSION_ACCESSORS_FIELD, "L" + C_EXTENSIONACCESSORS + ";");
       mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONACCESSORS, "size", "()I", false);
       mv.visitTypeInsn(ANEWARRAY, C_ENTITYBEAN);
       mv.visitFieldInsn(PUTFIELD, meta.className(), EXTENSION_STORAGE_FIELD, "[Lio/ebean/bean/EntityBean;");
@@ -128,7 +121,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
       return;
     }
 
-    MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getExtension", "(ILio/ebean/bean/EntityBeanIntercept;)Lio/ebean/bean/EntityBean;", null, null);
+    MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getExtension", "(L" + C_EXTENSIONACCESSOR + ";Lio/ebean/bean/EntityBeanIntercept;)Lio/ebean/bean/EntityBean;", null, null);
     mv.visitCode();
 
     Label l0 = new Label();
@@ -140,30 +133,25 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, classMeta.className(), EXTENSION_STORAGE_FIELD, "[Lio/ebean/bean/EntityBean;");
 
-    mv.visitVarInsn(ILOAD, 1); // index
+    mv.visitVarInsn(ALOAD, 1); // C_EXTENSIONACCESSOR
+    mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "getIndex", "()I", true);
     mv.visitInsn(AALOAD); // value storage[i] on stack
     mv.visitInsn(DUP);
     mv.visitJumpInsn(IFNONNULL, l1);
     mv.visitInsn(POP); // take "null" from stack
 
-    mv.visitVarInsn(ALOAD, 0);
-    mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.className(), "_ebean_getExtensionAccessors", "()L" + C_EXTENSIONACCESSORS + ";", false);
-    mv.visitInsn(DUP);
-    mv.visitVarInsn(ILOAD, 1); // index
-    mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONACCESSORS, "get", "(I)L" + C_EXTENSIONACCESSOR + ";", false);
-
-    mv.visitInsn(SWAP);
-    mv.visitVarInsn(ILOAD, 1); // index
-    mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONACCESSORS, "getOffset", "(I)I", false);
-
+    mv.visitFieldInsn(GETSTATIC, classMeta.className(), EXTENSION_ACCESSORS_FIELD, "L" + C_EXTENSIONACCESSORS + ";");
+    mv.visitVarInsn(ALOAD, 1); // C_EXTENSIONACCESSOR
+    //mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONACCESSORS, "getOffset", "(L" + C_EXTENSIONACCESSOR + ";)I", false);
     mv.visitVarInsn(ALOAD, 2); // ebi
-    mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "createInstance", "(ILio/ebean/bean/EntityBeanIntercept;)Lio/ebean/bean/EntityBean;", true);
+    mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONACCESSORS, "createInstance", "(L" + C_EXTENSIONACCESSOR + ";Lio/ebean/bean/EntityBeanIntercept;)Lio/ebean/bean/EntityBean;", false);
     mv.visitInsn(DUP);
 
     mv.visitVarInsn(ASTORE, 3);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, classMeta.className(), EXTENSION_STORAGE_FIELD, "[Lio/ebean/bean/EntityBean;");
-    mv.visitVarInsn(ILOAD, 1); // index
+    mv.visitVarInsn(ALOAD, 1); // C_EXTENSIONACCESSOR
+    mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "getIndex", "()I", true);
     mv.visitVarInsn(ALOAD, 3);
     mv.visitInsn(AASTORE);
 
@@ -186,7 +174,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     mv.visitLineNumber(13, l0);
     mv.visitFieldInsn(GETSTATIC, className, getFieldName(extension), "L" + C_EXTENSIONACCESSOR + ";");
     mv.visitVarInsn(ALOAD, 0);
-    mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "getExtension", "(Lio/ebean/bean/extend/ExtendableBean;)Ljava/lang/Object;", true);
+    mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "getExtension", "(Lio/ebean/bean/extend/ExtendableBean;)L" + C_ENTITYBEAN + ";", true);
     mv.visitTypeInsn(Opcodes.CHECKCAST, className);
     mv.visitInsn(ARETURN);
 

@@ -1,10 +1,8 @@
 package io.ebean.enhance.common;
 
 import io.ebean.DB;
-import io.ebean.annotation.DocStore;
 import io.ebean.bean.EntityBean;
-import io.ebean.bean.extend.ExtensionInfo;
-import org.junit.jupiter.api.Disabled;
+import io.ebean.bean.ExtensionAccessors;
 import org.junit.jupiter.api.Test;
 import test.model.domain.extend.BEntityBase;
 import test.model.domain.extend.BEntityBaseAbstract;
@@ -32,22 +30,23 @@ public class EntityExtensionTest {
 
     BExtension1.get(new BEntityBase());
 
-    Field field = BEntityBaseAbstract.class.getDeclaredField("_ebean_extensions");
+    Field field = BEntityBaseAbstract.class.getDeclaredField("_ebean_extension_accessors");
     Object ret = field.get(null);
     System.out.println(ret);
     BEntityBaseAbstract.class.getDeclaredField("_ebean_extension_storage");
 
-    BEntityBase.class.getDeclaredField("_ebean_extensions");
+    BEntityBase.class.getDeclaredField("_ebean_extension_accessors");
     try {
       BEntityBase.class.getDeclaredField("_ebean_extension_storage");
       fail("exception expected");
-    } catch (NoSuchFieldException e) {}
+    } catch (NoSuchFieldException e) {
+    }
 
     BEntityBase base = new BEntityBase();
-    ExtensionInfo info = base._ebean_getExtensionInfo();
+    ExtensionAccessors info = ((EntityBean) base)._ebean_getExtensionAccessors();
     //assertThat(info.getPropertyLength()).isEqualTo(3);
 
-     ret = base._ebean_getExtension(0, null);
+    ret = ((EntityBean) base)._ebean_getExtension(0, null);
     System.out.println(ret);
   }
 }

@@ -171,7 +171,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       if (isLog(4)) {
         log("... add _ebean_props field");
       }
-      EntityExtensionWeaver.addExtensionInfoField(cv, classMeta);
+      EntityExtensionWeaver.addExtensionAccessorsField(cv, classMeta);
 
       if (!classMeta.isSuperClassEntity()) {
         // only add the intercept and identity fields if
@@ -270,7 +270,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
     }
     IndexFieldWeaver.addGetPropertyNames(cv, classMeta);
     IndexFieldWeaver.addGetPropertyName(cv, classMeta);
-    EntityExtensionWeaver.addGetExtensionInfo(cv, classMeta);
+    EntityExtensionWeaver.addGetExtensionAccessors(cv, classMeta);
     if (!classMeta.isSuperClassEntity()) {
       if (isLog(8)) {
         log("... add _ebean_getIntercept() and _ebean_setIntercept()");

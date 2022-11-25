@@ -16,8 +16,8 @@
   <description>Runs agent tests using</description>
 
   <properties>
-    <ebean.agent.version>13.10.3-SNAPSHOT</ebean.agent.version>
-    <ebean.version>13.10.3-SNAPSHOT</ebean.version>
+    <ebean.agent.version>13.10.3-FOC1-SNAPSHOT</ebean.agent.version>
+    <ebean.version>13.10.3-FOC1-SNAPSHOT</ebean.version>
   </properties>
 
   <dependencies>

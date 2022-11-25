@@ -74,7 +74,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       if (c[i].equals(C_GROOVYOBJECT)) {
         classMeta.setGroovyInterface(true);
       }
-      if (c[i].equals(C_EXTENDABLE_BEAN_I)) {
+      if (c[i].equals(C_EXTENDABLE_BEAN)) {
         classMeta.setExtendableBeanInterface(true);
       }
     }
@@ -181,7 +181,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
         }
         InterceptField.addField(cv, classMeta, enhanceContext.isTransientInternalFields());
         MethodEquals.addIdentityField(cv, classMeta);
-        EntityExtensionWeaver.addStorageField(cv, classMeta, enhanceContext.isTransientInternalFields());
+        EntityExtensionWeaver.addStorageField(cv, classMeta);
 
       }
       firstMethod = false;

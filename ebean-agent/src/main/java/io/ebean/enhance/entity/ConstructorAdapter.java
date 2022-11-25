@@ -1,12 +1,6 @@
 package io.ebean.enhance.entity;
 
-import io.ebean.enhance.asm.AnnotationVisitor;
-import io.ebean.enhance.asm.Attribute;
-import io.ebean.enhance.asm.Handle;
-import io.ebean.enhance.asm.Label;
-import io.ebean.enhance.asm.MethodVisitor;
-import io.ebean.enhance.asm.Opcodes;
-import io.ebean.enhance.asm.TypePath;
+import io.ebean.enhance.asm.*;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 
@@ -137,23 +131,27 @@ final class ConstructorAdapter extends MethodVisitor implements EnhanceConstants
   private void addInitialisationIfRequired(int opcode, String owner, String name, String desc) {
     if (C_MODEL.equals(owner) && INIT.equals(name)) {
       addConstructorInit(owner);
+      EntityExtensionWeaver.addStorageInit(mv, meta);
       return;
     }
     if (opcode == INVOKESPECIAL && name.equals(INIT) && desc.equals(NOARG_VOID)) {
-      if (meta.isSuperClassEntity()) {
-        if (meta.isLog(4)) {
-          meta.log("... skipping intercept <init> ... handled by super class... CONSTRUCTOR: owner:" + owner + " " + constructorDesc);
-        }
-      } else if (owner.equals(meta.className())) {
+      if (owner.equals(meta.className())) {
         if (meta.isLog(4)) {
           meta.log("... skipping intercept <init> ... handled by other constructor... CONSTRUCTOR: owner:" + owner + " " + constructorDesc);
         }
-      } else if (owner.equals(meta.superClassName())) {
-        addConstructorInit(owner);
-      } else {
+      } else if (!owner.equals(meta.superClassName())) {
         if (meta.isLog(4)) {
           meta.log("... skipping intercept <init> ... incorrect type " + owner);
         }
+      } else {
+        if (meta.isSuperClassEntity()) {
+          if (meta.isLog(4)) {
+            meta.log("... skipping intercept <init> ... handled by super class... CONSTRUCTOR: owner:" + owner + " " + constructorDesc);
+          }
+        } else {
+          addConstructorInit(owner);
+        }
+        EntityExtensionWeaver.addStorageInit(mv, meta);
       }
     }
   }

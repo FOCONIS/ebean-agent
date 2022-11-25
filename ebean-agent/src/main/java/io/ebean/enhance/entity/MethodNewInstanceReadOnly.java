@@ -53,6 +53,7 @@ final class MethodNewInstanceReadOnly {
     mv.visitVarInsn(ALOAD, 0);
     mv.visitVarInsn(ALOAD, 1);
     mv.visitMethodInsn(INVOKESPECIAL, meta.superClassName(), "<init>", "(L" + C_ENTITYBEAN + ";)V", false);
+    EntityExtensionWeaver.addStorageInit(mv, meta);
     Label label1 = new Label();
     mv.visitLabel(label1);
     mv.visitLineNumber(13, label1);
@@ -73,6 +74,7 @@ final class MethodNewInstanceReadOnly {
     mv.visitLineNumber(2, label0);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitMethodInsn(INVOKESPECIAL, meta.superClassName(), "<init>", "()V", false);
+    EntityExtensionWeaver.addStorageInit(mv, meta);
     Label label1 = new Label();
     mv.visitLabel(label1);
     mv.visitLineNumber(3, label1);

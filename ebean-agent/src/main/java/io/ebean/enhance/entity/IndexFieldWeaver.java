@@ -6,6 +6,7 @@ import io.ebean.enhance.asm.Label;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
 import io.ebean.enhance.common.ClassMeta;
+import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.VisitUtil;
 
 import java.util.List;
@@ -21,12 +22,12 @@ import static io.ebean.enhance.common.EnhanceConstants.NOARG_VOID;
  * This includes the createCopy, getField and setField methods etc.
  * </p>
  */
-final class IndexFieldWeaver implements Opcodes {
+final class IndexFieldWeaver implements Opcodes, EnhanceConstants {
 
-  private static final String _EBEAN_PROPS = "_ebean_props";
+
 
   static void addPropertiesField(ClassVisitor cv, ClassMeta meta) {
-    FieldVisitor fv = cv.visitField(meta.accPublic() + ACC_STATIC, _EBEAN_PROPS, "[Ljava/lang/String;", null, null);
+    FieldVisitor fv = cv.visitField(meta.accPublic() + ACC_STATIC, PROPS_FIELD, "[Ljava/lang/String;", null, null);
     fv.visitEnd();
   }
 
@@ -34,6 +35,7 @@ final class IndexFieldWeaver implements Opcodes {
     MethodVisitor mv = cv.visitMethod(ACC_STATIC, CLINIT, NOARG_VOID, null, null);
     mv.visitCode();
     addPropertiesInit(mv, classMeta);
+    EntityExtensionWeaver.addExtensionAccessorsInit(mv, classMeta);
 
     Label l1 = new Label();
     mv.visitLabel(l1);
@@ -66,17 +68,17 @@ final class IndexFieldWeaver implements Opcodes {
       }
     }
 
-    mv.visitFieldInsn(PUTSTATIC, classMeta.className(), _EBEAN_PROPS, "[Ljava/lang/String;");
+    mv.visitFieldInsn(PUTSTATIC, classMeta.className(), PROPS_FIELD, "[" + L_STRING);
   }
 
 
   static void addGetPropertyNames(ClassVisitor cv, ClassMeta classMeta) {
-    MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getPropertyNames", "()[Ljava/lang/String;", null, null);
+    MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getPropertyNames", "()[" + L_STRING, null, null);
     mv.visitCode();
     Label l0 = new Label();
     mv.visitLabel(l0);
-    mv.visitLineNumber(13, l0);
-    mv.visitFieldInsn(GETSTATIC, classMeta.className(), _EBEAN_PROPS, "[Ljava/lang/String;");
+    mv.visitLineNumber(1, l0);
+    mv.visitFieldInsn(GETSTATIC, classMeta.className(), PROPS_FIELD, "[" + L_STRING);
     mv.visitInsn(ARETURN);
     Label l1 = new Label();
     mv.visitLabel(l1);
@@ -86,12 +88,12 @@ final class IndexFieldWeaver implements Opcodes {
   }
 
   static void addGetPropertyName(ClassVisitor cv, ClassMeta classMeta) {
-    MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getPropertyName", "(I)Ljava/lang/String;", null, null);
+    MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getPropertyName", "(I)" + L_STRING, null, null);
     mv.visitCode();
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(16, l0);
-    mv.visitFieldInsn(GETSTATIC, classMeta.className(), _EBEAN_PROPS, "[Ljava/lang/String;");
+    mv.visitFieldInsn(GETSTATIC, classMeta.className(), PROPS_FIELD, "[" + L_STRING);
     mv.visitVarInsn(ILOAD, 1);
     mv.visitInsn(AALOAD);
     mv.visitInsn(ARETURN);

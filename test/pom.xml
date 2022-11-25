@@ -13,7 +13,7 @@
   <description>Runs agent tests using</description>
 
   <properties>
-    <ebean.version>13.7.1-FOC7</ebean.version>
+    <ebean.version>13.10.3-FOC2</ebean.version>
   </properties>
 
   <dependencies>

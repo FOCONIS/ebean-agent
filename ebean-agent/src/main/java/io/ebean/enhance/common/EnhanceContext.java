@@ -498,6 +498,10 @@ public final class EnhanceContext {
     return enhancementVersion >= 141;
   }
 
+  public boolean entityExtension() {
+    return enhancementVersion >= 142;
+  }
+
   public boolean supportsProfileWithLine() {
     return enhancementVersion >= 143; // Ebean 13.13.1 onwards
   }

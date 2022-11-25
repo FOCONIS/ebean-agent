@@ -1,2 +1,2 @@
-ebean-version: 141
+ebean-version: 142
 

@@ -40,6 +40,7 @@ public interface EnhanceConstants {
   String C_INTERCEPT_I = "io/ebean/bean/EntityBeanIntercept";
   String C_INTERCEPT_RW = "io/ebean/bean/InterceptReadWrite";
   String C_INTERCEPT_RO = "io/ebean/bean/InterceptReadOnly";
+  String C_INTERCEPT_EXT = "io/ebean/bean/EntityExtensionIntercept";
   String C_BEANCOLLECTION = "io/ebean/bean/BeanCollection";
   String C_TOSTRINGBUILDER = "io/ebean/bean/ToStringBuilder";
 
@@ -51,6 +52,7 @@ public interface EnhanceConstants {
   String L_STRING = "Ljava/lang/String;";
   String L_OBJECT = "Ljava/lang/Object;";
   String L_INTERCEPT = "Lio/ebean/bean/EntityBeanIntercept;";
+  String L_ENTITYBEAN = "Lio/ebean/bean/EntityBean;";
   String L_HELPSCOPETRANS = "Lio/ebeaninternal/api/HelpScopeTrans;";
   String L_DRAFT = "Lio/ebean/annotation/Draft;";
   String C_TXSCOPE = "io/ebean/TxScope";

@@ -24,6 +24,7 @@ public class EntityExtensionTest {
 
 
     DB.getDefault();
+    new BEntityBase();
 
     BExtension1 ext = new BExtension1();
     assertThat(ext).isInstanceOf(EntityBean.class);

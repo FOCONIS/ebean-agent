@@ -289,8 +289,11 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
     MethodSetEmbeddedLoaded.addMethod(cv, classMeta);
     MethodIsEmbeddedNewOrDirty.addMethod(cv, classMeta);
     MethodNewInstance.addMethod(cv, classMeta);
-    MethodNewInstanceReadOnly.interceptAddReadOnly(cv, classMeta);
-    MethodNewInstanceIntercept.interceptAddIntercept(cv, classMeta);
+    if (classMeta.isEntityExtension()) {
+      MethodNewInstanceIntercept.interceptAddIntercept(cv, classMeta);
+    } else {
+      MethodNewInstanceReadOnly.interceptAddReadOnly(cv, classMeta);
+    }
     MethodToString.addMethod(cv, classMeta);
 
     // register with the agentContext

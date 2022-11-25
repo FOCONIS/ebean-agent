@@ -29,10 +29,10 @@ public class NewEntityBeanInterceptTest {
   void test() {
     BExtends bean = new BExtends();
     EntityBean bean1 = (EntityBean) bean;
-    EntityBeanIntercept ebi = Mockito.mock(EntityBeanIntercept.class);
-    EntityBean bean2 = (EntityBean) bean1._ebean_newInstanceIntercept(ebi);
 
-    assertEquals(bean2._ebean_getIntercept(), ebi);
+    EntityBean bean2 = (EntityBean) bean1._ebean_newExtendedInstance(1, bean1);
+
+    assertEquals(bean2._ebean_getIntercept(), bean1._ebean_getIntercept());
 
 
   }

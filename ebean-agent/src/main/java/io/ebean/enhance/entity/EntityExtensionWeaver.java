@@ -122,7 +122,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
       return;
     }
 
-    MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getExtension", "(L" + C_EXTENSIONACCESSOR + ";Lio/ebean/bean/EntityBeanIntercept;)Lio/ebean/bean/EntityBean;", null, null);
+    MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getExtension", "(L" + C_EXTENSIONACCESSOR + ";L" + C_ENTITYBEAN + ";)L" + C_ENTITYBEAN + ";", null, null);
     mv.visitCode();
 
     Label l0 = new Label();
@@ -132,7 +132,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     mv.visitLineNumber(1, l0);
 
     mv.visitVarInsn(ALOAD, 0);
-    mv.visitFieldInsn(GETFIELD, classMeta.className(), EXTENSION_STORAGE_FIELD, "[Lio/ebean/bean/EntityBean;");
+    mv.visitFieldInsn(GETFIELD, classMeta.className(), EXTENSION_STORAGE_FIELD, "[L" + C_ENTITYBEAN + ";");
 
     mv.visitVarInsn(ALOAD, 1); // C_EXTENSIONACCESSOR
     mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "getIndex", "()I", true);
@@ -144,9 +144,8 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     mv.visitVarInsn(ALOAD, 0);
     mv.visitMethodInsn(INVOKEVIRTUAL, classMeta.className(), "_ebean_getExtensionAccessors", "()L" + C_EXTENSIONACCESSORS + ";", false);
     mv.visitVarInsn(ALOAD, 1); // C_EXTENSIONACCESSOR
-    //mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONACCESSORS, "getOffset", "(L" + C_EXTENSIONACCESSOR + ";)I", false);
-    mv.visitVarInsn(ALOAD, 2); // ebi
-    mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONACCESSORS, "createInstance", "(L" + C_EXTENSIONACCESSOR + ";Lio/ebean/bean/EntityBeanIntercept;)Lio/ebean/bean/EntityBean;", false);
+    mv.visitVarInsn(ALOAD, 0); // base
+    mv.visitMethodInsn(INVOKEVIRTUAL, C_EXTENSIONACCESSORS, "createInstance", "(L" + C_EXTENSIONACCESSOR + ";L" + C_ENTITYBEAN + ";)L" + C_ENTITYBEAN + ";", false);
     mv.visitInsn(DUP);
 
     mv.visitVarInsn(ASTORE, 3);

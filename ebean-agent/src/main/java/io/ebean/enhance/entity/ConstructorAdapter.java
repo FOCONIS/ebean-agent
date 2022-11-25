@@ -170,6 +170,8 @@ final class ConstructorAdapter extends MethodVisitor implements EnhanceConstants
       System.err.println(msg);
 
     } else {
+      EntityExtensionWeaver.addStorageInit(mv, meta);
+
       // add the initialisation of the intercept object
       super.visitVarInsn(ALOAD, 0);
       super.visitTypeInsn(NEW, meta.interceptNew());

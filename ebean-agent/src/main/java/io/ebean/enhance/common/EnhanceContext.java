@@ -468,4 +468,8 @@ public final class EnhanceContext {
   public boolean interceptAddReadOnly() {
     return enhancementVersion >= 141;
   }
+
+  public boolean entityExtension() {
+    return enhancementVersion >= 142;
+  }
 }

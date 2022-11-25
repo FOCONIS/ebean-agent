@@ -1,7 +1,6 @@
 package test.enhancement;
 
 import io.ebean.enhance.asm.Type;
-import io.ebean.enhance.common.*;
 import io.ebean.enhance.entity.ClassPathClassBytesReader;
 import org.junit.jupiter.api.Test;
 
@@ -10,14 +9,12 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 
-import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.common.AgentManifest;
 import io.ebean.enhance.common.AnnotationInfo;
 import io.ebean.enhance.common.ClassMetaCache;
 
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.ClassMetaReader;
-import io.ebean.enhance.entity.ClassPathClassBytesReader;
 import io.ebean.enhance.common.EnhanceContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,7 +83,7 @@ class ClassMetaReaderTest {
     ClassMeta classMeta = classMetaReader.get(false, "test.model.SomeTransactionalServiceCls", classLoader);
 
     assertNotNull(classMeta);
-    AnnotationInfo annotationInfo = classMeta.annotationInfo();
+    AnnotationInfo annotationInfo = classMeta.transactionalAnnotationInfo();
     assertEquals(annotationInfo.getValue("getGeneratedKeys"), Boolean.FALSE);
     assertEquals(annotationInfo.getValue("batchSize"), Integer.valueOf(50));
   }
@@ -107,7 +104,7 @@ class ClassMetaReaderTest {
     ClassMeta classMeta = getClassMetaForOverrideTests();
 
     // check class meta annotation
-    AnnotationInfo classAi = classMeta.annotationInfo();
+    AnnotationInfo classAi = classMeta.transactionalAnnotationInfo();
     assertThat(classAi.getValue("batchSize")).isEqualTo(42);
     assertThat((List<Type>) (classAi.getValue("rollbackFor")))
       .containsExactly(Type.getType(IOException.class), Type.getType(IllegalStateException.class));
@@ -186,7 +183,7 @@ class ClassMetaReaderTest {
 
       AgentManifest manifest = new AgentManifest(emptyClassloader);
 
-      assertThat(manifest.enhancementVersion()).isEqualTo(141);
+      assertThat(manifest.enhancementVersion()).isEqualTo(142);
 
       EnhanceContext enhanceContext0 = new EnhanceContext(reader,"debug=1", manifest);
       assertThat(enhanceContext0.isEnhancedToString()).isTrue();

@@ -20,9 +20,13 @@ public interface EnhanceConstants {
   String DOCSTORE_ANNOTATION = "Lio/ebean/annotation/DocStore;";
   String EMBEDDABLE_ANNOTATION = "Ljavax/persistence/Embeddable;";
   String MAPPEDSUPERCLASS_ANNOTATION = "Ljavax/persistence/MappedSuperclass;";
+  String ENTITY_EXTENSION_ANNOTATION = "Lio/ebean/bean/extend/EntityExtension;";
 
   String IDENTITY_FIELD = "_ebean_identity";
   String INTERCEPT_FIELD = "_ebean_intercept";
+  String PROPS_FIELD = "_ebean_props";
+  String EXTENSION_ACCESSORS_FIELD = "_ebean_extension_accessors";
+  String EXTENSION_STORAGE_FIELD = "_ebean_extension_storage";
   String C_OBJECT = "java/lang/Object";
   String C_MODEL = "io/ebean/Model";
   String C_QUERYBEAN = "io/ebean/typequery/TQRootBean";
@@ -34,12 +38,19 @@ public interface EnhanceConstants {
   String C_INTERCEPT_I = "io/ebean/bean/EntityBeanIntercept";
   String C_INTERCEPT_RW = "io/ebean/bean/InterceptReadWrite";
   String C_INTERCEPT_RO = "io/ebean/bean/InterceptReadOnly";
+  String C_INTERCEPT_EXT = "io/ebean/bean/EntityExtensionIntercept";
   String C_BEANCOLLECTION = "io/ebean/bean/BeanCollection";
   String C_TOSTRINGBUILDER = "io/ebean/bean/ToStringBuilder";
 
+  String C_EXTENDABLE_BEAN = "io/ebean/bean/extend/ExtendableBean";
+  String C_EXTENSIONACCESSORS = "io/ebean/bean/ExtensionAccessors";
+  String C_EXTENSIONACCESSOR = "io/ebean/bean/ExtensionAccessor";
   String L_STRING = "Ljava/lang/String;";
   String L_OBJECT = "Ljava/lang/Object;";
   String L_INTERCEPT = "Lio/ebean/bean/EntityBeanIntercept;";
+  String L_ENTITYBEAN = "Lio/ebean/bean/EntityBean;";
+  String L_EXTENSIONACCESSORS = "Lio/ebean/bean/ExtensionAccessors;";
+  String L_EXTENSIONACCESSOR = "Lio/ebean/bean/ExtensionAccessor;";
   String L_HELPSCOPETRANS = "Lio/ebeaninternal/api/HelpScopeTrans;";
   String L_DRAFT = "Lio/ebean/annotation/Draft;";
   String C_TXSCOPE = "io/ebean/TxScope";

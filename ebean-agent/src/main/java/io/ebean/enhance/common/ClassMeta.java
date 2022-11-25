@@ -1,33 +1,14 @@
 package io.ebean.enhance.common;
 
-import io.ebean.enhance.asm.AnnotationVisitor;
-import io.ebean.enhance.asm.ClassVisitor;
-import io.ebean.enhance.asm.FieldVisitor;
-import io.ebean.enhance.asm.MethodVisitor;
-import io.ebean.enhance.asm.Type;
-import io.ebean.enhance.entity.CapturedInitCode;
-import io.ebean.enhance.entity.FieldMeta;
-import io.ebean.enhance.entity.LocalFieldVisitor;
-import io.ebean.enhance.entity.MessageOutput;
-import io.ebean.enhance.entity.MethodMeta;
+import io.ebean.enhance.asm.*;
+import io.ebean.enhance.entity.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static io.ebean.enhance.Transformer.EBEAN_ASM_VERSION;
-import static io.ebean.enhance.common.EnhanceConstants.C_OBJECT;
-import static io.ebean.enhance.common.EnhanceConstants.C_RECORDTYPE;
-import static io.ebean.enhance.common.EnhanceConstants.ENTITY_EXTENSION_ANNOTATION;
-import static io.ebean.enhance.common.EnhanceConstants.TRANSACTIONAL_ANNOTATION;
-import static io.ebean.enhance.common.EnhanceConstants.TYPEQUERYBEAN_ANNOTATION;
+import static io.ebean.enhance.common.EnhanceConstants.*;
 
 /**
  * Holds the meta data for an entity bean class that is being enhanced.
@@ -621,11 +602,10 @@ public class ClassMeta {
     return superMeta == null ? null : superMeta.classNormalizers();
   }
 
+  /**
+   * Returns the value of the &#64;EntityExtension annotation. Note that EntityExtensions shoud be final.
+   */
   public List<Type> entityExtensions() {
-    List<Type> ann = (List<Type>) extensionAnnotationInfo.getValue("value");
-    if (ann != null) {
-      return ann;
-    }
-    return superMeta == null ? null : superMeta.entityExtensions();
+    return (List<Type>) extensionAnnotationInfo.getValue("value");
   }
 }

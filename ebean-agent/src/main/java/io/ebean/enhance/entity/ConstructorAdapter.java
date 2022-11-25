@@ -181,7 +181,6 @@ final class ConstructorAdapter extends MethodVisitor implements EnhanceConstants
       super.visitMethodInsn(INVOKESPECIAL, meta.interceptNew(), INIT, "(Ljava/lang/Object;)V", false);
       super.visitFieldInsn(PUTFIELD, className, INTERCEPT_FIELD, EnhanceConstants.L_INTERCEPT);
 
-
       if (meta.isLog(8)) {
         meta.log("... constructorInitializationDone " + owner);
       }

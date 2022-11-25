@@ -256,7 +256,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     mv.visitLineNumber(13, l0);
     mv.visitFieldInsn(GETSTATIC, className, getFieldName(extension), L_EXTENSIONACCESSOR);
     mv.visitVarInsn(ALOAD, 0);
-    mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "getExtension", "(L" + C_EXTENDABLE_BEAN + ")L" + C_ENTITYBEAN + ";", true);
+    mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "getExtension", "(L" + C_EXTENDABLE_BEAN + ";)" + L_ENTITYBEAN , true);
     mv.visitTypeInsn(Opcodes.CHECKCAST, className);
     mv.visitInsn(ARETURN);
 

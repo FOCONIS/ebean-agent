@@ -126,6 +126,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
   public AnnotationInfo normalizeAnnotationInfo() {
     return this.normalizeAnnotationInfo;
   }
+
   public void setNotNull() {
     this.notNull = true;
   }

@@ -1,16 +1,7 @@
 package io.ebean.enhance.entity;
 
-import io.ebean.enhance.asm.AnnotationVisitor;
-import io.ebean.enhance.asm.ClassVisitor;
-import io.ebean.enhance.asm.FieldVisitor;
-import io.ebean.enhance.asm.MethodVisitor;
-import io.ebean.enhance.asm.Opcodes;
-import io.ebean.enhance.asm.Type;
-import io.ebean.enhance.common.AnnotationInfoVisitor;
-import io.ebean.enhance.common.ClassMeta;
-import io.ebean.enhance.common.EnhanceConstants;
-import io.ebean.enhance.common.EnhanceContext;
-import io.ebean.enhance.common.NoEnhancementRequiredException;
+import io.ebean.enhance.asm.*;
+import io.ebean.enhance.common.*;
 
 import java.util.List;
 
@@ -191,11 +182,12 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       log("--- #### method name[" + name + "] desc[" + desc + "] sig[" + signature + "]");
     }
 
-    // search for get method that returns this cclassMeta
-    // public static THIS_CLASS get(EXTENSION_TYPE param)
+    // search for get method that mathches this signature:
+    //   public static THIS_CLASS get(EXTENSION_TYPE param)
     if (classMeta.isEntityExtension() && (access & Opcodes.ACC_STATIC) != 0
-      && name.equals("get") && desc.endsWith(")L" + classMeta.className() + ";")) {
-
+      && name.equals("get")
+      && Type.getReturnType(desc).getInternalName().equals(classMeta.className())
+      && Type.getArgumentTypes(desc).length == 1) {
       Type extension = findExtensionEntry(desc);
       if (extension != null) {
 
@@ -203,12 +195,6 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
 
         return EntityExtensionWeaver.replaceGetterBody(mv, classMeta.className(), extension);
       }
-
-
-/*      MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-      return new MethodVisitor(api, null) {
-// return dummy method visitor. All code in this method will be ignored
-      };*/
     }
     if (isConstructor(name, desc)) {
       if (desc.equals(NOARG_VOID)) {
@@ -240,10 +226,13 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
   private Type findExtensionEntry(String desc) {
     List<Type> extensions = classMeta.entityExtensions();
     if (extensions != null) {
-      for (Type extension : extensions) {
-        // search extension getter, where parameter match.
-        if (desc.startsWith("(L" + extension.getInternalName() + ";)")) {
-          return extension;
+      Type[] types = Type.getArgumentTypes(desc);
+      if (types.length == 1) {
+        for (Type extension : extensions) {
+          // search extension getter, where parameter match.
+          if (types[0].equals(extension)) {
+            return extension;
+          }
         }
       }
     }

@@ -470,6 +470,6 @@ public final class EnhanceContext {
   }
 
   public boolean entityExtension() {
-    return enhancementVersion >= 141;
+    return enhancementVersion >= 142;
   }
 }

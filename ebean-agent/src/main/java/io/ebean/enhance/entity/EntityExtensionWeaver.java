@@ -12,9 +12,10 @@ import java.util.List;
 class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
 
   /**
-   * if class extends ExtendableBean, this will add the field
+   * if class extends ExtendableBean, this will add the fields
    * <pre>
    *   public static ExtensionAccessors _ebean_extension_accessors;
+   *   private EntityBean[] _ebean_extension_storage;
    * </pre>
    * <p>
    * and if class is annotated with &#64;EntityExtension(my.pkg.Foo.class, my.pkg.Bar.class) it will add the fields
@@ -23,14 +24,22 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
    *   private static ExtensionAccessor _ebean_acc_my_pkg_Bar;
    * </pre>
    */
-  public static void addExtensionAccessorsField(ClassVisitor cv, ClassMeta meta) {
+  public static void addFields(ClassVisitor cv, ClassMeta meta) {
     if (!meta.entityExtension()) {
       return; // agent does not support EntityExtension enhancement
     }
     if (meta.implementsExtendableBeanInterface()) {
+      // add static field to each class
       FieldVisitor fv = cv.visitField(meta.accPublic() + ACC_STATIC + ACC_FINAL, EXTENSION_ACCESSORS_FIELD, L_EXTENSIONACCESSORS, null, null);
       fv.visitEnd();
+
+      if (!meta.superImplementsExtendableBeanInterface()) {
+        // add storage field to top class only
+        FieldVisitor f1 = cv.visitField(meta.accPrivate(), EXTENSION_STORAGE_FIELD, "[" + L_ENTITYBEAN, null, null);
+        f1.visitEnd();
+      }
     }
+    // Add accessor fields to each class annotated with @EntityExtension
     List<Type> extensions = meta.entityExtensions();
     if (extensions != null) {
       for (Type extension : extensions) {
@@ -39,6 +48,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
       }
     }
   }
+
 
   /**
    * Initializes the fields:
@@ -66,7 +76,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
       mv.visitTypeInsn(NEW, C_EXTENSIONACCESSORS);
       mv.visitInsn(DUP);
       mv.visitFieldInsn(GETSTATIC, classMeta.className(), PROPS_FIELD, "[" + L_STRING);
-      if (classMeta.isSuperClassEntity()) {
+      if (classMeta.superImplementsExtendableBeanInterface()) {
         mv.visitFieldInsn(GETSTATIC, classMeta.superClassName(), EXTENSION_ACCESSORS_FIELD, L_EXTENSIONACCESSORS);
       } else {
         mv.visitInsn(ACONST_NULL);
@@ -91,6 +101,19 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     }
   }
 
+
+  public static void addGetters(ClassVisitor cv, ClassMeta classMeta) {
+    if (!classMeta.entityExtension()) {
+      return;
+    }
+    if (classMeta.implementsExtendableBeanInterface()) {
+      addGetExtensionAccessors(cv, classMeta);
+      if (!classMeta.superImplementsExtendableBeanInterface()) {
+        addGetExtension(cv, classMeta);
+      }
+    }
+  }
+
   /**
    * Adds the _ebean_getExtensionAccessors method:
    * <pre>
@@ -103,10 +126,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
    * @param cv
    * @param classMeta
    */
-  public static void addGetExtensionAccessors(ClassVisitor cv, ClassMeta classMeta) {
-    if (!classMeta.entityExtension()) {
-      return;
-    }
+  private static void addGetExtensionAccessors(ClassVisitor cv, ClassMeta classMeta) {
     if (classMeta.implementsExtendableBeanInterface()) {
       MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getExtensionAccessors", "()" + L_EXTENSIONACCESSORS, null, null);
       mv.visitCode();
@@ -131,8 +151,8 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
    * </pre>
    * Each extendableBean holds space for all extensions that extend this bean.
    */
-  static void addStorageField(ClassVisitor cv, ClassMeta meta) {
-    if (meta.entityExtension() && meta.implementsExtendableBeanInterface()) {
+  private static void addStorageField(ClassVisitor cv, ClassMeta meta) {
+    if (meta.implementsExtendableBeanInterface() && !meta.superImplementsExtendableBeanInterface()) {
       FieldVisitor f1 = cv.visitField(meta.accPrivate(), EXTENSION_STORAGE_FIELD, "[" + L_ENTITYBEAN, null, null);
       f1.visitEnd();
     }
@@ -147,6 +167,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
   static void addStorageInit(MethodVisitor mv, ClassMeta meta) {
     if (meta.entityExtension() && meta.implementsExtendableBeanInterface()) {
       // initialize the EXTENSION_STORAGE field
+      System.out.println("STORAGE INIT ADDED TO: " + meta.className());
       mv.visitVarInsn(ALOAD, 0);
       mv.visitVarInsn(ALOAD, 0);
       mv.visitMethodInsn(INVOKEVIRTUAL, meta.className(), "_ebean_getExtensionAccessors", "()" + L_EXTENSIONACCESSORS, false);
@@ -169,11 +190,11 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
    *   }
    * </pre>
    */
-  public static void addGetExtension(ClassVisitor cv, ClassMeta classMeta) {
+  private static void addGetExtension(ClassVisitor cv, ClassMeta classMeta) {
     if (!classMeta.entityExtension() || !classMeta.implementsExtendableBeanInterface()) {
       return;
     }
-
+    System.out.println("STORAGE GETTER ADDED TO: " + classMeta.className());
     MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getExtension", "(" + L_EXTENSIONACCESSOR + ")" + L_ENTITYBEAN, null, null);
     mv.visitCode();
 
@@ -250,13 +271,13 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
    * </pre>
    */
   public static MethodVisitor replaceGetterBody(MethodVisitor mv, String className, Type extension) {
-    // mv.visitCode();
+
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(13, l0);
     mv.visitFieldInsn(GETSTATIC, className, getFieldName(extension), L_EXTENSIONACCESSOR);
     mv.visitVarInsn(ALOAD, 0);
-    mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "getExtension", "(L" + C_EXTENDABLE_BEAN + ";)" + L_ENTITYBEAN , true);
+    mv.visitMethodInsn(INVOKEINTERFACE, C_EXTENSIONACCESSOR, "getExtension", "(L" + C_EXTENDABLE_BEAN + ";)" + L_ENTITYBEAN, true);
     mv.visitTypeInsn(Opcodes.CHECKCAST, className);
     mv.visitInsn(ARETURN);
 

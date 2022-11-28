@@ -579,7 +579,11 @@ public class ClassMeta {
   }
 
   public boolean implementsExtendableBeanInterface() {
-    return hasExtendableBeanInterface || (superMeta != null && superMeta.implementsExtendableBeanInterface());
+    return hasExtendableBeanInterface || superImplementsExtendableBeanInterface();
+  }
+
+  public boolean superImplementsExtendableBeanInterface() {
+    return superMeta != null && superMeta.implementsExtendableBeanInterface();
   }
 
   public void setExtendableBeanInterface(boolean hasExtendableBeanInterface) {

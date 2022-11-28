@@ -7,7 +7,7 @@ import io.ebean.bean.extend.EntityExtension;
 /**
  * @author Roland Praml, FOCONIS AG
  */
-@EntityExtension(BEntityBaseAbstract.class)
+@EntityExtension({BEntityBaseAbstract.class, BEntityExtendable.class})
 @EbeanComponent
 public class BExtension1 {
 
@@ -16,5 +16,7 @@ public class BExtension1 {
   public static BExtension1 get(BEntityBaseAbstract obj) {
     throw new NotEnhancedException();
   }
-
+  public static BExtension1 get(BEntityExtendable obj) {
+    throw new NotEnhancedException();
+  }
 }

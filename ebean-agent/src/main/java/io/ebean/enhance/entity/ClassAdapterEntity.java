@@ -162,7 +162,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       if (isLog(4)) {
         log("... add _ebean_props field");
       }
-      EntityExtensionWeaver.addExtensionAccessorsField(cv, classMeta);
+      EntityExtensionWeaver.addFields(cv, classMeta);
 
       if (!classMeta.isSuperClassEntity()) {
         // only add the intercept and identity fields if
@@ -172,8 +172,6 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
         }
         InterceptField.addField(cv, classMeta, enhanceContext.isTransientInternalFields());
         MethodEquals.addIdentityField(cv, classMeta);
-        EntityExtensionWeaver.addStorageField(cv, classMeta);
-
       }
       firstMethod = false;
     }
@@ -259,14 +257,14 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
     }
     IndexFieldWeaver.addGetPropertyNames(cv, classMeta);
     IndexFieldWeaver.addGetPropertyName(cv, classMeta);
-    EntityExtensionWeaver.addGetExtensionAccessors(cv, classMeta);
+    EntityExtensionWeaver.addGetters(cv, classMeta);
     if (!classMeta.isSuperClassEntity()) {
       if (isLog(8)) {
         log("... add _ebean_getIntercept() and _ebean_setIntercept()");
       }
       InterceptField.addGetterSetter(cv, classMeta);
-      EntityExtensionWeaver.addGetExtension(cv, classMeta);
     }
+
 
     // Add the field set/get methods which are used in place
     // of GETFIELD PUTFIELD instructions

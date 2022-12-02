@@ -128,18 +128,33 @@
     </pluginRepository>
   </pluginRepositories>
 
-  <distributionManagement>
-    <repository>
-      <id>foconis-release</id>
-      <name>FOCONIS Release Repository</name>
-      <url>https://mvnrepo.foconis.de/repository/release/</url>
-    </repository>
-    <snapshotRepository>
-      <id>foconis-snapshot</id>
-      <name>FOCONIS Snapshot Repository</name>
-      <url>https://mvnrepo.foconis.de/repository/snapshot/</url>
-    </snapshotRepository>
-  </distributionManagement>
+  <profiles>
+    <profile>
+      <id>foconis</id>
+      <distributionManagement>
+        <repository>
+          <id>foconis-release</id>
+          <name>FOCONIS Release Repository</name>
+          <url>https://mvnrepo.foconis.de/repository/release/</url>
+        </repository>
+        <snapshotRepository>
+          <id>foconis-snapshot</id>
+          <name>FOCONIS Snapshot Repository</name>
+          <url>https://mvnrepo.foconis.de/repository/snapshot/</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>github</id>
+      <distributionManagement>
+        <repository>
+          <id>github-release</id>
+          <name>FOCONIS Github Release Repository</name>
+          <url>https://maven.pkg.github.com/foconis/ebean-agent</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>

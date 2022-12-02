@@ -117,7 +117,7 @@
 <!--    </repository>-->
     <repository>
       <id>github-release</id>
-      <url>https://maven.pkg.github.com/foconis/ebean-agent</url>
+      <url>https://maven.pkg.github.com/foconis/ebean</url>
     </repository>
   </repositories>
 
@@ -132,7 +132,7 @@
 <!--    </pluginRepository>-->
     <pluginRepository>
       <id>github-release</id>
-      <url>https://maven.pkg.github.com/foconis/ebean-agent</url>
+      <url>https://maven.pkg.github.com/foconis/ebean</url>
     </pluginRepository>
   </pluginRepositories>
 

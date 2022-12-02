@@ -107,24 +107,32 @@
 
   </dependencies>
   <repositories>
+<!--    <repository>-->
+<!--      <id>foconis-release</id>-->
+<!--      <url>https://mvnrepo.foconis.de/repository/release/</url>-->
+<!--    </repository>-->
+<!--    <repository>-->
+<!--      <id>foconis-snapshot</id>-->
+<!--      <url>https://mvnrepo.foconis.de/repository/snapshot/</url>-->
+<!--    </repository>-->
     <repository>
-      <id>foconis-release</id>
-      <url>https://mvnrepo.foconis.de/repository/release/</url>
-    </repository>
-    <repository>
-      <id>foconis-snapshot</id>
-      <url>https://mvnrepo.foconis.de/repository/snapshot/</url>
+      <id>github-release</id>
+      <url>https://maven.pkg.github.com/foconis/ebean-agent</url>
     </repository>
   </repositories>
 
   <pluginRepositories>
+<!--    <pluginRepository>-->
+<!--      <id>foconis-release</id>-->
+<!--      <url>https://mvnrepo.foconis.de/repository/release/</url>-->
+<!--    </pluginRepository>-->
+<!--    <pluginRepository>-->
+<!--      <id>foconis-snapshot</id>-->
+<!--      <url>https://mvnrepo.foconis.de/repository/snapshot/</url>-->
+<!--    </pluginRepository>-->
     <pluginRepository>
-      <id>foconis-release</id>
-      <url>https://mvnrepo.foconis.de/repository/release/</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>foconis-snapshot</id>
-      <url>https://mvnrepo.foconis.de/repository/snapshot/</url>
+      <id>github-release</id>
+      <url>https://maven.pkg.github.com/foconis/ebean-agent</url>
     </pluginRepository>
   </pluginRepositories>
 

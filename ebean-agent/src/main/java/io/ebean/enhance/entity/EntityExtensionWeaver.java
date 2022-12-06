@@ -167,7 +167,6 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
   static void addStorageInit(MethodVisitor mv, ClassMeta meta) {
     if (meta.entityExtension() && meta.implementsExtendableBeanInterface()) {
       // initialize the EXTENSION_STORAGE field
-      System.out.println("STORAGE INIT ADDED TO: " + meta.className());
       mv.visitVarInsn(ALOAD, 0);
       mv.visitVarInsn(ALOAD, 0);
       mv.visitMethodInsn(INVOKEVIRTUAL, meta.className(), "_ebean_getExtensionAccessors", "()" + L_EXTENSIONACCESSORS, false);
@@ -194,7 +193,6 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     if (!classMeta.entityExtension() || !classMeta.implementsExtendableBeanInterface()) {
       return;
     }
-    System.out.println("STORAGE GETTER ADDED TO: " + classMeta.className());
     MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getExtension", "(" + L_EXTENSIONACCESSOR + ")" + L_ENTITYBEAN, null, null);
     mv.visitCode();
 

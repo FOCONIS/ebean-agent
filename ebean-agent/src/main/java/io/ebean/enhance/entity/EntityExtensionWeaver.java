@@ -1,6 +1,11 @@
 package io.ebean.enhance.entity;
 
-import io.ebean.enhance.asm.*;
+import io.ebean.enhance.asm.ClassVisitor;
+import io.ebean.enhance.asm.FieldVisitor;
+import io.ebean.enhance.asm.Label;
+import io.ebean.enhance.asm.MethodVisitor;
+import io.ebean.enhance.asm.Opcodes;
+import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 
@@ -110,6 +115,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
       addGetExtensionAccessors(cv, classMeta);
       if (!classMeta.superImplementsExtendableBeanInterface()) {
         addGetExtension(cv, classMeta);
+        addGetExtensions(cv, classMeta);
       }
     }
   }
@@ -143,21 +149,6 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     }
   }
 
-
-  /**
-   * Add the _ebean_extension_storage field.
-   * <pre>
-   *   private EntityBean[] _ebean_extension_storage;
-   * </pre>
-   * Each extendableBean holds space for all extensions that extend this bean.
-   */
-  private static void addStorageField(ClassVisitor cv, ClassMeta meta) {
-    if (meta.implementsExtendableBeanInterface() && !meta.superImplementsExtendableBeanInterface()) {
-      FieldVisitor f1 = cv.visitField(meta.accPrivate(), EXTENSION_STORAGE_FIELD, "[" + L_ENTITYBEAN, null, null);
-      f1.visitEnd();
-    }
-  }
-
   /**
    * Initializes the _ebean_extension_storage field.
    * <pre>
@@ -166,6 +157,15 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
    */
   static void addStorageInit(MethodVisitor mv, ClassMeta meta) {
     if (meta.entityExtension() && meta.implementsExtendableBeanInterface()) {
+      if (meta.superImplementsExtendableBeanInterface()) {
+        if (meta.isLog(4)) {
+          meta.log("... skipping intercept storage <init> ... handled by super class... ");
+        }
+        return;
+      }
+      if (meta.isLog(4)) {
+        meta.log("... adding intercept storage <init>");
+      }
       // initialize the EXTENSION_STORAGE field
       mv.visitVarInsn(ALOAD, 0);
       mv.visitVarInsn(ALOAD, 0);
@@ -179,7 +179,7 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
   /**
    * Adds the _ebean_getExtension method.
    * <pre>
-   *   public EntityBean _ebean_getExtension2(ExtensionAccessor accessor) {
+   *   public EntityBean _ebean_getExtension(ExtensionAccessor accessor) {
    *     EntityBean ret = this._ebean_extension_storage[accessor.getIndex()];
    *     if (ret == null) {
    *       ret = this._ebean_getExtensionAccessors().createInstance(accessor, this);
@@ -190,9 +190,6 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
    * </pre>
    */
   private static void addGetExtension(ClassVisitor cv, ClassMeta classMeta) {
-    if (!classMeta.entityExtension() || !classMeta.implementsExtendableBeanInterface()) {
-      return;
-    }
     MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getExtension", "(" + L_EXTENSIONACCESSOR + ")" + L_ENTITYBEAN, null, null);
     mv.visitCode();
 
@@ -249,6 +246,35 @@ class EntityExtensionWeaver implements Opcodes, EnhanceConstants {
     mv.visitLocalVariable("accessor", L_EXTENSIONACCESSOR, null, l0, l5, 1);
     mv.visitLocalVariable("ret", L_ENTITYBEAN, null, l1, l5, 2);
     mv.visitMaxs(3, 3);
+    mv.visitEnd();
+
+  }
+
+  /**
+   * Adds the _ebean_getExtension method.
+   * <pre>
+   *   public EntityBean[] _ebean_getExtensions() {
+   *     return this._ebean_extension_storage;
+   *   }
+   * </pre>
+   */
+  private static void addGetExtensions(ClassVisitor cv, ClassMeta classMeta) {
+    MethodVisitor mv = cv.visitMethod(classMeta.accPublic(), "_ebean_getExtensions", "()[" + L_ENTITYBEAN, null, null);
+    mv.visitCode();
+
+    Label l0 = new Label();
+
+    mv.visitLabel(l0);
+    mv.visitLineNumber(1, l0);
+
+    mv.visitVarInsn(ALOAD, 0);
+    mv.visitFieldInsn(GETFIELD, classMeta.className(), EXTENSION_STORAGE_FIELD, "[" + L_ENTITYBEAN);
+    mv.visitInsn(ARETURN);
+
+    Label l1 = new Label();
+    mv.visitLabel(l1);
+    mv.visitLocalVariable("this", "L" + classMeta.className() + ";", null, l0, l1, 0);
+    mv.visitMaxs(1, 1);
     mv.visitEnd();
 
   }

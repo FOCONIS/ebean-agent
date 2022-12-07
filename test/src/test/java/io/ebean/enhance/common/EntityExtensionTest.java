@@ -3,6 +3,8 @@ package io.ebean.enhance.common;
 import io.ebean.DB;
 import io.ebean.bean.EntityBean;
 import io.ebean.bean.ExtensionAccessors;
+import io.ebean.bean.InterceptReadOnly;
+import io.ebean.bean.InterceptReadWrite;
 import org.junit.jupiter.api.Test;
 import test.model.domain.extend.BEntityBase;
 import test.model.domain.extend.BEntityBaseAbstract;
@@ -48,6 +50,18 @@ public class EntityExtensionTest {
     //assertThat(info.getPropertyLength()).isEqualTo(3);
 
     ret = ((EntityBean) base)._ebean_getExtension(info.iterator().next());
-    System.out.println(ret);
+    assertThat(ret).isNotNull();
+    base = DB.getDefault().createEntityBean(BEntityBase.class);
+    assertThat(base._ebean_getExtensions()).hasSize(2);
+
+    DB.save(base);
+
+    base = DB.find(BEntityBase.class).setReadOnly(false).where().idEq(base.getId()).findOne();
+    assertThat(((EntityBean)base)._ebean_getIntercept()).isInstanceOf(InterceptReadWrite.class);
+    assertThat(base._ebean_getExtensions()).hasSize(2);
+
+    base = DB.find(BEntityBase.class).setReadOnly(true).setDisableLazyLoading(true).where().idEq(base.getId()).findOne();
+    assertThat(((EntityBean)base)._ebean_getIntercept()).isInstanceOf(InterceptReadOnly.class);
+    assertThat(base._ebean_getExtensions()).hasSize(2);
   }
 }

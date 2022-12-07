@@ -151,13 +151,7 @@ final class ConstructorAdapter extends MethodVisitor implements EnhanceConstants
         } else {
           addConstructorInit(owner);
         }
-        if (meta.superImplementsExtendableBeanInterface()) {
-          if (meta.isLog(4)) {
-            meta.log("... skipping intercept storage <init> ... handled by super class... CONSTRUCTOR: owner:" + owner + " " + constructorDesc);
-          }
-        } else {
-          EntityExtensionWeaver.addStorageInit(mv, meta);
-        }
+        EntityExtensionWeaver.addStorageInit(mv, meta);
       }
     }
   }

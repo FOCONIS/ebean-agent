@@ -142,7 +142,7 @@ class MethodNewInstanceIntercept {
     mv.visitLabel(label0);
     mv.visitLineNumber(2, label0);
     mv.visitVarInsn(ALOAD, 0);
-    mv.visitMethodInsn(INVOKESPECIAL, meta.superClassName(), INIT, "()V", false);
+    mv.visitMethodInsn(INVOKESPECIAL, meta.className(), INIT, "()V", false);
     Label label1 = new Label();
     mv.visitLabel(label1);
     mv.visitLineNumber(3, label1);

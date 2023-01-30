@@ -31,7 +31,8 @@ public class EntityExtensionTest {
     BExtension1 ext = new BExtension1();
     assertThat(ext).isInstanceOf(EntityBean.class);
 
-    BExtension1.get(new BEntityBase());
+    BExtension1 extension = BExtension1.get(new BEntityBase());
+    assertThat(extension.getBaz()).isTrue();
 
     Field field = BEntityBaseAbstract.class.getDeclaredField("_ebean_extension_accessors");
     Object ret = field.get(null);

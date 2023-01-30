@@ -13,10 +13,16 @@ public class BExtension1 {
 
   String foo;
 
+  Boolean baz = Boolean.TRUE;
+
   public static BExtension1 get(BEntityBaseAbstract obj) {
     throw new NotEnhancedException();
   }
   public static BExtension1 get(BEntityExtendable obj) {
     throw new NotEnhancedException();
+  }
+
+  public Boolean getBaz() {
+    return baz;
   }
 }

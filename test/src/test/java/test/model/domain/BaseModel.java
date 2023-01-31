@@ -2,9 +2,9 @@ package test.model.domain;
 
 import io.ebean.Model;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 import java.sql.Timestamp;
 
 /**

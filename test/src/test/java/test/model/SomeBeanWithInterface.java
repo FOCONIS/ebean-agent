@@ -1,6 +1,6 @@
 package test.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * Entity bean that implements an interface.

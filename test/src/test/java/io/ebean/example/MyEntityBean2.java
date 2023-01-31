@@ -4,7 +4,7 @@ import io.ebean.bean.EntityBean;
 import io.ebean.bean.EntityBeanIntercept;
 import test.model.MyEmbeddedBean;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 
 public class MyEntityBean2 implements EntityBean {
 

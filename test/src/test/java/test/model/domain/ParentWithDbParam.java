@@ -2,7 +2,7 @@ package test.model.domain;
 
 import io.ebean.Model;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * MappedSuperclass with no properties.

@@ -2,8 +2,8 @@ package test.model.domain.extend;
 
 import io.ebean.bean.extend.ExtendableBean;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * @author Roland Praml, FOCONIS AG

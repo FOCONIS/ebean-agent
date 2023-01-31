@@ -1,7 +1,7 @@
 package test.model.domain.extend;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * @author Roland Praml, FOCONIS AG

@@ -1,6 +1,6 @@
 package test.model.domain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.sql.Date;
 import java.util.List;
 

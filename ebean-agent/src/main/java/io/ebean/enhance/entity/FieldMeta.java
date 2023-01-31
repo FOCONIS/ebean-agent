@@ -182,7 +182,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
    * Return true if this is a transient field.
    */
   public boolean isTransient() {
-    return annotations.contains("Ljavax/persistence/Transient;")
+    return annotations.contains("Ljakarta/persistence/Transient;")
       || annotations.contains(L_DRAFT);
   }
 
@@ -193,30 +193,30 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
    * </p>
    */
   public boolean isId() {
-    return (annotations.contains("Ljavax/persistence/Id;")
-      || annotations.contains("Ljavax/persistence/EmbeddedId;"));
+    return (annotations.contains("Ljakarta/persistence/Id;")
+      || annotations.contains("Ljakarta/persistence/EmbeddedId;"));
   }
 
   private boolean isToOne() {
-    return annotations.contains("Ljavax/persistence/OneToOne;")
-      || annotations.contains("Ljavax/persistence/ManyToOne;");
+    return annotations.contains("Ljakarta/persistence/OneToOne;")
+      || annotations.contains("Ljakarta/persistence/ManyToOne;");
   }
 
   /**
    * Return true if this is a OneToMany or ManyToMany field.
    */
   public boolean isToMany() {
-    return annotations.contains("Ljavax/persistence/OneToMany;")
-      || annotations.contains("Ljavax/persistence/ManyToMany;");
+    return annotations.contains("Ljakarta/persistence/OneToMany;")
+      || annotations.contains("Ljakarta/persistence/ManyToMany;");
   }
 
   private boolean isManyToMany() {
-    return annotations.contains("Ljavax/persistence/ManyToMany;");
+    return annotations.contains("Ljakarta/persistence/ManyToMany;");
   }
 
   public boolean isOne() {
-    return annotations.contains("Ljavax/persistence/OneToOne;")
-      || annotations.contains("Ljavax/persistence/ManyToOne;");
+    return annotations.contains("Ljakarta/persistence/OneToOne;")
+      || annotations.contains("Ljakarta/persistence/ManyToOne;");
   }
 
   /**
@@ -246,18 +246,18 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
   }
 
   private boolean isVersion() {
-    return annotations.contains("Ljavax/persistence/Version;");
+    return annotations.contains("Ljakarta/persistence/Version;");
   }
 
   /**
    * Return true if this is an Embedded field.
    */
   boolean isEmbedded() {
-    return annotations.contains("Ljavax/persistence/Embedded;");
+    return annotations.contains("Ljakarta/persistence/Embedded;");
   }
 
   boolean hasOrderColumn() {
-    return annotations.contains("Ljavax/persistence/OrderColumn;");
+    return annotations.contains("Ljakarta/persistence/OrderColumn;");
   }
 
   /**

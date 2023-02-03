@@ -219,16 +219,20 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
    */
   public boolean isToMany() {
     return annotations.contains("Ljavax/persistence/OneToMany;")
+      || annotations.contains(JX_PERSISTENCE_MANYTOMANY)
+      || annotations.contains("Ljakarta/persistence/OneToMany;")
       || annotations.contains(JK_PERSISTENCE_MANYTOMANY);
   }
 
   private boolean isManyToMany() {
-    return annotations.contains("Ljakarta/persistence/ManyToMany;");
+    return annotations.contains(JX_PERSISTENCE_MANYTOMANY) || annotations.contains(JK_PERSISTENCE_MANYTOMANY);
   }
 
   public boolean isOne() {
-    return annotations.contains(JX_PERSISTENCE_MANYTOMANY)
-      || annotations.contains(JK_PERSISTENCE_MANYTOMANY);
+    return annotations.contains(JX_PERSISTENCE_ONETOONE)
+      || annotations.contains(JX_PERSISTENCE_MANYTOONE)
+      || annotations.contains(JK_PERSISTENCE_ONETOONE)
+      || annotations.contains(JK_PERSISTENCE_MANYTOONE);
   }
 
   /**

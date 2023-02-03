@@ -1,6 +1,6 @@
 package test.model;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * Only has hashCode() and equals() methods with no persistent fields.

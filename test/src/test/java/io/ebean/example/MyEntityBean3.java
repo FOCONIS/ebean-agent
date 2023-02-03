@@ -5,7 +5,7 @@ import io.ebean.bean.EntityBean;
 import io.ebean.bean.EntityBeanIntercept;
 import test.model.MyEmbeddedBean;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 import java.util.List;
 
 public class MyEntityBean3 extends Model implements EntityBean, EbString {

@@ -11,24 +11,30 @@ class EntityCheck {
   * A class with one of these annotations is enhanced as an "entity".
   */
   private static final String[] entityAnnotations = {
-      EnhanceConstants.ENTITY_ANNOTATION,
-      EnhanceConstants.EMBEDDABLE_ANNOTATION,
-      EnhanceConstants.MAPPEDSUPERCLASS_ANNOTATION,
-      EnhanceConstants.ENTITY_EXTENSION_ANNOTATION,
-      EnhanceConstants.DOCSTORE_ANNOTATION
+    EnhanceConstants.JX_ENTITY_ANNOTATION,
+    EnhanceConstants.JX_EMBEDDABLE_ANNOTATION,
+    EnhanceConstants.JX_MAPPEDSUPERCLASS_ANNOTATION,
+    EnhanceConstants.JK_ENTITY_ANNOTATION,
+    EnhanceConstants.JK_EMBEDDABLE_ANNOTATION,
+    EnhanceConstants.JK_MAPPEDSUPERCLASS_ANNOTATION,
+    EnhanceConstants.ENTITY_EXTENSION_ANNOTATION,
+    EnhanceConstants.DOCSTORE_ANNOTATION
   };
 
   /**
   * Return true if the annotation is for an Entity, Embeddable, MappedSuperclass or DocStore.
   */
   static boolean isEntityAnnotation(String desc) {
-    if (!desc.startsWith(EnhanceConstants.JAVAX_PERSISTENCE)) {
+    if (!(desc.startsWith(EnhanceConstants.JX_PERSISTENCE) || desc.startsWith(EnhanceConstants.JK_PERSISTENCE))) {
       return desc.equals(EnhanceConstants.DOCSTORE_ANNOTATION)
         || desc.equals(EnhanceConstants.ENTITY_EXTENSION_ANNOTATION);
     }
-    return desc.equals(EnhanceConstants.ENTITY_ANNOTATION)
-      || desc.equals(EnhanceConstants.EMBEDDABLE_ANNOTATION)
-      || desc.equals(EnhanceConstants.MAPPEDSUPERCLASS_ANNOTATION);
+    return desc.equals(EnhanceConstants.JX_ENTITY_ANNOTATION)
+      || desc.equals(EnhanceConstants.JX_EMBEDDABLE_ANNOTATION)
+      || desc.equals(EnhanceConstants.JX_MAPPEDSUPERCLASS_ANNOTATION)
+      || desc.equals(EnhanceConstants.JK_ENTITY_ANNOTATION)
+      || desc.equals(EnhanceConstants.JK_EMBEDDABLE_ANNOTATION)
+      || desc.equals(EnhanceConstants.JK_MAPPEDSUPERCLASS_ANNOTATION);
   }
 
   /**

@@ -2,7 +2,7 @@ package test.model.domain.extend;
 
 import io.ebean.bean.extend.ExtendableBean;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * @author Roland Praml, FOCONIS AG

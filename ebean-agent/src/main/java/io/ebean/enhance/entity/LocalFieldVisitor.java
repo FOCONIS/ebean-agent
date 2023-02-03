@@ -56,7 +56,7 @@ public final class LocalFieldVisitor extends FieldVisitor implements EnhanceCons
   }
 
   private boolean annotationWithNullable(String desc) {
-    return L_COLUMN_ANNOTATION.equals(desc) || L_DBARRAY.equals(desc);
+    return L_JX_COLUMN_ANNOTATION.equals(desc) || L_JK_COLUMN_ANNOTATION.equals(desc) || L_DBARRAY.equals(desc);
   }
 
   @Override

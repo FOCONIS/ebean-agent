@@ -1,7 +1,7 @@
 package test.model.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * Product entity bean.

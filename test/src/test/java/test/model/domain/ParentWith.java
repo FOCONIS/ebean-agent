@@ -1,6 +1,6 @@
 package test.model.domain;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class ParentWith extends ParentWithDbParam {

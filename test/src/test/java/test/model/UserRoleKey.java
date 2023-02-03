@@ -1,6 +1,6 @@
 package test.model;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 /**
  * An embedded bean that has package visibility (is not public).

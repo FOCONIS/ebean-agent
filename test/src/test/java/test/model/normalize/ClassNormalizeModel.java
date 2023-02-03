@@ -1,7 +1,7 @@
 package test.model.normalize;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 import io.ebean.annotation.Normalize;
 import test.normalize.LeadingZeroRemover;

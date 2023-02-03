@@ -1,6 +1,6 @@
 package test.model;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * Mapped superClass with equals/hashCode also needs to be enhanced.

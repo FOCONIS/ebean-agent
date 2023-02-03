@@ -1,6 +1,6 @@
 package test.model.domain.extend;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * @author Roland Praml, FOCONIS AG

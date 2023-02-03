@@ -3,7 +3,7 @@ package test.model;
 import io.ebean.example.EbString;
 import io.ebean.example.ToStringBuilder;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class MyEmbeddedBean implements EbString {

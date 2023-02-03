@@ -1,6 +1,6 @@
 package test.model;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class PBase extends GPBase {

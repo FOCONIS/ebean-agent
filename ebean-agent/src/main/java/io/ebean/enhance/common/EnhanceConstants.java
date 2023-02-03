@@ -15,11 +15,17 @@ public interface EnhanceConstants {
 
   String NORMALIZE_ANNOTATION = "Lio/ebean/annotation/Normalize;";
 
-  String JAVAX_PERSISTENCE = "Ljakarta/persistence/";
-  String ENTITY_ANNOTATION = "Ljakarta/persistence/Entity;";
+  String JX_PERSISTENCE = "Ljavax/persistence/";
+  String JX_ENTITY_ANNOTATION = "Ljavax/persistence/Entity;";
+  String JK_PERSISTENCE = "Ljakarta/persistence/";
+  String JK_ENTITY_ANNOTATION = "Ljakarta/persistence/Entity;";
+  String JX_EMBEDDABLE_ANNOTATION = "Ljavax/persistence/Embeddable;";
+  String JX_MAPPEDSUPERCLASS_ANNOTATION = "Ljavax/persistence/MappedSuperclass;";
+  String JK_EMBEDDABLE_ANNOTATION = "Ljakarta/persistence/Embeddable;";
+  String JK_MAPPEDSUPERCLASS_ANNOTATION = "Ljakarta/persistence/MappedSuperclass;";
+  String L_JX_COLUMN_ANNOTATION = "Ljavax/persistence/Column;";
+  String L_JK_COLUMN_ANNOTATION = "Ljakarta/persistence/Column;";
   String DOCSTORE_ANNOTATION = "Lio/ebean/annotation/DocStore;";
-  String EMBEDDABLE_ANNOTATION = "Ljakarta/persistence/Embeddable;";
-  String MAPPEDSUPERCLASS_ANNOTATION = "Ljakarta/persistence/MappedSuperclass;";
   String ENTITY_EXTENSION_ANNOTATION = "Lio/ebean/bean/extend/EntityExtension;";
 
   String IDENTITY_FIELD = "_ebean_identity";
@@ -66,6 +72,5 @@ public interface EnhanceConstants {
   String LINKEDHASHMAP = "java/util/LinkedHashMap";
   String L_JETBRAINS_NOTNULL = "Lorg/jetbrains/annotations/NotNull;";
   String L_EBEAN_NOTNULL = "Lio/ebean/annotation/NotNull;";
-  String L_COLUMN_ANNOTATION = "Ljakarta/persistence/Column;";
   String L_DBARRAY = "Lio/ebean/annotation/DbArray;";
 }

@@ -39,7 +39,7 @@ final class MethodFieldAdapter extends MethodVisitor implements Opcodes {
    */
   @Override
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-    if (desc.equals("Ljakarta/persistence/Transient;")) {
+    if (desc.equals("Ljavax/persistence/Transient;") || desc.equals("Ljakarta/persistence/Transient;")) {
       transientAnnotation = true;
     }
     return super.visitAnnotation(desc, visible);

@@ -16,8 +16,8 @@
   <description>Runs agent tests using</description>
 
   <properties>
-    <ebean.agent.version>13.10.3-FOC4</ebean.agent.version>
-    <ebean.version>13.10.3-FOC2</ebean.version>
+    <ebean.agent.version>13.13.1-FOC1-SNAPSHOT</ebean.agent.version>
+    <ebean.version>13.4.0</ebean.version>
   </properties>
 
   <dependencies>
@@ -46,6 +46,13 @@
       <artifactId>ebean</artifactId>
       <version>${ebean.version}</version>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>3.1.0</version>
+      <scope>test</scope>
     </dependency>
 
     <!--    <dependency>-->

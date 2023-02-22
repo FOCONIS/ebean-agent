@@ -16,7 +16,8 @@ final class EntityCheck {
     EnhanceConstants.Javax.Entity, EnhanceConstants.Jakarta.Entity,
     EnhanceConstants.Javax.Embeddable, EnhanceConstants.Jakarta.Embeddable,
     EnhanceConstants.Javax.MappedSuperclass, EnhanceConstants.Jakarta.MappedSuperclass,
-    EnhanceConstants.ENTITY_EXTENSION_ANNOTATION,
+    EnhanceConstants.DOCSTORE_ANNOTATION,
+    EnhanceConstants.ENTITY_EXTENSION_ANNOTATION
   };
 
   private static final Set<String> allEntityTypes = new HashSet<>(Arrays.asList(entityAnnotations));

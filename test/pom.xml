@@ -17,7 +17,7 @@
 
   <properties>
     <ebean.agent.version>13.13.1-FOC2-SNAPSHOT</ebean.agent.version>
-    <ebean.version>13.13.1-FOC1</ebean.version>
+    <ebean.version>13.13.1-FOC2</ebean.version>
   </properties>
 
   <dependencies>

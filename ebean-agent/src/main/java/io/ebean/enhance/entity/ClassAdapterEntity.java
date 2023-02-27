@@ -80,7 +80,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
         classMeta.log("read information about superClasses " + superName + " to see if it is entity/embedded/mappedSuperclass");
       }
       ClassMeta superMeta = enhanceContext.superMeta(superName, classLoader);
-      if (superMeta != null && superMeta.isEntity()) {
+      if (superMeta != null && (superMeta.isEntity() || superMeta.isEntityExtensionSuperclass())) {
         // the superClass is an entity/embedded/mappedSuperclass...
         classMeta.setSuperMeta(superMeta);
       }

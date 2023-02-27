@@ -48,6 +48,7 @@ public interface EnhanceConstants {
   String DOCSTORE_ANNOTATION = "Lio/ebean/annotation/DocStore;";
   String NORMALIZE_ANNOTATION = "Lio/ebean/annotation/Normalize;";
   String ENTITY_EXTENSION_ANNOTATION = "Lio/ebean/bean/extend/EntityExtension;";
+  String ENTITY_EXTENSION_SUPERCLASS_ANNOTATION = "Lio/ebean/bean/extend/EntityExtensionSuperclass;";
 
   String IDENTITY_FIELD = "_ebean_identity";
   String INTERCEPT_FIELD = "_ebean_intercept";

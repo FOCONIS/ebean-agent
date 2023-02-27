@@ -9,7 +9,7 @@ import io.ebean.bean.extend.EntityExtension;
  */
 @EntityExtension({BEntityBaseAbstract.class, BEntityExtendable.class})
 @EbeanComponent
-public class BExtension1 {
+public class BExtension1 extends AbstractExtension {
 
   String foo;
 
@@ -24,5 +24,13 @@ public class BExtension1 {
 
   public Boolean getBaz() {
     return baz;
+  }
+
+  public String getFoo() {
+    return foo;
+  }
+
+  public void setFoo(String foo) {
+    this.foo = foo;
   }
 }

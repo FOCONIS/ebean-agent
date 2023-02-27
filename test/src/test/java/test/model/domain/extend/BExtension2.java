@@ -8,7 +8,7 @@ import io.ebean.bean.extend.EntityExtension;
  */
 @EntityExtension(BEntityBaseAbstract.class)
 @EbeanComponent
-public class BExtension2 {
+public class BExtension2 extends AbstractExtension {
 
 
   String bar;

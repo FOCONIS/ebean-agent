@@ -33,6 +33,8 @@ public class EntityExtensionTest {
 
     BExtension1 extension = BExtension1.get(new BEntityBase());
     assertThat(extension.getBaz()).isTrue();
+    extension.setFoo("  baz  "); // shoudl be normalized
+    assertThat(extension.getFoo()).isEqualTo("baz");
 
     Field field = BEntityBaseAbstract.class.getDeclaredField("_ebean_extension_accessors");
     Object ret = field.get(null);

@@ -137,6 +137,10 @@ public class ClassMeta {
     return classAnnotation.contains(ENTITY_EXTENSION_ANNOTATION);
   }
 
+  public boolean isEntityExtensionSuperclass() {
+    return classAnnotation.contains(ENTITY_EXTENSION_SUPERCLASS_ANNOTATION);
+  }
+
   public void setClassName(String className, String superClassName) {
     this.className = className;
     this.superClassName = superClassName;

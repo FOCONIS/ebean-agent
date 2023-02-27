@@ -51,6 +51,7 @@ public interface EnhanceConstants {
   String EMBEDDABLE_ANNOTATION = "Ljavax/persistence/Embeddable;";
   String MAPPEDSUPERCLASS_ANNOTATION = "Ljavax/persistence/MappedSuperclass;";
   String ENTITY_EXTENSION_ANNOTATION = "Lio/ebean/bean/extend/EntityExtension;";
+  String ENTITY_EXTENSION_SUPERCLASS_ANNOTATION = "Lio/ebean/bean/extend/EntityExtensionSuperclass;";
 
   String IDENTITY_FIELD = "_ebean_identity";
   String INTERCEPT_FIELD = "_ebean_intercept";

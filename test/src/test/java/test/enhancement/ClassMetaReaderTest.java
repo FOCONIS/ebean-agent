@@ -182,7 +182,8 @@ class ClassMetaReaderTest {
     try (URLClassLoader emptyClassloader = new URLClassLoader(new URL[0])) {
 
       AgentManifest manifest = new AgentManifest(emptyClassloader);
-      assertThat(manifest.enhancementVersion()).isEqualTo(142);
+
+      assertThat(manifest.enhancementVersion()).isEqualTo(143);
 
       EnhanceContext enhanceContext0 = new EnhanceContext(reader,"debug=1", manifest);
       assertThat(enhanceContext0.isEnhancedToString()).isTrue();

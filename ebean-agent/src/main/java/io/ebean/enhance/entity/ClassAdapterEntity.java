@@ -65,7 +65,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       if (newInterfaces[i].equals(C_GROOVYOBJECT)) {
         classMeta.setGroovyInterface(true);
       }
-      if (c[i].equals(C_EXTENDABLE_BEAN)) {
+      if (newInterfaces[i].equals(C_EXTENDABLE_BEAN)) {
         classMeta.setExtendableBeanInterface(true);
       }
     }
@@ -81,7 +81,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
         classMeta.log("read information about superClasses " + superName + " to see if it is entity/embedded/mappedSuperclass");
       }
       ClassMeta superMeta = enhanceContext.superMeta(superName, classLoader);
-      if (superMeta != null && superMeta.isEntity()) {
+      if (superMeta != null && (superMeta.isEntity() || superMeta.isEntityExtensionSuperclass())) {
         // the superClass is an entity/embedded/mappedSuperclass...
         classMeta.setSuperMeta(superMeta);
       }

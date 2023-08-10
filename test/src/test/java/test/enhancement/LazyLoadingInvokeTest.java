@@ -51,8 +51,8 @@ public class LazyLoadingInvokeTest extends BaseTest {
     assertEquals(1, myBeanLoader.count);
 
     // The index on the lazy loaded property was set
-    assertEquals(3, intercept.getLazyLoadPropertyIndex());
-    assertEquals("name", intercept.getProperty(3));
+    assertEquals(3, intercept.lazyLoadPropertyIndex());
+    assertEquals("name", intercept.property(3));
   }
 
   @Test
@@ -73,8 +73,8 @@ public class LazyLoadingInvokeTest extends BaseTest {
     assertEquals(1, myBeanLoader.count);
 
     // The index on the lazy loaded property was set
-    assertEquals(2, intercept.getLazyLoadPropertyIndex());
-    assertEquals("one", intercept.getProperty(2));
+    assertEquals(2, intercept.lazyLoadPropertyIndex());
+    assertEquals("one", intercept.property(2));
   }
 
   private void setupCustomerState(Customer customer, EntityBeanIntercept intercept, MyBeanLoader myBeanLoader) {
@@ -137,7 +137,7 @@ public class LazyLoadingInvokeTest extends BaseTest {
     final Lock lock = new ReentrantLock();
 
     @Override
-    public String getName() {
+    public String name() {
       return null;
     }
 

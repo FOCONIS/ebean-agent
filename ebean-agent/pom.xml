@@ -9,7 +9,7 @@
 
   <groupId>io.ebean</groupId>
   <artifactId>ebean-agent</artifactId>
-  <version>13.20.1-FOC1</version>
+  <version>13.20.1-FOC1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>ebean-agent</name>
@@ -22,8 +22,7 @@
 
   <properties>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
-    <ebean.version>13.13.1-FOC2</ebean.version>
-<!--    <ebean.version>13.0.1-SNAPSHOT</ebean.version>-->
+    <ebean.version>13.17.3-FOC13</ebean.version>
   </properties>
 
   <dependencies>

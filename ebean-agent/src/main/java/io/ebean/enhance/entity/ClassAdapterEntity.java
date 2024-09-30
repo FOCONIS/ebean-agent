@@ -6,6 +6,7 @@ import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
+import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.common.*;
 
 import static io.ebean.enhance.Transformer.EBEAN_ASM_VERSION;
@@ -68,7 +69,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       if (newInterfaces[i].equals(C_GROOVYOBJECT)) {
         classMeta.setGroovyInterface(true);
       }
-      if (c[i].equals(C_EXTENDABLE_BEAN)) {
+      if (newInterfaces[i].equals(C_EXTENDABLE_BEAN)) {
         classMeta.setExtendableBeanInterface(true);
       }
     }

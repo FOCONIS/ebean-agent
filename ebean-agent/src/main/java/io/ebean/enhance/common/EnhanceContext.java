@@ -49,6 +49,7 @@ public final class EnhanceContext {
   private final HashMap<String, ClassMeta> map = new HashMap<>();
   private final FilterEntityTransactional filterEntityTransactional;
   private final FilterQueryBean filterQueryBean;
+  private final PackageFilter packageFilter;
   private boolean throwOnError;
   private final boolean enableProfileLocation;
   private final boolean enableEntityFieldAccess;
@@ -84,6 +85,7 @@ public final class EnhanceContext {
     this.logout = new SysoutMessageOutput(System.out);
     this.classBytesReader = classBytesReader;
     this.reader = new ClassMetaReader(this, metaCache);
+    this.packageFilter = initPackageFilter(agentArgsMap.get("packages"));
 
     if (manifest.debugLevel() > -1) {
       logLevel = manifest.debugLevel();
@@ -99,6 +101,10 @@ public final class EnhanceContext {
     if (logLevel > 0 || propertyBoolean("printversion", false)) {
       System.out.println("ebean-agent version:" + Transformer.getVersion() + " enhancement:" + enhancementVersion + " resources:" + manifest.loadedResources());
     }
+  }
+
+  private PackageFilter initPackageFilter(String packages) {
+    return packages == null ? null : new PackageFilter(packages);
   }
 
   private int versionOf(AgentManifest manifest) {
@@ -226,6 +232,9 @@ public final class EnhanceContext {
    * known libraries JDBC drivers etc can be skipped.
    */
   public boolean isIgnoreClass(String className) {
+    if (packageFilter != null && packageFilter.ignore(className)) {
+      return true;
+    }
     return ignoreClassHelper.isIgnoreClass(className);
   }
 
@@ -492,6 +501,10 @@ public final class EnhanceContext {
 
   public boolean supportsProfileWithLine() {
     return enhancementVersion >= 143; // Ebean 13.13.1 onwards
+  }
+
+  public boolean improvedQueryBeans() {
+    return enhancementVersion >= 145;
   }
 
   public ProfileLineNumberMode profileLineMode() {

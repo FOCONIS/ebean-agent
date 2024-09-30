@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.ebean</groupId>
     <artifactId>ebean-agent-reactor</artifactId>
-    <version>13.20.1-FOC1-SNAPSHOT</version>
+    <version>14.5.2-FOC1-SNAPSHOT</version>
   </parent>
 
   <artifactId>ebean-agent-test</artifactId>
@@ -74,13 +74,6 @@
 
     <dependency>
       <groupId>io.ebean</groupId>
-      <artifactId>querybean-generator</artifactId>
-      <version>${ebean.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>io.ebean</groupId>
       <artifactId>ebean-test</artifactId>
       <version>${ebean.version}</version>
       <scope>test</scope>
@@ -104,7 +97,20 @@
 
   <build>
     <plugins>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.ebean</groupId>
+              <artifactId>querybean-generator</artifactId>
+              <version>${ebean.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>io.ebean</groupId>
         <artifactId>ebean-maven-plugin</artifactId>
@@ -121,7 +127,7 @@
             <id>test</id>
             <phase>process-test-classes</phase>
             <configuration>
-              <transformArgs>debug=0,version=999999999</transformArgs>
+              <transformArgs>debug=1;packages=test,org.foo</transformArgs>
             </configuration>
             <goals>
               <goal>testEnhance</goal>

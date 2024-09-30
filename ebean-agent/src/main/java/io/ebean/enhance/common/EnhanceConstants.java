@@ -57,7 +57,6 @@ public interface EnhanceConstants {
   String EXTENSION_STORAGE_FIELD = "_ebean_extension_storage";
   String C_OBJECT = "java/lang/Object";
   String C_MODEL = "io/ebean/Model";
-  String C_QUERYBEAN = "io/ebean/typequery/TQRootBean";
   String C_ENHANCEDTRANSACTIONAL = "io/ebean/bean/EnhancedTransactional";
   String C_ENTITYBEAN = "io/ebean/bean/EntityBean";
   String C_SCALAOBJECT = "scala/ScalaObject";

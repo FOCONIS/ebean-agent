@@ -3,7 +3,14 @@ package io.ebean.enhance.common;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
 
-public class VisitUtil implements Opcodes {
+public final class VisitUtil implements Opcodes {
+
+  /**
+   * Append the interfaceType to the existing class signature.
+   */
+  public static String signatureAppend(String signature, String interfaceType) {
+    return signature == null ? null : signature + 'L' + interfaceType + ';';
+  }
 
   /**
   * Helper method for visiting an int value.

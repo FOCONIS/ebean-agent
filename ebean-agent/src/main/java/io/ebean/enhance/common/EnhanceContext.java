@@ -507,6 +507,10 @@ public final class EnhanceContext {
     return enhancementVersion >= 145;
   }
 
+  public boolean fluidQueryBuilders() {
+    return enhancementVersion >= 148;
+  }
+
   public ProfileLineNumberMode profileLineMode() {
     return profileLineNumberMode;
   }

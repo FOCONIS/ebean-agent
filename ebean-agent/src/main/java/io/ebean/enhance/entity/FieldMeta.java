@@ -584,7 +584,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
     int iLoadOpcode = asmType.getOpcode(Opcodes.ILOAD);
     int iStoreOpcode = asmType.getOpcode(Opcodes.ISTORE);
 
-    MethodVisitor originalMv = cw.visitMethod(ACC_PROTECTED, setMethodName, setMethodDesc, null, null);
+    MethodVisitor originalMv = cw.visitMethod(classMeta.accAccessor(), setMethodName, setMethodDesc, null, null);
 
     GeneratorAdapter mv = new GeneratorAdapter(originalMv, ACC_PROTECTED, setMethodName, setMethodDesc);
     mv.visitCode();
@@ -599,7 +599,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
       mv.visitVarInsn(iLoadOpcode, 1);
       for (Type normalizer : normalizers) {
         mv.visitMethodInsn(INVOKESTATIC, normalizer.getInternalName(), "normalize",
-          "(" +  asmType.getDescriptor() +")" +  asmType.getDescriptor(), false);
+          "(" + asmType.getDescriptor() + ")" + asmType.getDescriptor(), false);
       }
       mv.visitVarInsn(iStoreOpcode, 1);
     } else {

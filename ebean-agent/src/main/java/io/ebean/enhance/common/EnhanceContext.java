@@ -58,9 +58,7 @@ public final class EnhanceContext {
   private final int accProtected;
   private final int accPrivate;
   private final int enhancementVersion;
-  private final int ebeanInternalVersion;
   private final String postJsonGetter;
-
   private SummaryInfo summaryInfo;
 
   public EnhanceContext(ClassBytesReader classBytesReader, String agentArgs, AgentManifest manifest) {
@@ -76,7 +74,6 @@ public final class EnhanceContext {
     this.postJsonGetter = manifest.postJsonGetter();
     this.enableEntityFieldAccess = manifest.isEnableEntityFieldAccess();
     this.profileLineNumberMode = manifest.profileLineMode();
-    this.postJsonGetter = manifest.getPostJsonGetter();
     this.accPublic = manifest.accPublic();
     this.accProtected = manifest.accProtected();
     this.accPrivate = manifest.accPrivate();

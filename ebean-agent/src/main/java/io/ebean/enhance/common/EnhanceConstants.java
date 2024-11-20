@@ -47,9 +47,6 @@ public interface EnhanceConstants {
   String TYPEQUERYBEAN_ANNOTATION = "Lio/ebean/typequery/TypeQueryBean;";
   String DOCSTORE_ANNOTATION = "Lio/ebean/annotation/DocStore;";
   String NORMALIZE_ANNOTATION = "Lio/ebean/annotation/Normalize;";
-  String DOCSTORE_ANNOTATION = "Lio/ebean/annotation/DocStore;";
-  String EMBEDDABLE_ANNOTATION = "Ljavax/persistence/Embeddable;";
-  String MAPPEDSUPERCLASS_ANNOTATION = "Ljavax/persistence/MappedSuperclass;";
   String ENTITY_EXTENSION_ANNOTATION = "Lio/ebean/bean/extend/EntityExtension;";
   String ENTITY_EXTENSION_SUPERCLASS_ANNOTATION = "Lio/ebean/bean/extend/EntityExtensionSuperclass;";
 

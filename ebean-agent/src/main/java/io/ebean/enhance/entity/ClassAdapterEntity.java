@@ -6,7 +6,10 @@ import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
 import io.ebean.enhance.asm.Opcodes;
+import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.common.*;
+
+import java.util.List;
 
 import static io.ebean.enhance.Transformer.EBEAN_ASM_VERSION;
 
@@ -68,6 +71,9 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       if (newInterfaces[i].equals(C_GROOVYOBJECT)) {
         classMeta.setGroovyInterface(true);
       }
+      if (newInterfaces[i].equals(C_EXTENDABLE_BEAN)) {
+        classMeta.setExtendableBeanInterface(true);
+      }
     }
     // add the EntityBean interface
     newInterfaces[newInterfaces.length - 1] = C_ENTITYBEAN;
@@ -81,7 +87,7 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
         classMeta.log("read information about superClasses " + superName + " to see if it is entity/embedded/mappedSuperclass");
       }
       ClassMeta superMeta = enhanceContext.superMeta(superName, classLoader);
-      if (superMeta != null && superMeta.isEntity()) {
+      if (superMeta != null && (superMeta.isEntity() || superMeta.isEntityExtensionSuperclass())) {
         // the superClass is an entity/embedded/mappedSuperclass...
         classMeta.setSuperMeta(superMeta);
       }
@@ -102,9 +108,13 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
     classMeta.addClassAnnotation(desc);
     AnnotationVisitor av = super.visitAnnotation(desc, visible);
-    return NORMALIZE_ANNOTATION.equals(desc)
-      ? new AnnotationInfoVisitor(null, classMeta.normalizeAnnotationInfo(), av)
-      : av;
+    if (NORMALIZE_ANNOTATION.equals(desc)) {
+      return new AnnotationInfoVisitor(null, classMeta.normalizeAnnotationInfo(), av);
+    }
+    if (ENTITY_EXTENSION_ANNOTATION.equals(desc)) {
+      return new AnnotationInfoVisitor(null, classMeta.extensionAnnotationInfo(), av);
+    }
+    return av;
   }
 
   private boolean isPropertyChangeListenerField(String desc) {
@@ -149,13 +159,12 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       if (classMeta.isAlreadyEnhanced()) {
         throw new NoEnhancementRequiredException();
       }
-      if (classMeta.hasEntityBeanInterface()) {
-        log("Enhancing when EntityBean interface already exists!");
-      }
       IndexFieldWeaver.addPropertiesField(cv, classMeta);
       if (isLog(4)) {
         log("... add _ebean_props field");
       }
+      EntityExtensionWeaver.addFields(cv, classMeta);
+
       if (!classMeta.isSuperClassEntity()) {
         // only add the intercept and identity fields if
         // the superClass is not also enhanced
@@ -164,7 +173,6 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
         }
         InterceptField.addField(cv, classMeta, enhanceContext.isTransientInternalFields());
         MethodEquals.addIdentityField(cv, classMeta);
-
       }
       firstMethod = false;
     }
@@ -173,6 +181,20 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
       log("--- #### method name[" + name + "] desc[" + desc + "] sig[" + signature + "]");
     }
 
+    // search for get method that mathches this signature:
+    //   public static THIS_CLASS get(EXTENSION_TYPE param)
+    if (classMeta.isEntityExtension() && (access & Opcodes.ACC_STATIC) != 0
+      && name.equals("get")
+      && Type.getReturnType(desc).getInternalName().equals(classMeta.className())
+      && Type.getArgumentTypes(desc).length == 1) {
+      Type extension = findExtensionEntry(desc);
+      if (extension != null) {
+
+        MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+
+        return EntityExtensionWeaver.replaceGetterBody(mv, classMeta.className(), extension);
+      }
+    }
     if (isConstructor(name, desc)) {
       if (desc.equals(NOARG_VOID)) {
         // ensure public access on the default constructor
@@ -198,6 +220,22 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
     }
     // just leave as is, no interception etc
     return mv;
+  }
+
+  private Type findExtensionEntry(String desc) {
+    List<Type> extensions = classMeta.entityExtensions();
+    if (extensions != null) {
+      Type[] types = Type.getArgumentTypes(desc);
+      if (types.length == 1) {
+        for (Type extension : extensions) {
+          // search extension getter, where parameter match.
+          if (types[0].equals(extension)) {
+            return extension;
+          }
+        }
+      }
+    }
+    return null;
   }
 
   /**
@@ -228,13 +266,14 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
     }
     IndexFieldWeaver.addGetPropertyNames(cv, classMeta);
     IndexFieldWeaver.addGetPropertyName(cv, classMeta);
-
+    EntityExtensionWeaver.addGetters(cv, classMeta);
     if (!classMeta.isSuperClassEntity()) {
       if (isLog(8)) {
         log("... add _ebean_getIntercept() and _ebean_setIntercept()");
       }
       InterceptField.addGetterSetter(cv, classMeta);
     }
+
 
     // Add the field set/get methods which are used in place
     // of GETFIELD PUTFIELD instructions
@@ -246,7 +285,11 @@ public final class ClassAdapterEntity extends ClassVisitor implements EnhanceCon
     MethodSetEmbeddedLoaded.addMethod(cv, classMeta);
     MethodIsEmbeddedNewOrDirty.addMethod(cv, classMeta);
     MethodNewInstance.addMethod(cv, classMeta);
-    MethodNewInstanceReadOnly.interceptAddReadOnly(cv, classMeta);
+    if (classMeta.isEntityExtension()) {
+      MethodNewInstanceIntercept.interceptAddIntercept(cv, classMeta);
+    } else {
+      MethodNewInstanceReadOnly.interceptAddReadOnly(cv, classMeta);
+    }
     MethodToString.addMethod(cv, classMeta);
 
     // register with the agentContext

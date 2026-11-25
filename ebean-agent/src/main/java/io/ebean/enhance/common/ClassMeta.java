@@ -35,9 +35,9 @@ public class ClassMeta {
    */
   private boolean hasScalaInterface;
   /**
-   * Set to true if the class already implements the EntityBean interface.
+   * Set to true if the class directly implements the ExtendableBean interface.
    */
-  private boolean hasEntityBeanInterface;
+  private boolean hasExtendableBeanInterface;
   private boolean alreadyEnhanced;
   private boolean hasEqualsOrHashcode;
   private boolean hasToString;
@@ -57,6 +57,7 @@ public class ClassMeta {
   private final LinkedHashMap<String, FieldMeta> fields = new LinkedHashMap<>();
   private final HashSet<String> classAnnotation = new HashSet<>();
   private final AnnotationInfo annotationInfo = new AnnotationInfo(null);
+  private final AnnotationInfo extensionAnnotationInfo = new AnnotationInfo(null);
   private final AnnotationInfo normalizeAnnotationInfo = new AnnotationInfo(null);
   private final ArrayList<MethodMeta> methodMetaList = new ArrayList<>();
   private final EnhanceContext enhanceContext;
@@ -76,10 +77,10 @@ public class ClassMeta {
     return enhanceContext;
   }
 
-  /**
-   * Return the AnnotationInfo collected on methods.
-   * Used to determine Transactional method enhancement.
-   */
+  public AnnotationInfo extensionAnnotationInfo() {
+    return extensionAnnotationInfo;
+  }
+
   public AnnotationInfo normalizeAnnotationInfo() {
     return normalizeAnnotationInfo;
   }
@@ -90,6 +91,9 @@ public class ClassMeta {
     return normalizers != null || superMeta == null ? normalizers : superMeta.classNormalizers();
   }
 
+  /**
+   * Return the class-level annotation information used for transactional enhancement.
+   */
   public AnnotationInfo annotationInfo() {
     return annotationInfo;
   }
@@ -135,6 +139,14 @@ public class ClassMeta {
 
   public boolean isTransactional() {
     return classAnnotation.contains(TRANSACTIONAL_ANNOTATION);
+  }
+
+  public boolean isEntityExtension() {
+    return classAnnotation.contains(ENTITY_EXTENSION_ANNOTATION);
+  }
+
+  public boolean isEntityExtensionSuperclass() {
+    return classAnnotation.contains(ENTITY_EXTENSION_SUPERCLASS_ANNOTATION);
   }
 
   public void setClassName(String className, String superClassName) {
@@ -444,6 +456,10 @@ public class ClassMeta {
     return enhanceContext.interceptAddReadOnly();
   }
 
+  public boolean entityExtension() {
+    return enhanceContext.entityExtension();
+  }
+
   public boolean isRecordType() {
     return recordType;
   }
@@ -588,12 +604,16 @@ public class ClassMeta {
     this.hasScalaInterface = hasScalaInterface;
   }
 
-  public boolean hasEntityBeanInterface() {
-    return hasEntityBeanInterface;
+  public boolean implementsExtendableBeanInterface() {
+    return hasExtendableBeanInterface || superImplementsExtendableBeanInterface();
   }
 
-  public void setEntityBeanInterface(boolean hasEntityBeanInterface) {
-    this.hasEntityBeanInterface = hasEntityBeanInterface;
+  public boolean superImplementsExtendableBeanInterface() {
+    return superMeta != null && superMeta.implementsExtendableBeanInterface();
+  }
+
+  public void setExtendableBeanInterface(boolean hasExtendableBeanInterface) {
+    this.hasExtendableBeanInterface = hasExtendableBeanInterface;
   }
 
   private boolean hasGroovyInterface() {
@@ -604,4 +624,10 @@ public class ClassMeta {
     this.hasGroovyInterface = hasGroovyInterface;
   }
 
+  /**
+   * Returns the value of the &#64;EntityExtension annotation. Note that EntityExtensions shoud be final.
+   */
+  public List<Type> entityExtensions() {
+    return (List<Type>) extensionAnnotationInfo.getValue("value");
+  }
 }

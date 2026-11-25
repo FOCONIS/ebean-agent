@@ -45,6 +45,11 @@ class ClassMetaReaderVisitor extends ClassVisitor implements EnhanceConstants {
   @Override
   public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
     classMeta.setClassName(name, superName);
+    for (int i = 0; i < interfaces.length; i++) {
+      if (interfaces[i].equals(C_EXTENDABLE_BEAN)) {
+        classMeta.setExtendableBeanInterface(true);
+      }
+    }
     super.visit(version, access, name, signature, superName, interfaces);
   }
 
@@ -58,6 +63,8 @@ class ClassMetaReaderVisitor extends ClassVisitor implements EnhanceConstants {
       return new AnnotationInfoVisitor(null, classMeta.annotationInfo(), av);
     } else if (NORMALIZE_ANNOTATION.equals(desc)) {
       return new AnnotationInfoVisitor(null, classMeta.normalizeAnnotationInfo(), av);
+    } else if (ENTITY_EXTENSION_ANNOTATION.equals(desc)) {
+      return new AnnotationInfoVisitor(null, classMeta.extensionAnnotationInfo(), av);
     } else {
       return av;
     }

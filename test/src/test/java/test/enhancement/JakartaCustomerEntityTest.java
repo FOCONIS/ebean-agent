@@ -79,7 +79,7 @@ class JakartaCustomerEntityTest extends BaseTest {
     customer.setId(23l);
 
     // this is null as the bean has not been marked as loaded yet
-    boolean[] loaded = customerIntercept.getLoaded();
+    boolean[] loaded = customerIntercept.loaded();
     assertNotNull(loaded);
     assertEquals(PROPERTY_COUNT, loaded.length);
     assertEquals(true, loaded[0]);
@@ -169,7 +169,7 @@ class JakartaCustomerEntityTest extends BaseTest {
   }
 
   private void assertThatLoaded(EntityBeanIntercept intercept, boolean propertyLoaded, int... idx) {
-    boolean[] loaded = intercept.getLoaded();
+    boolean[] loaded = intercept.loaded();
     assertNotNull(loaded);
     for (int pos : idx) {
       assertEquals(propertyLoaded, loaded[pos]);

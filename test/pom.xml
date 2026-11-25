@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.ebean</groupId>
     <artifactId>ebean-agent-reactor</artifactId>
-    <version>18.7.0</version>
+    <version>18.7.0-FOC1-SNAPSHOT</version>
   </parent>
 
   <artifactId>ebean-agent-test</artifactId>
@@ -14,6 +14,7 @@
 
   <properties>
     <ebean.version>13.17.3-FOC13</ebean.version>
+    <maven.deploy.skip>true</maven.deploy.skip>
     <java.version>11</java.version>
   </properties>
 

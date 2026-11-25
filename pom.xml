@@ -9,14 +9,52 @@
 
   <groupId>io.ebean</groupId>
   <artifactId>ebean-agent-reactor</artifactId>
-  <version>18.7.0</version>
+  <version>18.7.0-FOC1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>ebean agent reactor</name>
+
+  <scm>
+    <developerConnection>scm:git:git@github.com:FOCONIS/ebean-agent.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>favf-sonatype-nexus-releases</id>
+      <name>Foconis Analytics Vilshofen Release Repository</name>
+      <url>https://artifacts.foconis.de/repository/favf-maven-releases/</url>
+    </repository>
+  </distributionManagement>
 
   <modules>
     <module>ebean-agent</module>
     <module>test</module>
   </modules>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>${maven-release-plugin.version}</version>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <tagNameFormat>ebean-agent-@{project.version}</tagNameFormat>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>github</id>
+      <distributionManagement>
+        <repository>
+          <id>github-release</id>
+          <name>FOCONIS Github Release Repository</name>
+          <url>https://maven.pkg.github.com/foconis/ebean-agent</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 </project>
 

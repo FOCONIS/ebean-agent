@@ -4,6 +4,7 @@ import io.ebean.enhance.asm.AnnotationVisitor;
 import io.ebean.enhance.asm.ClassVisitor;
 import io.ebean.enhance.asm.FieldVisitor;
 import io.ebean.enhance.asm.MethodVisitor;
+import io.ebean.enhance.asm.Type;
 import io.ebean.enhance.entity.*;
 
 import java.util.*;
@@ -56,6 +57,7 @@ public class ClassMeta {
   private final LinkedHashMap<String, FieldMeta> fields = new LinkedHashMap<>();
   private final HashSet<String> classAnnotation = new HashSet<>();
   private final AnnotationInfo annotationInfo = new AnnotationInfo(null);
+  private final AnnotationInfo normalizeAnnotationInfo = new AnnotationInfo(null);
   private final ArrayList<MethodMeta> methodMetaList = new ArrayList<>();
   private final EnhanceContext enhanceContext;
   private List<FieldMeta> allFields;
@@ -78,6 +80,16 @@ public class ClassMeta {
    * Return the AnnotationInfo collected on methods.
    * Used to determine Transactional method enhancement.
    */
+  public AnnotationInfo normalizeAnnotationInfo() {
+    return normalizeAnnotationInfo;
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<Type> classNormalizers() {
+    List<Type> normalizers = (List<Type>) normalizeAnnotationInfo.getValue("value");
+    return normalizers != null || superMeta == null ? normalizers : superMeta.classNormalizers();
+  }
+
   public AnnotationInfo annotationInfo() {
     return annotationInfo;
   }

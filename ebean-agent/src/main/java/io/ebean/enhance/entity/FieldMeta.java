@@ -1,11 +1,13 @@
 package io.ebean.enhance.entity;
 
 import io.ebean.enhance.asm.*;
+import io.ebean.enhance.common.AnnotationInfo;
 import io.ebean.enhance.common.ClassMeta;
 import io.ebean.enhance.common.EnhanceConstants;
 import io.ebean.enhance.common.VisitUtil;
 
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Holds meta data for a field.
@@ -36,6 +38,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
   private int indexPosition;
   private int sortOrder;
   private boolean notNull;
+  private final AnnotationInfo normalizeAnnotationInfo = new AnnotationInfo(null);
 
   /**
    * Construct based on field name and desc from reading byte code.
@@ -547,6 +550,26 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
    * }
    * </pre>
    */
+  AnnotationInfo normalizeAnnotationInfo() {
+    return normalizeAnnotationInfo;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void addNormalize(MethodVisitor mv, ClassMeta classMeta) {
+    List<Type> normalizers = (List<Type>) normalizeAnnotationInfo.getValue("value");
+    if (normalizers == null && L_STRING.equals(fieldDesc)) {
+      normalizers = classMeta.classNormalizers();
+    }
+    if (normalizers != null && !normalizers.isEmpty()) {
+      mv.visitVarInsn(asmType.getOpcode(ILOAD), 1);
+      String signature = "(" + fieldDesc + ")" + fieldDesc;
+      for (Type normalizer : normalizers) {
+        mv.visitMethodInsn(INVOKESTATIC, normalizer.getInternalName(), "normalize", signature, false);
+      }
+      mv.visitVarInsn(asmType.getOpcode(ISTORE), 1);
+    }
+  }
+
   private void addSet(ClassVisitor cw, ClassMeta classMeta) {
     String preSetterArgTypes = "Ljava/lang/Object;Ljava/lang/Object;";
     if (!objectType) {
@@ -562,6 +585,7 @@ public final class FieldMeta implements Opcodes, EnhanceConstants, Comparable<Fi
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitLineNumber(1, l0);
+    addNormalize(mv, classMeta);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitFieldInsn(GETFIELD, fieldClass, INTERCEPT_FIELD, L_INTERCEPT);
     if (isInterceptSet()) {

@@ -105,6 +105,10 @@ public final class EnhanceContext {
     return packages == null ? null : new PackageFilter(packages);
   }
 
+  public String postJsonGetter() {
+    return manifest.postJsonGetter();
+  }
+
   private int versionOf(AgentManifest manifest) {
     String ver = agentArgsMap.get("version");
     if (ver != null) {

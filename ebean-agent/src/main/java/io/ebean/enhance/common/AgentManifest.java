@@ -23,6 +23,7 @@ public final class AgentManifest {
   private final Set<String> transactionalPackages = new HashSet<>();
   private final Set<String> querybeanPackages = new HashSet<>();
   private final DetectQueryBean detectQueryBean;
+  private String postJsonGetter;
   private int debugLevel = -1;
   private boolean allowNullableDbArray;
   private boolean transientInternalFields;
@@ -314,7 +315,15 @@ public final class AgentManifest {
     }
   }
 
+  String postJsonGetter() {
+    return postJsonGetter;
+  }
+
   private void readOptions(Attributes attributes) {
+    String hook = attributes.getValue("post-json-getter");
+    if (hook != null) {
+      postJsonGetter = hook.replace('.', '/');
+    }
     transientInit = bool("transient-init", transientInit, attributes);
     transientInitThrowError = bool("transient-init-error", transientInit, attributes);
     transientInternalFields = bool("transient-internal-fields", transientInternalFields, attributes);
